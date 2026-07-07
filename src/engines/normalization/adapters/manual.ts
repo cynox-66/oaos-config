@@ -11,13 +11,31 @@
 // Unlabeled prose is taken wholesale as the description; company/role then
 // come back null (lower completeness → flagged for enrichment, per spec).
 
-import type { AdapterOutput, RawItem, SourceAdapter } from "../types";
+import type { AdapterOutput, Category, RawItem, SourceAdapter } from "../types";
 import {
   detectRemote,
   readLabeled,
   readString,
   type PayloadObject,
 } from "./shared";
+
+/** The canonical categories the operator may assert directly (spec Section 1). */
+const CATEGORIES: readonly Category[] = [
+  "Job",
+  "Internship",
+  "Freelance",
+  "Startup",
+  "OSS",
+  "Other",
+];
+
+/** Read an operator-asserted category from the payload, if it is a valid one. */
+function readCategory(payload: PayloadObject): Category | null {
+  const raw = readString(payload, ["category"]);
+  return raw !== null && (CATEGORIES as readonly string[]).includes(raw)
+    ? (raw as Category)
+    : null;
+}
 
 function extractFromObject(payload: PayloadObject): AdapterOutput {
   const description =
@@ -26,8 +44,11 @@ function extractFromObject(payload: PayloadObject): AdapterOutput {
   return {
     company: readString(payload, ["company", "company_name", "organization", "org"]),
     role: readString(payload, ["role", "title", "position", "job_title"]),
-    // Manual entries never assert a category; the engine infers it.
-    category: null,
+    // A structured manual entry MAY assert its category (e.g. from the CLI's
+    // category menu); when present and valid it is taken as-is and the engine
+    // skips inference (normalize.ts uses `extracted.category ?? inferCategory`).
+    // When absent, the engine infers it as before.
+    category: readCategory(payload),
     description_raw: description,
     comp_raw: readString(payload, ["comp", "compensation", "salary", "pay", "rate"]),
     remote: detectRemote(remoteField ?? description),

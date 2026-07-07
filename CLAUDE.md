@@ -31,8 +31,11 @@
 - Pipeline wiring complete: src/pipeline/intake.ts (`runPipeline`)
 - Persistence layer complete: src/persistence/ (Airtable REST: read.ts,
   write.ts, records.ts, airtable.ts, config.ts)
-- CLI: in progress (see "Current task" below)
+- CLI: implemented on `feat/cli` — `oaos` entry (cli/index.ts) with
+  intake / score / contacts / report; pure input+output in
+  cli/{prompts,format,args}.ts. Pending live-base verification + merge.
 - Test count on main: 250 passing (22 test files) — `vitest run`
+  (feat/cli: 278 passing, 26 files)
 - No tsconfig.json by design — tsx direct execution throughout
 - Test framework: vitest (`npm test` = `vitest run`)
 
@@ -83,5 +86,12 @@
   what changed.
 
 ## Current task
-- Setup/onboarding complete: Serena MCP configured, CLAUDE.md added.
-  Next up: CLI (in progress). Update this line at the end of each task.
+- CLI Entry Point built on `feat/cli` (F1–F6 resolved): `oaos intake`
+  (interactive → runPipeline → persist), `oaos score --company` (re-score,
+  PATCH Quality/Match only), `oaos contacts --repo` (spawn github scan →
+  POST newest *-airtable-*.json to Contacts), `oaos report` (F5 weekly
+  metrics). Pure pieces unit-tested (cli/tests: prompts, format, args,
+  intake-mapping). 278 tests pass. F2: manual adapter now honors an
+  operator-asserted category (src/engines/normalization/adapters/manual.ts).
+  PENDING: live-base manual verification (AIRTABLE_API_KEY/BASE_ID are
+  currently EMPTY in .env) and merge to main.
