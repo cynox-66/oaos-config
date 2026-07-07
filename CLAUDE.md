@@ -88,14 +88,16 @@
   what changed.
 
 ## Current task
-- CLI Entry Point built on `feat/cli` (F1–F6 resolved): `oaos intake`
-  (interactive → runPipeline → persist), `oaos score --company` (re-score,
-  PATCH Quality/Match only), `oaos contacts --repo` (spawn github scan →
-  POST newest *-airtable-*.json to Contacts), `oaos report` (F5 weekly
+- CLI Entry Point: COMPLETE, live-verified, merged to main (12aecbe).
+  `oaos intake` (interactive → runPipeline → persist), `oaos score --company`
+  (re-score, PATCH Quality/Match only), `oaos contacts --repo` (spawn github
+  scan → POST newest *-airtable-*.json to Contacts), `oaos report` (F5 weekly
   metrics). Pure pieces unit-tested (cli/tests: prompts, format, args,
-  intake-mapping). 278 tests pass. F2: manual adapter now honors an
-  operator-asserted category (src/engines/normalization/adapters/manual.ts).
-  Also fixed a latent persistence bug found during live verify:
-  opportunityFields was writing the computed Total Score/Tier columns
-  (422 on every scored write) — now writes only Quality/Match. Live-verified
-  read (report) + write (intake create). Merged to main. DONE.
+  intake-mapping). 278 tests pass. F1–F6 all resolved. F2: manual adapter
+  honors an operator-asserted category. Persistence fix along the way:
+  opportunityFields no longer writes computed Total Score/Tier (was 422-ing
+  every scored write). Live-verified read (report) + write (intake create,
+  rec recuJNCX3Y3fKJDZP). Interactive prompt UX to be confirmed by operator
+  in a real TTY (readline can't be driven headless — non-blocking).
+- NEXT UP (hold for direction): Stage 2 discovery OR replace the
+  research-enrichment stub (pipeline currently sets `research = null`).
