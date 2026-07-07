@@ -55,10 +55,12 @@ export function opportunityFields(o: Opportunity, score?: Score): Record<string,
     [FO.notes]: opportunityNotes(o),
   };
   if (score) {
+    // Only the two writable inputs are sent. Total Score and Tier are Airtable
+    // formula fields (computed from Quality + Match); sending them is rejected
+    // with "field is computed" (422), so we let Airtable recompute them — the
+    // same rule the `oaos score` re-score PATCH follows.
     fields[FO.quality_score] = score.quality.total;
     fields[FO.match_score] = score.match.total;
-    fields[FO.total_score] = score.total;
-    fields[FO.tier] = score.tier;
   }
   return fields;
 }

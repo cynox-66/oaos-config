@@ -30,12 +30,14 @@
       read-only analysis, human-approved feedback. [pure]
 - Pipeline wiring complete: src/pipeline/intake.ts (`runPipeline`)
 - Persistence layer complete: src/persistence/ (Airtable REST: read.ts,
-  write.ts, records.ts, airtable.ts, config.ts)
-- CLI: implemented on `feat/cli` — `oaos` entry (cli/index.ts) with
-  intake / score / contacts / report; pure input+output in
-  cli/{prompts,format,args}.ts. Pending live-base verification + merge.
-- Test count on main: 250 passing (22 test files) — `vitest run`
-  (feat/cli: 278 passing, 26 files)
+  write.ts, records.ts, airtable.ts, config.ts). NOTE: opportunityFields
+  writes ONLY Quality Score + Match Score — Total Score & Tier are
+  Airtable formula (computed) fields; writing them 422s.
+- CLI: complete — `oaos` entry (cli/index.ts) with intake / score /
+  contacts / report; pure input+output in cli/{prompts,format,args}.ts.
+  Live-verified: `oaos report` (read) + intake write path (create OK,
+  no 422) against the real base.
+- Test count on main: 278 passing (26 test files) — `vitest run`
 - No tsconfig.json by design — tsx direct execution throughout
 - Test framework: vitest (`npm test` = `vitest run`)
 
@@ -93,5 +95,7 @@
   metrics). Pure pieces unit-tested (cli/tests: prompts, format, args,
   intake-mapping). 278 tests pass. F2: manual adapter now honors an
   operator-asserted category (src/engines/normalization/adapters/manual.ts).
-  PENDING: live-base manual verification (AIRTABLE_API_KEY/BASE_ID are
-  currently EMPTY in .env) and merge to main.
+  Also fixed a latent persistence bug found during live verify:
+  opportunityFields was writing the computed Total Score/Tier columns
+  (422 on every scored write) — now writes only Quality/Match. Live-verified
+  read (report) + write (intake create). Merged to main. DONE.

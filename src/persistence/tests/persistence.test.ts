@@ -157,8 +157,12 @@ describe("writeOpportunity", () => {
     expect(post.headers.Authorization).toBe("Bearer key123");
     const fields = (post.body as { fields: Record<string, unknown> }).fields;
     expect(fields["Company"]).toBe("Isovalent");
-    expect(fields["Total Score"]).toBe(79);
-    expect(fields["Tier"]).toBe("A");
+    // Quality/Match are the writable score inputs; Total Score + Tier are
+    // Airtable formula fields (computed) and must NOT be written.
+    expect(fields["Quality Score"]).toBe(makeScore().quality.total);
+    expect(fields["Match Score"]).toBe(makeScore().match.total);
+    expect(fields["Total Score"]).toBeUndefined();
+    expect(fields["Tier"]).toBeUndefined();
     expect(fields["Domain"]).toEqual(["eBPF", "Security"]); // array, not comma-joined
   });
 });
