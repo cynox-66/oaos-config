@@ -7,7 +7,11 @@
     "doc": "docs"
   },
   "scripts": {
-    "test": "vitest run"
+    "test": "vitest run",
+    "oaos": "tsx cli/index.ts"
+  },
+  "bin": {
+    "oaos": "cli/index.ts"
   },
   "keywords": [],
   "author": "",

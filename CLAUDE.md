@@ -30,9 +30,14 @@
       read-only analysis, human-approved feedback. [pure]
 - Pipeline wiring complete: src/pipeline/intake.ts (`runPipeline`)
 - Persistence layer complete: src/persistence/ (Airtable REST: read.ts,
-  write.ts, records.ts, airtable.ts, config.ts)
-- CLI: in progress (see "Current task" below)
-- Test count on main: 250 passing (22 test files) — `vitest run`
+  write.ts, records.ts, airtable.ts, config.ts). NOTE: opportunityFields
+  writes ONLY Quality Score + Match Score — Total Score & Tier are
+  Airtable formula (computed) fields; writing them 422s.
+- CLI: complete — `oaos` entry (cli/index.ts) with intake / score /
+  contacts / report; pure input+output in cli/{prompts,format,args}.ts.
+  Live-verified: `oaos report` (read) + intake write path (create OK,
+  no 422) against the real base.
+- Test count on main: 278 passing (26 test files) — `vitest run`
 - No tsconfig.json by design — tsx direct execution throughout
 - Test framework: vitest (`npm test` = `vitest run`)
 
@@ -83,5 +88,14 @@
   what changed.
 
 ## Current task
-- Setup/onboarding complete: Serena MCP configured, CLAUDE.md added.
-  Next up: CLI (in progress). Update this line at the end of each task.
+- CLI Entry Point built on `feat/cli` (F1–F6 resolved): `oaos intake`
+  (interactive → runPipeline → persist), `oaos score --company` (re-score,
+  PATCH Quality/Match only), `oaos contacts --repo` (spawn github scan →
+  POST newest *-airtable-*.json to Contacts), `oaos report` (F5 weekly
+  metrics). Pure pieces unit-tested (cli/tests: prompts, format, args,
+  intake-mapping). 278 tests pass. F2: manual adapter now honors an
+  operator-asserted category (src/engines/normalization/adapters/manual.ts).
+  Also fixed a latent persistence bug found during live verify:
+  opportunityFields was writing the computed Total Score/Tier columns
+  (422 on every scored write) — now writes only Quality/Match. Live-verified
+  read (report) + write (intake create). Merged to main. DONE.
