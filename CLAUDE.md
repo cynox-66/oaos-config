@@ -29,6 +29,13 @@
       re-weight discovery + recalibrate scoring from accumulated outcomes;
       read-only analysis, human-approved feedback. [pure]
 - Pipeline wiring complete: src/pipeline/intake.ts (`runPipeline`)
+- Research enrichment complete: src/pipeline/research.ts
+  (`researchOpportunity`) — Gemini company profile per
+  prompts/company-research.md; feeds research.stage +
+  research.oss_involvement into Engine 2. Replaces the old
+  `research = null` stub in intake.ts step 2. Any Gemini failure →
+  null (unchanged graceful-degradation path). Unit + integration
+  tested (src/pipeline/tests/research.test.ts).
 - Persistence layer complete: src/persistence/ (Airtable REST: read.ts,
   write.ts, records.ts, airtable.ts, config.ts). NOTE: opportunityFields
   writes ONLY Quality Score + Match Score — Total Score & Tier are
@@ -37,7 +44,7 @@
   contacts / report; pure input+output in cli/{prompts,format,args}.ts.
   Live-verified: `oaos report` (read) + intake write path (create OK,
   no 422) against the real base.
-- Test count on main: 278 passing (26 test files) — `vitest run`
+- Test count: 287 passing (27 test files) — `vitest run`
 - No tsconfig.json by design — tsx direct execution throughout
 - Test framework: vitest (`npm test` = `vitest run`)
 
@@ -99,5 +106,6 @@
   every scored write). Live-verified read (report) + write (intake create,
   rec recuJNCX3Y3fKJDZP). Interactive prompt UX to be confirmed by operator
   in a real TTY (readline can't be driven headless — non-blocking).
-- NEXT UP (hold for direction): Stage 2 discovery OR replace the
-  research-enrichment stub (pipeline currently sets `research = null`).
+- Research enrichment: COMPLETE (feat/research-enrichment). Pipeline
+  step 2 now calls `researchOpportunity` instead of `research = null`.
+- NEXT UP (hold for direction): Stage 2 discovery.
