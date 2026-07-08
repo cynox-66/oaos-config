@@ -12,6 +12,7 @@ import { computeScore } from "../engines/scoring";
 import { recommend } from "../engines/recommended-action";
 import { buildApplicationPackage } from "../engines/application-package";
 import { buildOutreachDraft } from "../engines/outreach-package";
+import { researchOpportunity } from "./research";
 import type {
   ApplicationPackage,
   OutreachDraft,
@@ -30,7 +31,8 @@ import type {
  *  - outreach draft when `action ∈ {Outreach, Both}` AND a primary contact
  *    exists AND both `channel` and `ask_type` are provided.
  *
- * `research` is a null stub (future enrichment). `followUpState` is always null
+ * `research` is enriched via {@link researchOpportunity} (null on Gemini
+ * failure or when no client is provided). `followUpState` is always null
  * at intake (Engine 8 runs only after a send). One `now` instant is held for the
  * whole run so every engine sees the same moment.
  *
@@ -47,8 +49,9 @@ export async function runPipeline(
   // 1. Normalize → canonical opportunity (authoritative).
   const opportunity = normalize(raw);
 
-  // 2. Research enrichment is a stub for now.
-  const research = null;
+  // 2. Research enrichment. Returns null on any Gemini failure (graceful
+  //    degradation — Engine 2 handles null research via its degraded path).
+  const research = client ? await researchOpportunity(opportunity, client) : null;
 
   // 3. Contact discovery + ranking (override the caller's opportunity).
   const contacts = rankContacts(
