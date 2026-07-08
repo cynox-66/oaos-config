@@ -13,6 +13,7 @@ import { runIntake } from "./commands/intake";
 import { runScore } from "./commands/score";
 import { runContacts } from "./commands/contacts";
 import { runReport } from "./commands/report";
+import { runDiscoverCommand } from "./commands/discover";
 
 const HELP = `oaos — OAOS command line
 
@@ -21,6 +22,7 @@ Usage:
   oaos score --company "Name"                  Re-score an existing opportunity
   oaos contacts --repo owner/repo [--min-contributions N]
                                                Scan a repo and import contributors
+  oaos discover [--dir <path>] [--dry-run]     Parse alert emails in discovery-inbox/ → pipeline
   oaos report                                  Weekly snapshot from the live base
 
 Run via: npx tsx cli/index.ts <command>  (or  npm run oaos -- <command>)
@@ -38,6 +40,9 @@ async function main(): Promise<void> {
       break;
     case "contacts":
       await runContacts(rest);
+      break;
+    case "discover":
+      await runDiscoverCommand(rest);
       break;
     case "report":
       await runReport();

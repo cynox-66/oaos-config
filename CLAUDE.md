@@ -60,9 +60,22 @@
   Input mechanism: file-based, full raw email text (headers + body) —
   NOT live Gmail OAuth (operator-confirmed). RawItems flow through the
   existing normalize() → runPipeline path via the job_board adapter (no
-  engine/adapter change). Transport (watched-folder read + CLI wiring)
-  is the next follow-up; the pure parsing boundary is transport-agnostic.
-- Test count: 329 passing (28 test files) — `vitest run`
+  engine/adapter change).
+- Stage 2 transport complete: `oaos discover [--dir <path>] [--dry-run]`
+  (cli/commands/discover.ts). Reads .eml/.txt from discovery-inbox/ →
+  parseAlertEmail → per listing normalize()+runPipeline+persist → moves
+  file to discovery-inbox/processed/. Decision table: unrecognized
+  source → left + flagged; processItem throws (fatal) → left for retry;
+  recognized+processed (incl. 0 listings / non-fatal write errors) →
+  moved. Persistence is fingerprint-idempotent so re-runs are safe.
+  Core is `runDiscover(deps)` with injected fs + processItem (unit-
+  tested with fakes; no real Airtable/Gemini). discovery-inbox/ +
+  processed/ kept via .gitkeep; *.eml/*.txt/processed contents
+  gitignored. Live-verified: dry-run (no write/move) + real run
+  (write + move to processed). NOTE: real run hit Gemini 429s — engines
+  degraded gracefully (opportunity still written with fallback scores,
+  file still moved), consistent with the daily free-tier cap.
+- Test count: 341 passing (29 test files) — `vitest run`
 - No tsconfig.json by design — tsx direct execution throughout
 - Test framework: vitest (`npm test` = `vitest run`)
 
@@ -126,4 +139,8 @@
   in a real TTY (readline can't be driven headless — non-blocking).
 - Research enrichment: COMPLETE (feat/research-enrichment). Pipeline
   step 2 now calls `researchOpportunity` instead of `research = null`.
-- NEXT UP (hold for direction): Stage 2 discovery.
+- Stage 2 discovery: COMPLETE. Parsing layer (6 parsers) merged to
+  main; transport `oaos discover` on feat/discover-command
+  (watched-folder → pipeline → persist → move), pending merge.
+- NEXT UP (hold for direction): Stage 3 (automated per-source feeds:
+  RSS / official APIs), or operator-chosen priority.
