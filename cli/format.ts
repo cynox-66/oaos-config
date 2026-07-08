@@ -155,3 +155,70 @@ export function formatReport(r: Report): string {
   lines.push("────────────────────────────────────────────────");
   return lines.join("\n");
 }
+
+// ============================================================
+// discover (Stage 2 transport)
+// ============================================================
+
+/** Per-file outcome of an `oaos discover` run. */
+export interface DiscoverFileResult {
+  file: string;
+  /** Detected AlertSource, or null when the source was unrecognized. */
+  source: string | null;
+  listings: number;
+  written: number;
+  /** Non-fatal write errors (file was still moved). */
+  errors: string[];
+  status: "moved" | "unrecognized" | "error" | "previewed";
+}
+
+export interface DiscoverSummary {
+  dir: string;
+  dryRun: boolean;
+  files: DiscoverFileResult[];
+}
+
+/** Render the post-`discover` summary block. Pure. */
+export function formatDiscoverSummary(s: DiscoverSummary): string {
+  const header = s.dryRun
+    ? `oaos discover (dry-run) — ${s.dir}`
+    : `oaos discover — ${s.dir}`;
+  const lines = ["", header];
+
+  let recognized = 0;
+  let listings = 0;
+  let written = 0;
+  let unrecognized = 0;
+  let errored = 0;
+
+  for (const f of s.files) {
+    listings += f.listings;
+    written += f.written;
+    if (f.source === null) unrecognized++;
+    else recognized++;
+    if (f.status === "error") errored++;
+
+    const tag = f.source ? `[${f.source}]` : "[unknown]";
+    const mark =
+      f.status === "moved"
+        ? "✓ moved"
+        : f.status === "previewed"
+          ? "· preview"
+          : f.status === "unrecognized"
+            ? "⚠ unrecognized — review"
+            : "⚠ error — left for retry";
+    const detail =
+      f.source === null
+        ? "—"
+        : `${f.listings} listing${f.listings === 1 ? "" : "s"} → ${f.written} written` +
+          (f.errors.length ? ` (${f.errors.length} err)` : "");
+
+    lines.push(`  ${f.file.padEnd(28)} ${tag.padEnd(10)} ${detail.padEnd(30)} ${mark}`);
+  }
+
+  lines.push(
+    `Totals: ${s.files.length} files · ${recognized} recognized · ${listings} listings · ` +
+      `${written} written · ${unrecognized} unrecognized · ${errored} errors`
+  );
+  return lines.join("\n");
+}

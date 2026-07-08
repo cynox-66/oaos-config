@@ -2,3 +2,10 @@
 node_modules/
 scripts/output/
 .serena/
+
+# Stage 2 discovery watched folder — real input location; contents are local
+# only, but the folder structure is kept via .gitkeep.
+discovery-inbox/*.eml
+discovery-inbox/*.txt
+discovery-inbox/processed/*
+!discovery-inbox/processed/.gitkeep
