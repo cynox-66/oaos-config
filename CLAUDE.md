@@ -52,7 +52,17 @@
   gemini-3.5-flash is a reasoning model (emits thinking tokens) →
   expect slightly slower responses; monitor token usage against daily
   free-tier caps if 429s recur.
-- Test count: 287 passing (27 test files) — `vitest run`
+- Stage 2 discovery complete (parsing layer): src/discovery/stage2/ —
+  email-alert parsers for LinkedIn / Indeed / Wellfound / We Work
+  Remotely / Upwork (freelance) / Remote OK. Each parser is pure
+  `parseAlert(rawText): RawItem[]` (multi-listing); `parse.ts` does
+  From:-domain source detection + dispatch (null on unknown).
+  Input mechanism: file-based, full raw email text (headers + body) —
+  NOT live Gmail OAuth (operator-confirmed). RawItems flow through the
+  existing normalize() → runPipeline path via the job_board adapter (no
+  engine/adapter change). Transport (watched-folder read + CLI wiring)
+  is the next follow-up; the pure parsing boundary is transport-agnostic.
+- Test count: 329 passing (28 test files) — `vitest run`
 - No tsconfig.json by design — tsx direct execution throughout
 - Test framework: vitest (`npm test` = `vitest run`)
 
