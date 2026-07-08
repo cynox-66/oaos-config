@@ -44,14 +44,19 @@
   contacts / report; pure input+output in cli/{prompts,format,args}.ts.
   Live-verified: `oaos report` (read) + intake write path (create OK,
   no 422) against the real base.
-- Gemini model: `gemini-3.5-flash` (src/engines/scoring/config.ts
+- Gemini model: `gemini-3.1-flash-lite` (src/engines/scoring/config.ts
   `GEMINI_MODEL`, single source of truth; endpoint derived from it).
-  Switched from `gemini-2.0-flash` — that model has zero (`limit: 0`)
-  free-tier quota on this Google Cloud project (confirmed via isolated
-  curl on two keys; RESOURCE_EXHAUSTED on every first call).
-  gemini-3.5-flash is a reasoning model (emits thinking tokens) →
-  expect slightly slower responses; monitor token usage against daily
-  free-tier caps if 429s recur.
+  Switched from `gemini-3.5-flash`/`gemini-2.0-flash` on the OAOS-v2
+  Google Cloud project. Verified via isolated curl: clean 200, real
+  text, faster response than 2.5/3.5-flash, and JSON-mode confirmed
+  valid structured output. Rate limits on OAOS-v2: 15 RPM / 500 RPD
+  per model — comfortably covers the pipeline's per-run call volume
+  (up to 4 calls: 3 evidence-matching reasons + 1 scoring), with real
+  headroom. This supersedes any model-load-split plan — no splitting
+  or fallback chain needed at this scale. If 429/503s recur, check
+  aistudio.google.com/app/apikey rate-limit dashboard first before
+  assuming a code defect — the earlier debugging saga was entirely
+  external (deprecated model + stale billing on the old project).
 - Stage 2 discovery complete (parsing layer): src/discovery/stage2/ —
   email-alert parsers for LinkedIn / Indeed / Wellfound / We Work
   Remotely / Upwork (freelance) / Remote OK. Each parser is pure

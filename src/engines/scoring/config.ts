@@ -100,5 +100,5 @@ export const UNPAID_LEVERAGE_CAP = 5;
 // Gemini
 // ============================================================
 
-export const GEMINI_MODEL = "gemini-3.5-flash";
+export const GEMINI_MODEL = "gemini-3.1-flash-lite";
 export const GEMINI_ENDPOINT = `https://generativelanguage.googleapis.com/v1beta/models/${GEMINI_MODEL}:generateContent`;

@@ -1,7 +1,7 @@
-# Company Research Prompt — Gemini 3.5 Flash
+# Company Research Prompt — Gemini 3.1 Flash Lite
 # File: prompts/company-research.md
 # Used in: Make.com Scenario 1 (Discovery Research Pipeline)
-# Model: Gemini 3.5 Flash (free tier)
+# Model: Gemini 3.1 Flash Lite (free tier)
 # When to use: Automatically triggered when a new company is added to Airtable with Status = Discovered
 
 ---
