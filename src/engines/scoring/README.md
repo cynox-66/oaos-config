@@ -11,7 +11,7 @@ The engine is **two-pass**:
   (`research.stage`), `match.contact` (best contact reachability),
   `match.evidence` (`evidence_match.top_score`), `match.network` (best contact
   relationship).
-- **LLM pass** (Gemini 2.0 Flash) scores the three judgment factors —
+- **LLM pass** (Gemini 3.5 Flash) scores the three judgment factors —
   `quality.domain`, `quality.leverage`, `match.overlap` — returning JSON only,
   which is schema-validated and clamped before use.
 
@@ -68,7 +68,7 @@ Score {
 
 The LLM call goes through an injectable `GeminiClient` (`gemini.ts`). Production
 uses `createGeminiClient()` (reads `process.env.GEMINI_API_KEY`, posts to
-`gemini-2.0-flash:generateContent`). Tests inject a mock — **no real API calls in
+`gemini-3.5-flash:generateContent`). Tests inject a mock — **no real API calls in
 the test suite**.
 
 ## Usage
