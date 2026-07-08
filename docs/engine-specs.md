@@ -5,7 +5,7 @@ Frozen vision assumed. No architecture, no phases. Logic, rules, data, decisions
 
 Conventions:
 - `Opportunity`, `Contact`, `Evidence`, `Outreach`, `Outcome` = Airtable records.
-- LLM = Gemini 2.0 Flash unless noted. Every LLM call returns strict JSON; callers validate before write.
+- LLM = Gemini 3.5 Flash unless noted. Every LLM call returns strict JSON; callers validate before write.
 - All scores integers unless stated. All dates ISO-8601. Currency INR.
 
 ---
