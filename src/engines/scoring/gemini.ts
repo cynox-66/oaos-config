@@ -1,6 +1,6 @@
 // gemini.ts
 // File: src/engines/scoring/gemini.ts
-// Purpose: Thin, injectable Gemini 2.0 Flash client. Production code uses
+// Purpose: Thin, injectable Gemini 3.5 Flash client. Production code uses
 //          createGeminiClient(); tests inject a mock implementing GeminiClient.
 //          This is the ONLY module that performs a network call.
 

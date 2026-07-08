@@ -44,6 +44,14 @@
   contacts / report; pure input+output in cli/{prompts,format,args}.ts.
   Live-verified: `oaos report` (read) + intake write path (create OK,
   no 422) against the real base.
+- Gemini model: `gemini-3.5-flash` (src/engines/scoring/config.ts
+  `GEMINI_MODEL`, single source of truth; endpoint derived from it).
+  Switched from `gemini-2.0-flash` — that model has zero (`limit: 0`)
+  free-tier quota on this Google Cloud project (confirmed via isolated
+  curl on two keys; RESOURCE_EXHAUSTED on every first call).
+  gemini-3.5-flash is a reasoning model (emits thinking tokens) →
+  expect slightly slower responses; monitor token usage against daily
+  free-tier caps if 429s recur.
 - Test count: 287 passing (27 test files) — `vitest run`
 - No tsconfig.json by design — tsx direct execution throughout
 - Test framework: vitest (`npm test` = `vitest run`)
