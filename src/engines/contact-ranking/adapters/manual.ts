@@ -24,6 +24,7 @@ export function fromManual(raw: ManualContactInput): CandidateContact {
     last_verified: raw.last_verified ?? null,
     relationship: raw.relationship ?? "Cold",
     source: "manual",
+    existing_record_id: raw.existing_record_id ?? null,
   };
 }
 

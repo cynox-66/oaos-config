@@ -61,6 +61,9 @@ export type Contact = {
   relationship: ContactRelationship;
   /** True when this contact could not be confidently distinguished from another. */
   identity_uncertain: boolean;
+  /** Airtable record id when already persisted (existing-record lookup);
+   *  null/absent for newly discovered contacts. */
+  existing_record_id?: string | null;
 };
 
 /** The engine's output: the ranked contacts for one opportunity. */
@@ -112,6 +115,9 @@ export interface ManualContactInput {
   last_verified?: string | null;
   oss_overlap?: string;
   relationship?: ContactRelationship;
+  /** Airtable record id when this contact was read back from persistence
+   *  (existing-record lookup) rather than newly discovered. */
+  existing_record_id?: string | null;
 }
 
 /**
@@ -132,6 +138,8 @@ export interface CandidateContact {
   relationship: ContactRelationship;
   /** Provenance, e.g. "github:owner/repo" or "manual". */
   source: string;
+  /** Airtable record id when already persisted; null for new discoveries. */
+  existing_record_id?: string | null;
 }
 
 // ============================================================

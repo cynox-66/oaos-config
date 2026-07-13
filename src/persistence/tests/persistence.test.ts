@@ -238,6 +238,105 @@ describe("writePipelineResult", () => {
     expect(fields["Opportunity"]).toEqual(["recOpp"]);
     expect(fields["Contact"]).toEqual(["recContact"]);
   });
+
+  it("does not re-create contacts backed by an existing record (re-intake stays flat)", async () => {
+    // Simulates a second intake for the same company: the contact came from
+    // findContactsByCompany, so it carries its persisted record id. The
+    // Contacts table count must not grow, and Outreach links the existing id.
+    const existing = { ...makeContact(), existing_record_id: "recExisting1" };
+    const result = makePipelineResult({
+      contacts: { opportunity_id: "opp_1", ordered: [existing], primary_contact_id: "contact_1" },
+    });
+
+    const { fetchImpl, calls } = mockFetch((call) => {
+      if (call.method === "GET")
+        return json({ records: [{ id: "recOpp", fields: { Fingerprint: "fp_abc" } }] });
+      if (call.url.includes("/Opportunities")) return json({ id: "recOpp" });
+      if (call.url.endsWith("/Outreach")) return json({ id: "recOutreach" });
+      return json({ id: "recUnexpected" });
+    });
+    const p = createPersistence(client(fetchImpl));
+    const results = await p.writePipelineResult(result);
+
+    expect(results.every((r) => r.success)).toBe(true);
+    const contactPosts = calls.filter((c) => c.method === "POST" && c.url.endsWith("/Contacts"));
+    expect(contactPosts).toEqual([]);
+    const outreach = calls.find((c) => c.url.endsWith("/Outreach"))!;
+    expect((outreach.body as { fields: Record<string, unknown> }).fields["Contact"]).toEqual([
+      "recExisting1",
+    ]);
+  });
+});
+
+describe("findContactsByCompany", () => {
+  const jadhav = {
+    id: "recJadhav",
+    fields: {
+      Name: "Rahul Jadhav",
+      Title: "Founder/CEO",
+      "GitHub URL": "https://github.com/nyrahul",
+      Relationship: "Cold",
+      Reachability: 4,
+      "OSS Overlap": "KubeArmor contributor",
+      Notes: "Bio: CTO/Cofounder - AccuKnox\nCompany: AccuKnox\nFollowers: 136\n",
+    },
+  };
+  const otherCo = {
+    id: "recOther",
+    fields: {
+      Name: "Someone Else",
+      Notes: "Company: AccuKnoxLabs\nFollowers: 10\n",
+    },
+  };
+
+  it("matches Company Notes line case-insensitively and maps to ManualContactInput", async () => {
+    const { fetchImpl, calls } = mockFetch(() => json({ records: [jadhav] }));
+    const p = createPersistence(client(fetchImpl));
+    const contacts = await p.findContactsByCompany("accuknox");
+
+    const url = new URL(calls[0].url);
+    expect(url.searchParams.get("filterByFormula")).toBe("FIND('company: accuknox', LOWER({Notes}))");
+    expect(contacts).toEqual([
+      {
+        name: "Rahul Jadhav",
+        company: "accuknox",
+        title: "Founder/CEO",
+        email: null,
+        github: "https://github.com/nyrahul",
+        linkedin: null,
+        followers: 136,
+        oss_overlap: "KubeArmor contributor",
+        relationship: "Cold",
+        existing_record_id: "recJadhav",
+      },
+    ]);
+  });
+
+  it("excludes prefix false-positives (Company line must match exactly)", async () => {
+    const { fetchImpl } = mockFetch(() => json({ records: [jadhav, otherCo] }));
+    const p = createPersistence(client(fetchImpl));
+    const contacts = await p.findContactsByCompany("AccuKnox");
+    expect(contacts.map((c) => c.name)).toEqual(["Rahul Jadhav"]);
+  });
+
+  it("returned contacts recompute their persisted reachability through the manual adapter", async () => {
+    const { fetchImpl } = mockFetch(() => json({ records: [jadhav] }));
+    const p = createPersistence(client(fetchImpl));
+    const [contact] = await p.findContactsByCompany("AccuKnox");
+    const { fromManual } = await import("../../engines/contact-ranking");
+    const { computeReachability } = await import("../../engines/contact-ranking/rank");
+    // github direct channel (+2) + followers 136 > 100 (+1) → 4, matching Airtable.
+    const candidate = fromManual(contact);
+    expect(computeReachability(candidate, Date.now())).toBe(4);
+    // The persisted record id survives adaptation so re-intake never re-creates it.
+    expect(candidate.existing_record_id).toBe("recJadhav");
+  });
+
+  it("returns [] cleanly for a company with no persisted contacts", async () => {
+    const { fetchImpl } = mockFetch(() => json({ records: [] }));
+    const p = createPersistence(client(fetchImpl));
+    expect(await p.findContactsByCompany("NoSuchCo")).toEqual([]);
+  });
 });
 
 describe("missing env vars", () => {

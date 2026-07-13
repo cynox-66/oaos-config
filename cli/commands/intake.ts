@@ -129,17 +129,21 @@ export async function runIntake(): Promise<void> {
   const gemini_client = createGeminiClient();
 
   // The pipeline overrides contacts_input.opportunity with its own normalized
-  // record; we supply the normalized opportunity to satisfy the type and pass no
-  // contact sources (manual intake discovers no contacts).
+  // record; we supply the normalized opportunity to satisfy the type. Manual
+  // intake discovers no NEW contacts, but already-persisted Contacts for this
+  // company (from earlier `oaos contacts` scans) are resolved and fed in as the
+  // manual source so contact scoring reflects them. No live scan happens here.
   const opportunity = normalize(raw);
+  const persistence = createPersistence();
+  const manual = await persistence.findContactsByCompany(entry.company);
 
   const result = await runPipeline(raw, {
     inventory,
-    contacts_input: { opportunity, githubScan: [], manual: [] },
+    contacts_input: { opportunity, githubScan: [], manual },
     gemini_client,
   });
 
-  const writes = await createPersistence().writePipelineResult(result);
+  const writes = await persistence.writePipelineResult(result);
   const oppWrite = writes[0];
 
   console.log(
