@@ -13,6 +13,8 @@ import { runPipeline } from "../../src/pipeline";
 import { createPersistence } from "../../src/persistence";
 import { loadInventory } from "../../src/engines/evidence-matching/inventory";
 import { createGeminiClient } from "../../src/engines/scoring/gemini";
+import { loadBaseResume, loadOperatorProfile } from "../resume";
+import type { Channel, AskType } from "../../src/engines/outreach-package/types";
 import {
   buildManualRawItem,
   createPrompter,
@@ -57,6 +59,57 @@ export const CATEGORY_OPTIONS: readonly { label: string; value: Category }[] = [
 export function parseCategory(input: string): Category {
   return parseChoice(input, CATEGORY_OPTIONS) ?? "Other";
 }
+
+// ============================================================
+// C7 — category → default (channel, ask_type) for the outreach draft
+// ============================================================
+
+/** The outreach discriminators (Engine 7 inputs) chosen per intake. */
+export interface OutreachChoice {
+  channel: Channel;
+  ask_type: AskType;
+}
+
+/**
+ * Category-derived default channel + ask_type for the outreach draft. The
+ * operator can accept or override these at the prompt. "Other" (and any
+ * unmapped category) falls back to the Job default.
+ */
+export function defaultOutreachForCategory(category: Category): OutreachChoice {
+  switch (category) {
+    case "Internship":
+      return { channel: "email", ask_type: "internship_inquiry" };
+    case "Freelance":
+      return { channel: "email", ask_type: "freelance_pitch" };
+    case "OSS":
+      return { channel: "github", ask_type: "oss_contribution" };
+    case "Startup":
+      return { channel: "email", ask_type: "collaboration" };
+    case "Job":
+    case "Other":
+    default:
+      return { channel: "email", ask_type: "referral_request" };
+  }
+}
+
+/** Valid channel values (for prompt override validation). */
+export const CHANNEL_VALUES: readonly Channel[] = [
+  "email",
+  "linkedin_connect",
+  "linkedin_dm",
+  "github",
+  "slack",
+];
+
+/** Valid ask_type values (for prompt override validation). */
+export const ASK_TYPE_VALUES: readonly AskType[] = [
+  "internship_inquiry",
+  "oss_contribution",
+  "advice",
+  "collaboration",
+  "freelance_pitch",
+  "referral_request",
+];
 
 // ============================================================
 // Interactive helpers (impure)
@@ -111,14 +164,53 @@ async function collectEntry(p: Prompter): Promise<ManualEntry> {
 }
 
 /**
+ * Prompt for the outreach channel + ask_type, offering the category-derived
+ * default (blank answer accepts it; an unrecognized override falls back to the
+ * default too). Impure; the pure default logic is {@link defaultOutreachForCategory}.
+ */
+async function collectOutreachChoice(
+  p: Prompter,
+  category: Category
+): Promise<OutreachChoice> {
+  const def = defaultOutreachForCategory(category);
+  const channelAns = (
+    await p.ask(
+      `\nOutreach channel [${def.channel}] (${CHANNEL_VALUES.join(", ")}): `
+    )
+  ).trim();
+  const askAns = (
+    await p.ask(
+      `Ask type [${def.ask_type}] (${ASK_TYPE_VALUES.join(", ")}): `
+    )
+  ).trim();
+  const channel = CHANNEL_VALUES.includes(channelAns as Channel)
+    ? (channelAns as Channel)
+    : def.channel;
+  const ask_type = ASK_TYPE_VALUES.includes(askAns as AskType)
+    ? (askAns as AskType)
+    : def.ask_type;
+  return { channel, ask_type };
+}
+
+/**
  * Run the `oaos intake` command. Prompts for a manual opportunity, runs the full
  * intake pipeline (real Gemini + Airtable), and prints a summary.
  */
 export async function runIntake(): Promise<void> {
+  // Load the read-only structured inputs for Engine 6 up front. A malformed
+  // file throws ResumeValidationError (exact path) and stops intake — we never
+  // coerce a bad resume into the pipeline.
+  const base_resume = loadBaseResume(resolve(process.cwd(), "resume/base_resume.json"));
+  const operator_profile = loadOperatorProfile(
+    resolve(process.cwd(), "resume/operator_profile.json")
+  );
+
   const prompter = createPrompter();
   let entry: ManualEntry;
+  let outreach: OutreachChoice;
   try {
     entry = await collectEntry(prompter);
+    outreach = await collectOutreachChoice(prompter, parseCategory(entry.category));
   } finally {
     prompter.close();
   }
@@ -141,6 +233,10 @@ export async function runIntake(): Promise<void> {
     inventory,
     contacts_input: { opportunity, githubScan: [], manual },
     gemini_client,
+    base_resume,
+    operator_profile,
+    channel: outreach.channel,
+    ask_type: outreach.ask_type,
   });
 
   const writes = await persistence.writePipelineResult(result);

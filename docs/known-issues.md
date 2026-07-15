@@ -75,3 +75,62 @@ Worked around this session via a throwaway import script
 (scripts/import-contact-scan-results.ts) reusing the same
 createAirtableClient persistence primitive. Consider adding an
 `oaos contacts --import <file>` mode later. Not fixed this session.
+
+## 6. Intake generated no application/outreach packages — RESOLVED 2026-07-15
+
+`runIntake` (cli/commands/intake.ts) called `runPipeline` without
+`base_resume`, `operator_profile`, `channel`, or `ask_type`, so Engines 6/7
+were always gated off and every intake produced `applicationPackage=null`
+and `outreachDraft=null` even for Tier-A "Both" opportunities.
+`runPipeline`'s C6/C7 gating (src/pipeline/intake.ts) was already correct —
+the gap was purely the caller not supplying inputs. RESOLVED 2026-07-15:
+new cli/resume.ts strict loaders (`loadBaseResume`/`loadOperatorProfile`,
+throw `ResumeValidationError` with the exact offending path, no coercion)
+read the human-placed resume/base_resume.json + resume/operator_profile.json;
+`runIntake` now loads both up front and passes them plus a category-derived
+channel/ask_type (new pure `defaultOutreachForCategory` + interactive
+`collectOutreachChoice` prompt) into `runPipeline`. Verified end-to-end on
+AccuKnox (recHvgizujOJzVwWd, Tier A "Both"): both packages now generate,
+fabrication_check runs and gates, idempotent update (no duplicate
+opportunity/contact). Regression tests: cli/tests/resume.test.ts,
+defaultOutreachForCategory cases in cli/tests/intake-mapping.test.ts,
+fabrication_check surfaced in src/pipeline/tests/pipeline.test.ts.
+
+The AccuKnox re-run surfaced three DESIGN findings (logged below, NOT fixed
+this session — they require a supervised session):
+
+## 7. fabrication_check precision — flags generic connective sentences (LOG ONLY)
+
+On the AccuKnox cover letter, fabrication_check returned `flag` with 6
+flagged sentences — but all 6 were verified non-fabricated. Several are
+generic connective sentences carrying no concrete claim (e.g. "My
+experience is defined by two key technical contributions.", "These
+experiences demonstrate my ability to navigate complex codebases…"). Even
+the substantive #1425 line ("…exception-safe fix… currently pending
+review") is correctly honest and traceable to evidence. The check appears
+too conservative: it flags sentences with no traceable claim rather than
+only flagging unverifiable CONCRETE claims. Needs review — but do NOT
+weaken it carelessly: false negatives (letting a real over-claim through)
+are worse than false positives here. Design decision, supervised session.
+
+## 8. evidence-match relevance under-ranks the most on-target asset (LOG ONLY)
+
+For the AccuKnox SRE role — AccuKnox owns KubeArmor — the matcher cited
+`krkn-rollback-systemexit` + `hyperhid-software-kvm` and buried the actual
+KubeArmor contribution at rank #2, uncited in the outreach draft. Honest
+strength-scoring (KubeArmor evidence = strength 2, PRs unmerged) combined
+with coverage_gap behavior under-ranks the single most company-relevant
+asset. Consider a per-opportunity evidence override or strength
+recalibration once the KubeArmor PRs merge. Design decision, supervised
+session.
+
+## 9. outreach channel vs. contact reachability data (LOG ONLY)
+
+The category default sets `channel=email` for Jobs, but the scanned
+AccuKnox contacts carry GitHub handles and no email (email='-'), so the
+generated email draft has no deliverable recipient address. Channel
+selection should consider which channels the resolved contacts are
+actually reachable on, rather than a fixed category default. Related: the
+primary contact resolved to the CEO (Rahul Jadhav) over the security
+engineer (Prateek Nandle) via seniority preference, which may be
+suboptimal for a referral ask. Design decision, supervised session.
