@@ -7,6 +7,8 @@ export { buildResumeVariant } from "./resume";
 export { checkFabrication, tokenize, allowedTokens, splitSentences } from "./fabrication";
 export { generateCoverLetter, wordCount, truncateToWords } from "./letter";
 export { buildCoverLetterPrompt, buildRegenPrompt, toneFor, parseLetter } from "./prompt";
+export { buildCriticPrompt, parseCriticEdits, applyEdits } from "./critic";
+export type { CriticEdit } from "./critic";
 
 export type {
   BaseResume,

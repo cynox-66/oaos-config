@@ -112,6 +112,7 @@ too conservative: it flags sentences with no traceable claim rather than
 only flagging unverifiable CONCRETE claims. Needs review — but do NOT
 weaken it carelessly: false negatives (letting a real over-claim through)
 are worse than false positives here. Design decision, supervised session.
+See also #11 — this issue currently throttles the D8 reviewer pass.
 
 ## 8. evidence-match relevance under-ranks the most on-target asset (LOG ONLY)
 
@@ -134,3 +135,34 @@ actually reachable on, rather than a fixed category default. Related: the
 primary contact resolved to the CEO (Rahul Jadhav) over the security
 engineer (Prateek Nandle) via seniority preference, which may be
 suboptimal for a referral ask. Design decision, supervised session.
+
+## 10. Generic cover letter on first real run — ADDRESSED 2026-07-16 by D8
+
+The first real C6 run (AccuKnox) produced a generic cover letter: no
+company-specific insight, single-pass draft with no critic (finding
+logged in the research doc, DISCOVERY-SYNTHESIS-DECISIONS.md, decision
+D8). ADDRESSED by the D8 drafter-reviewer pass
+(src/engines/application-package/critic.ts): one extra Gemini critique
+call returns structured sharpen-only edits (never-add-facts contract),
+applied via pure exact-string replacement, and the revised letter re-runs
+the existing pure fabrication trace-check — critic for quality, regex for
+truth. Validated on AccuKnox before/after: the letter is now more
+specific. Caveat: see #11 — the improvement is currently throttled by #7.
+
+## 11. D8 critic edits discarded when the regen path fires — throttled by #7 (LOG ONLY)
+
+D8 critic edits are discarded when the regeneration path fires, and under
+known-issue #7's current conservatism (fabrication_check flags generic
+connective sentences carrying no concrete claim) the regen path fires on
+most real runs — so D8 is currently throttled by #7: the critic's
+sharpened letter is thrown away and replaced by a fresh single-pass
+regeneration. Two candidate remedies, BOTH deferred, BOTH requiring a
+supervised session:
+
+(a) improve #7's precision so it stops flagging generic connectives with
+    no concrete claim; or
+(b) reorder so regeneration fires only on hard-rule flags, NOT on soft
+    connective flags. Remedy (b) touches the safety path's control flow
+    and must NOT be done unsupervised.
+
+Cross-reference: issue #7 (fabrication_check precision).

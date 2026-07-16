@@ -1,5 +1,39 @@
 # Changelog — Application Package Engine (Engine 6)
 
+## [Reviewer pass (D8)] — 2026-07-16
+
+Added the drafter-reviewer critic pass per research decision D8
+(`~/Desktop/oaos-research/DISCOVERY-SYNTHESIS-DECISIONS.md`), addressing the
+generic-cover-letter finding from the first real run. Pattern borrowed as an
+idea from MadsLorentzen/ai-job-search's drafter-reviewer workflow (MIT); no
+code copied. Safety guarantees unchanged: the pure fabrication trace-check
+runs on the final letter and is never overridden by the critic; no "minor
+stretch" allowance (D9).
+
+### Added
+- `critic.ts` — `buildCriticPrompt` (pure; sharpen-only, never-add-facts
+  contract), `parseCriticEdits` (tolerant; any parse failure degrades to zero
+  edits), `applyEdits` (pure exact-string sentence replacement, skips
+  non-matching edits), `CriticEdit` type.
+- Reviewer pass wired into `generateCoverLetter` between the initial draft and
+  the existing check/regen safety net: draft → critic (ONE extra Gemini call)
+  → apply edits → fabrication + word-count check on the revised letter → the
+  existing regenerate-once-then-truncate budget. Total Gemini calls ≤3 (was
+  ≤2); happy path 2.
+- `CoverLetterResult.criticEditsApplied`; `notes` gains
+  `"reviewer pass: N edit(s) applied."` (reported as 0 when a regeneration
+  replaced the critic-revised text).
+- Tests (`tests/critic.test.ts`): parse/apply pure units; sharpening happy
+  path (2 calls); the load-bearing safety test — a critic edit injecting an
+  unverifiable claim ends in `fabrication_check="flag"` with the offending
+  sentence named, exactly 3 calls, no loop; graceful degradation on
+  unparseable critic output. Existing call-count tests updated for the new
+  budget. Suite: 361 → 371.
+
+### Changed
+- `prompt.ts`: `contextBlock` and `proofBlock` exported (reused by the critic
+  prompt). No behavior change.
+
 ## [Initial] — 2026-06-24
 
 Implemented Engine 6 (Application Package Engine) per `docs/engine-specs.md`

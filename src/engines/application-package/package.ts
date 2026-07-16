@@ -29,7 +29,8 @@ function resolveProofEvidence(request: PackageRequest): Evidence[] {
 /**
  * Generate an application package (resume variant + cover letter) for an
  * Apply/Both opportunity. The resume variant is pure; the cover letter uses the
- * injectable Gemini client (≤2 calls — one generation, one regeneration).
+ * injectable Gemini client (≤3 calls — one generation, one reviewer critique
+ * (D8), at most one regeneration).
  *
  * @param request opportunity + match + inventory + base resume + operator + role.
  * @param options.client injected Gemini client (defaults to a real one).
@@ -49,7 +50,11 @@ export async function buildApplicationPackage(
   );
 
   const client: GeminiClient = options.client ?? createGeminiClient();
-  const { letter, fabrication, truncated } = await generateCoverLetter(request, proofEvidence, client);
+  const { letter, fabrication, truncated, criticEditsApplied } = await generateCoverLetter(
+    request,
+    proofEvidence,
+    client
+  );
 
   const notes: string[] = [];
   if (request.match.ranked.length === 0) {
@@ -62,6 +67,9 @@ export async function buildApplicationPackage(
   }
   if (truncated) {
     notes.push("letter truncated to 250 words.");
+  }
+  if (criticEditsApplied > 0) {
+    notes.push(`reviewer pass: ${criticEditsApplied} edit(s) applied.`);
   }
   if (request.match.coverage_gap) {
     notes.push(`coverage gap: ${request.match.coverage_gap}.`);
