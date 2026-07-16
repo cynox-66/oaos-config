@@ -157,6 +157,9 @@ export const FLAGGED_LETTER =
   "I have 5 years experience as a Staff Engineer leading large teams. " +
   "I contributed KubeArmor eBPF security policies.";
 
+/** Layer-2 semantic auditor verdict: affirmatively found no unsupported claims. */
+export const SEMANTIC_OK = JSON.stringify({ unsupported_claims: [] });
+
 // ============================================================
 // Mock Gemini clients
 // ============================================================

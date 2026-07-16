@@ -82,6 +82,12 @@ export interface FabricationResult {
   fabrication_check: "pass" | "flag";
   /** Sentences that failed the check (empty on pass). */
   flagged_sentences: string[];
+  /**
+   * True when the semantic (Layer 2) check could not run — LLM error or
+   * unparseable verdict. The result is then the hard-rule (Layer 1) result
+   * alone; never a silent downgrade of a flag to a pass.
+   */
+  semantic_degraded?: boolean;
 }
 
 /** The generated application package (spec ApplicationPackage + flagged_sentences). */

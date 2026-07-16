@@ -99,7 +99,7 @@ fabrication_check surfaced in src/pipeline/tests/pipeline.test.ts.
 The AccuKnox re-run surfaced three DESIGN findings (logged below, NOT fixed
 this session — they require a supervised session):
 
-## 7. fabrication_check precision — flags generic connective sentences (LOG ONLY)
+## 7. fabrication_check precision — flags generic connective sentences — RESOLVED 2026-07-16
 
 On the AccuKnox cover letter, fabrication_check returned `flag` with 6
 flagged sentences — but all 6 were verified non-fabricated. Several are
@@ -113,6 +113,24 @@ only flagging unverifiable CONCRETE claims. Needs review — but do NOT
 weaken it carelessly: false negatives (letting a real over-claim through)
 are worse than false positives here. Design decision, supervised session.
 See also #11 — this issue currently throttles the D8 reviewer pass.
+
+RESOLVED 2026-07-16 (supervised session): the grammar-noise failure mode
+is eliminated, pinned by tests. Root cause was the soft token rule
+counting EVERY unsupported token including English function words
+("the", "your", "have"), so ordinary prose flagged on grammar alone.
+Replaced by a layered check (see the engine CHANGELOG): Layer 1 = four
+pure hard rules (YoE, titles, puffery incl. digit-less experience
+claims, narrowed token rule over content tokens only — connective
+stopwords excluded, threshold >2, evidence URLs in the allowed corpus);
+Layer 2 = one Gemini semantic audit that can only ADD flags (union;
+fail-closed to Layer 1 with a visible degradation note on LLM failure).
+All six #7 connective sentences now pass; every real-fabrication
+regression (YoE, title, invented project, puffery) still flags via the
+pure floor with the LLM absent. Validated on the AccuKnox re-run: 6
+flagged sentences (incl. pure connectives) → 3, all substantive.
+Residual precision limit (true claims in fresh paraphrase vocabulary
+still flag via the token rule) is tracked under #11 — it is a different
+failure mode than the one this issue logged.
 
 ## 8. evidence-match relevance under-ranks the most on-target asset (LOG ONLY)
 
@@ -147,9 +165,11 @@ call returns structured sharpen-only edits (never-add-facts contract),
 applied via pure exact-string replacement, and the revised letter re-runs
 the existing pure fabrication trace-check — critic for quality, regex for
 truth. Validated on AccuKnox before/after: the letter is now more
-specific. Caveat: see #11 — the improvement is currently throttled by #7.
+specific. Caveat: see #11 — critic edits can still be discarded when
+regen fires on token-rule flags (#7's grammar-noise trigger is resolved;
+the paraphrase-vocabulary trigger remains).
 
-## 11. D8 critic edits discarded when the regen path fires — throttled by #7 (LOG ONLY)
+## 11. D8 critic edits discarded when the regen path fires — IMPROVED 2026-07-16, not cleared (LOG ONLY)
 
 D8 critic edits are discarded when the regeneration path fires, and under
 known-issue #7's current conservatism (fabrication_check flags generic
@@ -166,3 +186,32 @@ supervised session:
     and must NOT be done unsupervised.
 
 Cross-reference: issue #7 (fabrication_check precision).
+
+UPDATE 2026-07-16: remedy (a) is done (#7 RESOLVED — grammar noise no
+longer triggers regen). IMPROVED but not cleared: D8 edits still die
+when the narrowed token rule flags true-but-paraphrased sentences —
+observed on the AccuKnox re-run, where the critic applied 4 sharpening
+edits and regen then discarded them (criticEditsApplied=0) because three
+evidence-traceable sentences used vocabulary outside the corpus
+(e.g. "equipped", "robust", "maintainable"). Token-overlap rules cannot
+recognize honest paraphrase; deliberately NOT patched by stoplisting
+professional vocabulary (claim-bearing words stay counted, fail-closed).
+
+Sharpened design question for the supervised session: should regen fire
+only on hard-claim flags (YoE/title/puffery), with token-rule flags
+serving as human-review signals that do not trigger regen? Leading
+candidate design as of this session. Cross-reference #12 (approval
+surface): token-flags-as-review-signals only works once a reviewer
+actually sees flags.
+
+## 12. Package contents never reach a human approval surface (LOG ONLY)
+
+Application/outreach package contents (letter, fabrication flags,
+degradation warnings, notes) are not persisted by writePipelineResult and
+not displayed by the intake CLI — the human approval gate currently has
+no systematic surface and depends on ad-hoc inspection of pipeline
+results. This is a gap in the human-gate guarantee: spec §6 requires
+`fabrication_check=pass` before a package is eligible for human review,
+but nothing systematically presents the package (or its warnings, e.g.
+the semantic-layer degradation note) to the human at decision time. Fix
+requires cli/ + persistence work; deferred to a supervised session.

@@ -2,13 +2,14 @@
 // Reviewer pass (D8): critic prompt/parse/apply pure units, plus the flow
 // tests — sharpening happy path, the LOAD-BEARING safety test (a critic edit
 // that injects an unverifiable claim MUST be flagged by the fabrication
-// trace-check on the final package), graceful degradation on unparseable
-// critic output, and the exact call budget (2 happy / 3 worst, never a loop).
+// check's pure Layer-1 floor on the final package, even when the semantic
+// auditor says everything is fine), graceful degradation on unparseable
+// critic output, and the exact call budget (3 happy / 5 worst, never a loop).
 
 import { describe, it, expect } from "vitest";
 import { buildApplicationPackage } from "../package";
 import { buildCriticPrompt, parseCriticEdits, applyEdits } from "../critic";
-import { makeRequest, countingClient, CLEAN_LETTER, INVENTORY } from "./helpers";
+import { makeRequest, countingClient, CLEAN_LETTER, INVENTORY, SEMANTIC_OK } from "./helpers";
 
 // ============================================================
 // Pure units
@@ -86,18 +87,19 @@ const GENERIC_SENTENCE = "My Krkn chaos engineering work shows Kubernetes capabi
 const SHARPENED_SENTENCE = "My Krkn chaos scenarios prove Kubernetes resilience engineering.";
 
 describe("critic flow — sharpening happy path", () => {
-  it("applies a grounded edit, final letter passes, exactly 2 calls (draft + critic)", async () => {
+  it("applies a grounded edit, final letter passes, exactly 3 calls (draft + critic + semantic)", async () => {
     const { client, state } = countingClient((call) => {
       if (call === 1) return JSON.stringify({ letter: CLEAN_LETTER });
       if (call === 2)
         return JSON.stringify({
           edits: [{ old: GENERIC_SENTENCE, new: SHARPENED_SENTENCE, reason: "more specific" }],
         });
+      if (call === 3) return SEMANTIC_OK;
       throw new Error(`unexpected Gemini call #${call}`);
     });
 
     const pkg = await buildApplicationPackage(makeRequest(), { client });
-    expect(state.calls).toBe(2);
+    expect(state.calls).toBe(3);
     expect(pkg.cover_letter).toContain(SHARPENED_SENTENCE);
     expect(pkg.cover_letter).not.toContain(GENERIC_SENTENCE);
     expect(pkg.fabrication_check).toBe("pass");
@@ -114,8 +116,8 @@ describe("critic flow — sharpening happy path", () => {
 const INJECTED_CLAIM =
   "With 8+ years as a principal engineer, I will lead your eBPF security roadmap.";
 
-describe("critic flow — SAFETY: trace-check gates the critic", () => {
-  it("critic-injected unverifiable claim → final flag naming the sentence, exactly 3 calls, no loop", async () => {
+describe("critic flow — SAFETY: the pure Layer-1 floor gates the critic", () => {
+  it("critic-injected unverifiable claim → final flag naming the sentence, exactly 5 calls, no loop — even though the semantic auditor claims everything is fine", async () => {
     const { client, state } = countingClient((call) => {
       // call 1: clean draft.
       if (call === 1) return JSON.stringify({ letter: CLEAN_LETTER });
@@ -130,25 +132,28 @@ describe("critic flow — SAFETY: trace-check gates the critic", () => {
             },
           ],
         });
-      // call 3: the one regeneration — the model persists with the bad claim.
-      if (call === 3)
+      // calls 3 & 5: the semantic auditor WRONGLY reports no unsupported
+      // claims — the pure floor must flag regardless (the invariant).
+      if (call === 3 || call === 5) return SEMANTIC_OK;
+      // call 4: the one regeneration — the model persists with the bad claim.
+      if (call === 4)
         return JSON.stringify({
           letter: `${INJECTED_CLAIM} I contributed KubeArmor eBPF runtime security policies.`,
         });
-      // A 4th call would mean a retry loop — the budget forbids it.
+      // A 6th call would mean a retry loop — the budget forbids it.
       throw new Error(`unexpected Gemini call #${call} — regeneration must not loop`);
     });
 
     const pkg = await buildApplicationPackage(makeRequest(), { client });
 
-    // The trace-check wins: the final package is flagged, exactly as today.
+    // The pure Layer-1 floor wins: the final package is flagged.
     expect(pkg.fabrication_check).toBe("flag");
     // The offending sentence is named.
     expect(pkg.flagged_sentences.join(" ")).toContain("8+ years");
     expect(pkg.flagged_sentences.join(" ")).toContain("principal");
     expect(pkg.notes).toContain("fabrication check flagged");
-    // Exactly draft + critic + one regeneration; never a loop.
-    expect(state.calls).toBe(3);
+    // Exactly draft + critic + semantic + one regeneration + semantic re-check.
+    expect(state.calls).toBe(5);
   });
 });
 
@@ -157,15 +162,16 @@ describe("critic flow — SAFETY: trace-check gates the critic", () => {
 // ============================================================
 
 describe("critic flow — graceful degradation", () => {
-  it("unparseable critic response → draft proceeds unchanged, still fabrication-checked, 2 calls", async () => {
+  it("unparseable critic response → draft proceeds unchanged, still fabrication-checked, 3 calls", async () => {
     const { client, state } = countingClient((call) => {
       if (call === 1) return JSON.stringify({ letter: CLEAN_LETTER });
       if (call === 2) return "TOTALLY NOT JSON";
+      if (call === 3) return SEMANTIC_OK;
       throw new Error(`unexpected Gemini call #${call}`);
     });
 
     const pkg = await buildApplicationPackage(makeRequest(), { client });
-    expect(state.calls).toBe(2);
+    expect(state.calls).toBe(3);
     expect(pkg.cover_letter).toBe(CLEAN_LETTER);
     expect(pkg.fabrication_check).toBe("pass"); // the check ran on the final text
     expect(pkg.notes).not.toContain("reviewer pass");
