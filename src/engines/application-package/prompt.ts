@@ -16,7 +16,7 @@ const OUTPUT_CONTRACT = `Return ONLY this JSON and nothing else:
 { "letter": "<the cover letter text>" }`;
 
 /** Compact, grounded context block (base resume highlights + operator + opp). */
-function contextBlock(request: PackageRequest): string {
+export function contextBlock(request: PackageRequest): string {
   const { opportunity, base_resume, operator, role_description } = request;
   const topExperience = base_resume.experience
     .slice(0, 3)
@@ -34,7 +34,7 @@ function contextBlock(request: PackageRequest): string {
 }
 
 /** Render the proof-point evidence (or the sparse-evidence instruction). */
-function proofBlock(proofEvidence: Evidence[]): string {
+export function proofBlock(proofEvidence: Evidence[]): string {
   if (proofEvidence.length === 0) {
     return "No matched evidence is available. Lead with capability and a learning trajectory. Do NOT invent projects or claims.";
   }

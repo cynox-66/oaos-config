@@ -33,12 +33,12 @@ describe("tone by category", () => {
 });
 
 describe("buildApplicationPackage — happy path", () => {
-  it("returns a passing package with the right evidence cited (1 Gemini call)", async () => {
+  it("returns a passing package with the right evidence cited (2 Gemini calls: draft + critic)", async () => {
     const { client, state } = countingClient(() => JSON.stringify({ letter: CLEAN_LETTER }));
     const pkg = await buildApplicationPackage(makeRequest(), { client });
     expect(pkg.fabrication_check).toBe("pass");
     expect(pkg.evidence_cited).toEqual(["kubearmor", "krkn-chaos"]);
-    expect(state.calls).toBe(1);
+    expect(state.calls).toBe(2);
     expect(pkg.notes).not.toContain("proof thin");
   });
 
@@ -50,20 +50,21 @@ describe("buildApplicationPackage — happy path", () => {
   });
 });
 
-describe("regeneration budget (≤2 calls)", () => {
+describe("regeneration budget (≤3 calls: draft + critic + one regen)", () => {
   it("regenerates once on a flagged letter, then accepts the clean retry", async () => {
+    // call 1 = draft (flagged), call 2 = critic (no edits), call 3 = regen (clean).
     const { client, state } = countingClient((call) =>
       JSON.stringify({ letter: call === 1 ? FLAGGED_LETTER : CLEAN_LETTER })
     );
     const pkg = await buildApplicationPackage(makeRequest(), { client });
-    expect(state.calls).toBe(2);
+    expect(state.calls).toBe(3);
     expect(pkg.fabrication_check).toBe("pass");
   });
 
-  it("persistent fabrication → flag after exactly 2 calls", async () => {
+  it("persistent fabrication → flag after exactly 3 calls", async () => {
     const { client, state } = countingClient(() => JSON.stringify({ letter: FLAGGED_LETTER }));
     const pkg = await buildApplicationPackage(makeRequest(), { client });
-    expect(state.calls).toBe(2);
+    expect(state.calls).toBe(3);
     expect(pkg.fabrication_check).toBe("flag");
     expect(pkg.flagged_sentences.length).toBeGreaterThanOrEqual(1);
     expect(pkg.notes).toContain("fabrication check flagged");
@@ -93,7 +94,7 @@ describe("word-cap enforcement (≤250)", () => {
     const longLetter = Array(300).fill("Kubernetes").join(" ");
     const { client, state } = countingClient(() => JSON.stringify({ letter: longLetter }));
     const pkg = await buildApplicationPackage(makeRequest(), { client });
-    expect(state.calls).toBe(2);
+    expect(state.calls).toBe(3);
     expect(wordCount(pkg.cover_letter)).toBeLessThanOrEqual(250);
     expect(pkg.notes).toContain("truncated to 250 words");
   });
