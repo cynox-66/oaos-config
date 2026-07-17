@@ -1,9 +1,11 @@
 // fabrication.ts
 // File: src/engines/application-package/fabrication.ts
-// Purpose: The pure (no-LLM) fabrication trace-check (GAP B). Compares every
-//          sentence of the cover letter against the allowed corpus (base resume
-//          + evidence inventory + opportunity text) and flags untraceable
-//          claims, years-of-experience claims, and titles absent from the base.
+// Purpose: Layer 1 of the fabrication check (GAP B) — the pure, deterministic,
+//          no-LLM floor. Four hard rules per sentence: years-of-experience not
+//          in base, title keywords absent from base, untraceable puffery
+//          phrases, and too many unsupported CONTENT tokens (connective
+//          stopwords excluded). Layer 2 (semantic.ts) can only ADD flags on
+//          top of this result, never clear one.
 //
 //  NOTE: Only the cover_letter is checked. The resume_variant is a pure reorder
 //  of base content (see resume.ts) and cannot introduce fabrication by
@@ -11,11 +13,24 @@
 
 import type { BaseResume, Evidence, FabricationResult, Opportunity } from "./types";
 import {
+  CONNECTIVE_STOPWORDS,
   FABRICATION_SUSPICIOUS_LIMIT,
   MIN_TOKEN_LENGTH,
+  PUFFERY_PATTERNS,
   TITLE_KEYWORDS,
   YEARS_OF_EXPERIENCE_REGEX,
 } from "./config";
+
+/**
+ * Compile a puffery phrase to a word-boundary regex tolerating whitespace or
+ * hyphens between words ("world class" matches "world-class" and vice versa).
+ */
+function pufferyRegex(phrase: string): RegExp {
+  const parts = phrase.split(/[\s-]+/).map((p) => p.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"));
+  return new RegExp(`\\b${parts.join("[\\s-]+")}\\b`, "i");
+}
+
+const PUFFERY_REGEXES = PUFFERY_PATTERNS.map(pufferyRegex);
 
 /** Lowercase, split on non-alphanumeric, keep tokens longer than MIN_TOKEN_LENGTH. */
 export function tokenize(text: string): string[] {
@@ -47,7 +62,9 @@ function baseTitlesText(base: BaseResume): string {
   return base.experience.map((e) => e.title).join(" ").toLowerCase();
 }
 
-/** Tokens of the allowed corpus: base resume + inventory + opportunity text. */
+/** Tokens of the allowed corpus: base resume + inventory + opportunity text.
+ *  Inventory URLs are included: citing an evidence record's own address can
+ *  never be fabrication. */
 export function allowedTokens(
   base: BaseResume,
   inventory: Evidence[],
@@ -56,7 +73,7 @@ export function allowedTokens(
 ): Set<string> {
   const strings = [
     baseResumeText(base),
-    ...inventory.flatMap((e) => [e.title, e.relevance_blurb, ...e.tech_tags, ...e.domains]),
+    ...inventory.flatMap((e) => [e.title, e.relevance_blurb, e.url ?? "", ...e.tech_tags, ...e.domains]),
     opportunity.company,
     opportunity.role,
     roleDescription,
@@ -74,7 +91,10 @@ export function splitSentences(letter: string): string[] {
 }
 
 /**
- * Fabrication trace-check on a cover letter (GAP B). Pure and deterministic.
+ * Layer-1 fabrication trace-check on a cover letter (GAP B). Pure and
+ * deterministic — evaluable with no LLM available. This is the un-bypassable
+ * floor: the layered check (semantic.ts) unions Layer-2 flags on top of this
+ * result and can never remove one.
  *
  * @param letter the generated cover letter.
  * @param base the operator's base resume (the source of truth for claims).
@@ -120,7 +140,18 @@ function isFabricated(
     if (re.test(sentence) && !titles.includes(kw)) return true;
   }
 
-  // Soft rule: too many unsupported tokens.
-  const suspicious = tokenize(sentence).filter((t) => !allowed.has(t)).length;
+  // Hard rule: a puffery phrase not present verbatim in the base resume.
+  // (The same variation-tolerant regex checks both sides, so "world class"
+  // in the letter is traceable to "world-class" in the base.)
+  for (const re of PUFFERY_REGEXES) {
+    if (re.test(sentence) && !re.test(baseText)) return true;
+  }
+
+  // Hard rule (narrowed token rule): too many unsupported CONTENT tokens.
+  // Connective stopwords never count, so grammar and rhetoric cost nothing;
+  // every counted token is content-bearing (fails closed on unknown words).
+  const suspicious = tokenize(sentence).filter(
+    (t) => !allowed.has(t) && !CONNECTIVE_STOPWORDS.has(t)
+  ).length;
   return suspicious > FABRICATION_SUSPICIOUS_LIMIT;
 }

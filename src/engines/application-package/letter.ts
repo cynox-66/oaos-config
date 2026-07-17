@@ -10,7 +10,7 @@ import type { Evidence, FabricationResult, GeminiClient, PackageRequest } from "
 import { MAX_LETTER_WORDS } from "./config";
 import { buildCoverLetterPrompt, buildRegenPrompt, parseLetter } from "./prompt";
 import { applyEdits, buildCriticPrompt, parseCriticEdits } from "./critic";
-import { checkFabrication } from "./fabrication";
+import { checkFabricationLayered } from "./semantic";
 
 /** Count words (whitespace-delimited, non-empty). */
 export function wordCount(text: string): number {
@@ -47,12 +47,14 @@ export interface CoverLetterResult {
 
 /**
  * Generate the cover letter. Flow: generate → ONE critic pass returning
- * structured edits, applied by exact match (D8) → check fabrication AND word
- * count on the REVISED letter → if either fails, regenerate ONCE with combined
- * corrective instructions → re-check → if still over the cap, hard-truncate.
- * Total Gemini calls ≤ 3 (draft + critic + at most one regeneration); the
- * fabrication trace-check always runs on the final text and is never overridden
- * by the critic.
+ * structured edits, applied by exact match (D8) → layered fabrication check
+ * (pure Layer-1 hard rules + ONE semantic Gemini audit) AND word count on the
+ * REVISED letter → if either fails, regenerate ONCE with combined corrective
+ * instructions → re-check → if still over the cap, hard-truncate.
+ * Total Gemini calls ≤ 5 (draft + critic + semantic + at most one
+ * regeneration + its semantic re-check); happy path 3. The fabrication check
+ * always runs on the final text and is never overridden by the critic; its
+ * Layer-1 hard rules are pure and cannot be overridden by any LLM output.
  */
 export async function generateCoverLetter(
   request: PackageRequest,
@@ -60,8 +62,8 @@ export async function generateCoverLetter(
   client: GeminiClient
 ): Promise<CoverLetterResult> {
   const { base_resume, inventory, opportunity, role_description } = request;
-  const check = (letter: string): FabricationResult =>
-    checkFabrication(letter, base_resume, inventory, opportunity, role_description);
+  const check = (letter: string): Promise<FabricationResult> =>
+    checkFabricationLayered(letter, base_resume, inventory, opportunity, role_description, client);
 
   let letter = parseLetter(await client.generate(buildCoverLetterPrompt(request, proofEvidence)));
 
@@ -71,7 +73,7 @@ export async function generateCoverLetter(
   const revision = applyEdits(letter, edits);
   letter = revision.letter;
 
-  let fabrication = check(letter);
+  let fabrication = await check(letter);
   let overLimit = wordCount(letter) > MAX_LETTER_WORDS;
 
   // One regeneration if fabrication flagged OR the letter is too long. A
@@ -81,7 +83,7 @@ export async function generateCoverLetter(
   if (fabrication.fabrication_check === "flag" || overLimit) {
     const regen = buildRegenPrompt(request, proofEvidence, fabrication.flagged_sentences);
     letter = parseLetter(await client.generate(regen));
-    fabrication = check(letter);
+    fabrication = await check(letter);
     overLimit = wordCount(letter) > MAX_LETTER_WORDS;
     regenerated = true;
   }

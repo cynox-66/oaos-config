@@ -29,8 +29,9 @@ function resolveProofEvidence(request: PackageRequest): Evidence[] {
 /**
  * Generate an application package (resume variant + cover letter) for an
  * Apply/Both opportunity. The resume variant is pure; the cover letter uses the
- * injectable Gemini client (≤3 calls — one generation, one reviewer critique
- * (D8), at most one regeneration).
+ * injectable Gemini client (≤5 calls — one generation, one reviewer critique
+ * (D8), one semantic fabrication audit, at most one regeneration plus its
+ * semantic re-check; happy path 3).
  *
  * @param request opportunity + match + inventory + base resume + operator + role.
  * @param options.client injected Gemini client (defaults to a real one).
@@ -64,6 +65,11 @@ export async function buildApplicationPackage(
   }
   if (fabrication.fabrication_check === "flag") {
     notes.push("fabrication check flagged — review flagged sentences before submit.");
+  }
+  if (fabrication.semantic_degraded) {
+    notes.push(
+      "fabrication semantic layer degraded (LLM error) — hard rules only; verify claims manually before submit."
+    );
   }
   if (truncated) {
     notes.push("letter truncated to 250 words.");
