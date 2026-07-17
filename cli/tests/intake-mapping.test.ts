@@ -9,6 +9,7 @@ import { buildManualRawItem } from "../prompts";
 import {
   parseSourceType,
   parseCategory,
+  defaultOutreachForCategory,
   SOURCE_TYPE_OPTIONS,
   CATEGORY_OPTIONS,
 } from "../commands/intake";
@@ -90,5 +91,19 @@ describe("F2 — chosen category takes precedence over inference", () => {
       "2026-07-08T00:00:00.000Z"
     );
     expect(normalize(raw).category).toBe("Internship");
+  });
+});
+
+describe("defaultOutreachForCategory (C7 defaults)", () => {
+  it("maps each category to its specified channel + ask_type default", () => {
+    expect(defaultOutreachForCategory("Job")).toEqual({ channel: "email", ask_type: "referral_request" });
+    expect(defaultOutreachForCategory("Internship")).toEqual({ channel: "email", ask_type: "internship_inquiry" });
+    expect(defaultOutreachForCategory("Freelance")).toEqual({ channel: "email", ask_type: "freelance_pitch" });
+    expect(defaultOutreachForCategory("OSS")).toEqual({ channel: "github", ask_type: "oss_contribution" });
+    expect(defaultOutreachForCategory("Startup")).toEqual({ channel: "email", ask_type: "collaboration" });
+  });
+
+  it("falls back to the Job default for Other", () => {
+    expect(defaultOutreachForCategory("Other")).toEqual({ channel: "email", ask_type: "referral_request" });
   });
 });

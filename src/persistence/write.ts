@@ -74,6 +74,12 @@ export function createWriter(client: AirtableClient) {
 
     const recordIdByContactId = new Map<string, string>();
     for (const contact of result.contacts.ordered) {
+      // A contact read back from persistence (existing-record lookup) already
+      // has an Airtable record — reuse it instead of creating a duplicate.
+      if (contact.existing_record_id) {
+        recordIdByContactId.set(contact.id, contact.existing_record_id);
+        continue;
+      }
       const contactResult = await writeContact(contact, oppRecordId);
       results.push(contactResult);
       if (contactResult.record_id) recordIdByContactId.set(contact.id, contactResult.record_id);

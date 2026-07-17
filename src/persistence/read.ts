@@ -4,7 +4,7 @@
 //          into engine types (lossy for columns the base does not store).
 
 import type { AirtableClient, AirtableRecord, Contact, Opportunity } from "./types";
-import type { ContactRelationship } from "../engines/contact-ranking/types";
+import type { ContactRelationship, ManualContactInput } from "../engines/contact-ranking/types";
 import { FIELD_NAMES, TABLE_NAMES } from "./config";
 import { parseOpportunity } from "./records";
 
@@ -41,6 +41,12 @@ function parseContact(record: AirtableRecord): Contact {
   };
 }
 
+/** The value of a `Key: value` line inside a Notes blob, or null. */
+function noteLine(notes: string, key: string): string | null {
+  const m = notes.match(new RegExp(`^${key}:\\s*(.+)\\s*$`, "im"));
+  return m ? m[1].trim() : null;
+}
+
 /** A reader bound to an {@link AirtableClient}. */
 export function createReader(client: AirtableClient) {
   /** Internal: the matching Opportunities record + parsed opportunity, or null. */
@@ -74,6 +80,45 @@ export function createReader(client: AirtableClient) {
         filterByFormula: `FIND(${quote(opportunity_id)}, {${FC.notes}})`,
       });
       return records.map(parseContact);
+    },
+
+    /**
+     * Already-persisted Contacts whose Notes record `Company: <name>` matching
+     * `company` exactly (case-insensitive). The Contacts table has no Company
+     * column — the contributor scan stores it as a Notes line. The Airtable
+     * FIND is a substring prefilter; the exact line match happens here so a
+     * shorter company name never matches a longer one. Returned in the
+     * ManualContactInput shape the contact-ranking manual adapter consumes
+     * (Followers parsed from Notes so reachability recomputes faithfully).
+     */
+    async findContactsByCompany(company: string): Promise<ManualContactInput[]> {
+      const target = company.trim().toLowerCase();
+      if (target === "") return [];
+      const { records } = await client.listRecords(TABLE_NAMES.contacts, {
+        filterByFormula: `FIND(${quote(`company: ${target}`)}, LOWER({${FC.notes}}))`,
+      });
+      return records
+        .filter((r) => {
+          const notes = typeof r.fields[FC.notes] === "string" ? (r.fields[FC.notes] as string) : "";
+          return noteLine(notes, "Company")?.toLowerCase() === target;
+        })
+        .map((r) => {
+          const c = parseContact(r);
+          const notes = typeof r.fields[FC.notes] === "string" ? (r.fields[FC.notes] as string) : "";
+          const followers = Number(noteLine(notes, "Followers"));
+          return {
+            name: c.name,
+            company,
+            title: c.title,
+            email: c.channels.email,
+            github: c.channels.github,
+            linkedin: c.channels.linkedin,
+            followers: Number.isFinite(followers) ? followers : 0,
+            oss_overlap: c.oss_overlap,
+            relationship: c.relationship,
+            existing_record_id: r.id,
+          };
+        });
     },
   };
 }

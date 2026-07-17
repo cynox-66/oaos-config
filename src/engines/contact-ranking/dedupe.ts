@@ -156,6 +156,7 @@ function mergeCluster(members: CandidateContact[]): CandidateContact {
     last_verified: mostRecent(members.map((m) => m.last_verified)),
     relationship: strongestRelationship(members.map((m) => m.relationship)),
     source: [...new Set(members.map((m) => m.source))].join(","),
+    existing_record_id: firstNonEmpty(members.map((m) => m.existing_record_id ?? null)),
   };
 }
 

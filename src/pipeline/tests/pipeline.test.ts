@@ -171,6 +171,9 @@ describe("Job + contacts + evidence + resume → Both", () => {
     expect(result.recommendation.action).toBe("Both");
     expect(result.applicationPackage).not.toBeNull();
     expect(result.outreachDraft).not.toBeNull();
+    // The fabrication check runs and its result is surfaced on the package.
+    expect(result.applicationPackage!.fabrication_check).toMatch(/^(pass|flag)$/);
+    expect(result.outreachDraft!.constraint_pass).toBeTypeOf("boolean");
     expect(result.followUpState).toBeNull();
     expect(result.evidenceMatch.ranked[0].evidence_id).toBe("kubearmor");
     expect(result.contacts.primary_contact_id).not.toBeNull();

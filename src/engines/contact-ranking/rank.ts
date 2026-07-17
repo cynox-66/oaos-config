@@ -179,6 +179,7 @@ export function rankContacts(request: DiscoveryRequest, options: RankOptions = {
       primary: false,
       relationship: c.relationship,
       identity_uncertain: d.identity_uncertain,
+      existing_record_id: c.existing_record_id ?? null,
     };
   });
 
