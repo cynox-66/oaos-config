@@ -1,11 +1,13 @@
 // fabrication.ts
 // File: src/engines/application-package/fabrication.ts
 // Purpose: Layer 1 of the fabrication check (GAP B) — the pure, deterministic,
-//          no-LLM floor. Four hard rules per sentence: years-of-experience not
-//          in base, title keywords absent from base, untraceable puffery
-//          phrases, and too many unsupported CONTENT tokens (connective
-//          stopwords excluded). Layer 2 (semantic.ts) can only ADD flags on
-//          top of this result, never clear one.
+//          no-LLM floor. Four rules per sentence: three HARD (years-of-
+//          experience not in base, title keywords absent from base,
+//          untraceable puffery phrases) and one REVIEW-ONLY (too many
+//          unsupported CONTENT tokens, connective stopwords excluded). Hard
+//          flags trigger regeneration; review-only flags are surfaced for
+//          human review but never trigger regen alone. Layer 2 (semantic.ts)
+//          can only ADD flags on top of this result, never clear one.
 //
 //  NOTE: Only the cover_letter is checked. The resume_variant is a pure reorder
 //  of base content (see resume.ts) and cannot introduce fabrication by
@@ -114,44 +116,69 @@ export function checkFabrication(
   const titles = baseTitlesText(base);
 
   const flagged: string[] = [];
+  const reviewOnly: string[] = [];
   for (const sentence of splitSentences(letter)) {
-    if (isFabricated(sentence, allowed, baseText, titles)) flagged.push(sentence);
+    const cls = classifySentence(sentence, allowed, baseText, titles);
+    if (cls === null) continue;
+    flagged.push(sentence);
+    if (cls === "review") reviewOnly.push(sentence);
   }
 
   return {
     fabrication_check: flagged.length > 0 ? "flag" : "pass",
     flagged_sentences: flagged,
+    review_only_sentences: reviewOnly,
   };
 }
 
-function isFabricated(
+/**
+ * True iff regeneration should fire: at least one flagged sentence was flagged
+ * by a hard net (1 YoE / 2 title / 3 puffery / 5 semantic) — i.e. is NOT
+ * review-only. Net-4-only flags never trigger regeneration on their own; they
+ * pass through for human review instead (and never block a regen another net
+ * earned). Explicit set-difference, not length arithmetic: stays correct even
+ * if a future edit dedupes flagged_sentences or double-buckets a sentence.
+ */
+export function requiresRegen(result: FabricationResult): boolean {
+  const reviewOnly = new Set(result.review_only_sentences);
+  return result.flagged_sentences.some((s) => !reviewOnly.has(s));
+}
+
+/**
+ * Classify one sentence: "hard" when a hard net (YoE / title / puffery) fires,
+ * "review" when only the token rule (net 4) fires, null when clean. The four
+ * predicates are the pre-existing detection rules, unchanged — only the
+ * aggregation (which net fired) is new.
+ */
+function classifySentence(
   sentence: string,
   allowed: Set<string>,
   baseText: string,
   titles: string
-): boolean {
+): "hard" | "review" | null {
   // Hard rule: years-of-experience claim not present verbatim in the base.
   const yoe = sentence.match(YEARS_OF_EXPERIENCE_REGEX);
-  if (yoe && !baseText.includes(collapseLower(yoe[0]))) return true;
+  if (yoe && !baseText.includes(collapseLower(yoe[0]))) return "hard";
 
   // Hard rule: a seniority/title keyword not present in the base resume's titles.
   for (const kw of TITLE_KEYWORDS) {
     const re = new RegExp(`\\b${kw}\\b`, "i");
-    if (re.test(sentence) && !titles.includes(kw)) return true;
+    if (re.test(sentence) && !titles.includes(kw)) return "hard";
   }
 
   // Hard rule: a puffery phrase not present verbatim in the base resume.
   // (The same variation-tolerant regex checks both sides, so "world class"
   // in the letter is traceable to "world-class" in the base.)
   for (const re of PUFFERY_REGEXES) {
-    if (re.test(sentence) && !re.test(baseText)) return true;
+    if (re.test(sentence) && !re.test(baseText)) return "hard";
   }
 
-  // Hard rule (narrowed token rule): too many unsupported CONTENT tokens.
-  // Connective stopwords never count, so grammar and rhetoric cost nothing;
-  // every counted token is content-bearing (fails closed on unknown words).
+  // Review-only rule (narrowed token rule): too many unsupported CONTENT
+  // tokens. Connective stopwords never count, so grammar and rhetoric cost
+  // nothing; every counted token is content-bearing (fails closed on unknown
+  // words). Flags for human review but does not trigger regeneration alone.
   const suspicious = tokenize(sentence).filter(
     (t) => !allowed.has(t) && !CONNECTIVE_STOPWORDS.has(t)
   ).length;
-  return suspicious > FABRICATION_SUSPICIOUS_LIMIT;
+  return suspicious > FABRICATION_SUSPICIOUS_LIMIT ? "review" : null;
 }

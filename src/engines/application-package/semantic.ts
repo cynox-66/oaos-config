@@ -145,9 +145,14 @@ export async function checkFabricationLayered(
   }
 
   const flagged = [...new Set([...hard.flagged_sentences, ...semanticFlags])];
+  // A sentence Layer 2 names is a hard flag — it is promoted out of
+  // review-only. Review-only survives ONLY as "net 4 fired and nothing else".
+  const semanticSet = new Set(semanticFlags);
+  const review_only = hard.review_only_sentences.filter((s) => !semanticSet.has(s));
   return {
     fabrication_check: flagged.length > 0 ? "flag" : "pass",
     flagged_sentences: flagged,
+    review_only_sentences: review_only,
     semantic_degraded: degraded,
   };
 }

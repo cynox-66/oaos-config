@@ -44,6 +44,53 @@ export function formatIntakeSummary(s: IntakeSummary): string {
 }
 
 // ============================================================
+// intake — application-package flag block (#12a)
+// ============================================================
+
+export interface PackageFlags {
+  /** Hard-flagged sentences (nets 1/2/3/5) still present after regeneration. */
+  hard: string[];
+  /** Review-only sentences (net-4-only; regeneration did NOT fire for these). */
+  reviewOnly: string[];
+  /** True when the semantic (Layer 2) audit could not run. */
+  semanticDegraded: boolean;
+}
+
+/**
+ * Render the fabrication-flag block shown before the operator acknowledgment
+ * gate. Hard flags and review-only flags are visually distinct; the semantic-
+ * degradation state renders INSIDE this same block (never buried) so the
+ * operator sees "the AI check failed AND there are review flags" together.
+ * Returns "" when there is nothing to show.
+ */
+export function formatPackageFlags(f: PackageFlags): string {
+  if (f.hard.length === 0 && f.reviewOnly.length === 0 && !f.semanticDegraded) return "";
+  const lines = ["", "── Application-package flags ───────────────────"];
+  if (f.hard.length > 0) {
+    lines.push("  ⚠ HARD fabrication flags (regeneration already fired; still present):");
+    f.hard.forEach((s, i) => lines.push(`    ${i + 1}. ${s}`));
+  }
+  if (f.reviewOnly.length > 0) {
+    if (f.hard.length > 0) lines.push("");
+    lines.push(
+      "  REVIEW-ONLY flags (token rule — did NOT trigger regeneration):",
+      "  Vocabulary not lexically traceable to the base resume/evidence.",
+      "  Verify each sentence is true before submitting:"
+    );
+    f.reviewOnly.forEach((s, i) => lines.push(`    ${i + 1}. ${s}`));
+  }
+  if (f.semanticDegraded) {
+    lines.push(
+      "",
+      "  ! SEMANTIC AUDIT DEGRADED — the AI fact-check (net 5) did not run.",
+      "    Flags above reflect hard rules only; review with extra care."
+    );
+  }
+  lines.push("────────────────────────────────────────────────");
+  return lines.join("\n");
+}
+
+// ============================================================
 // score --company (F4)
 // ============================================================
 

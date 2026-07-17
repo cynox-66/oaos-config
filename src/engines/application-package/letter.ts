@@ -10,6 +10,7 @@ import type { Evidence, FabricationResult, GeminiClient, PackageRequest } from "
 import { MAX_LETTER_WORDS } from "./config";
 import { buildCoverLetterPrompt, buildRegenPrompt, parseLetter } from "./prompt";
 import { applyEdits, buildCriticPrompt, parseCriticEdits } from "./critic";
+import { requiresRegen } from "./fabrication";
 import { checkFabricationLayered } from "./semantic";
 
 /** Count words (whitespace-delimited, non-empty). */
@@ -48,9 +49,12 @@ export interface CoverLetterResult {
 /**
  * Generate the cover letter. Flow: generate → ONE critic pass returning
  * structured edits, applied by exact match (D8) → layered fabrication check
- * (pure Layer-1 hard rules + ONE semantic Gemini audit) AND word count on the
- * REVISED letter → if either fails, regenerate ONCE with combined corrective
- * instructions → re-check → if still over the cap, hard-truncate.
+ * (pure Layer-1 rules + ONE semantic Gemini audit) AND word count on the
+ * REVISED letter → if a HARD net flagged (YoE/title/puffery/semantic — NOT
+ * the token rule alone) or the cap is exceeded, regenerate ONCE with combined
+ * corrective instructions → re-check → if still over the cap, hard-truncate.
+ * Review-only (net-4-only) flags do not regenerate; they are retained on the
+ * result for the human gate.
  * Total Gemini calls ≤ 5 (draft + critic + semantic + at most one
  * regeneration + its semantic re-check); happy path 3. The fabrication check
  * always runs on the final text and is never overridden by the critic; its
@@ -76,11 +80,14 @@ export async function generateCoverLetter(
   let fabrication = await check(letter);
   let overLimit = wordCount(letter) > MAX_LETTER_WORDS;
 
-  // One regeneration if fabrication flagged OR the letter is too long. A
-  // regenerated letter replaces the critic-revised text wholesale, so the
-  // critic's edits no longer survive in the final letter.
+  // One regeneration if a HARD net flagged (1 YoE / 2 title / 3 puffery /
+  // 5 semantic) OR the letter is too long. Net-4-only (review-only) flags
+  // never trigger regen on their own — they pass through for human review,
+  // preserving the critic's edits. A regenerated letter replaces the
+  // critic-revised text wholesale, so the critic's edits no longer survive
+  // in the final letter.
   let regenerated = false;
-  if (fabrication.fabrication_check === "flag" || overLimit) {
+  if (requiresRegen(fabrication) || overLimit) {
     const regen = buildRegenPrompt(request, proofEvidence, fabrication.flagged_sentences);
     letter = parseLetter(await client.generate(regen));
     fabrication = await check(letter);

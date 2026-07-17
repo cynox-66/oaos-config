@@ -157,6 +157,24 @@ export const FLAGGED_LETTER =
   "I have 5 years experience as a Staff Engineer leading large teams. " +
   "I contributed KubeArmor eBPF security policies.";
 
+/**
+ * A TRUE, evidence-traceable claim (the Krkn chaos work) expressed in
+ * vocabulary absent from the base resume — honest paraphrase. Only net 4 (the
+ * token rule) fires: "equipped"/"build"/"robust"/"maintainable"/"failure"/
+ * "tooling" are unsupported content tokens, but there is no YoE, title, or
+ * puffery. Review-only; must never trigger regeneration alone (#11).
+ */
+export const PARAPHRASE_SENTENCE =
+  "My chaos work equipped me to build robust and maintainable failure tooling.";
+
+/**
+ * The same paraphrase carrying an untraceable puffery phrase ("proven track
+ * record") — net 3 fires, so regeneration is earned regardless of net 4's
+ * simultaneous firing.
+ */
+export const PARAPHRASE_PLUS_PUFFERY_SENTENCE =
+  "My proven track record equipped me to build robust and maintainable failure tooling.";
+
 /** Layer-2 semantic auditor verdict: affirmatively found no unsupported claims. */
 export const SEMANTIC_OK = JSON.stringify({ unsupported_claims: [] });
 

@@ -83,6 +83,12 @@ export interface FabricationResult {
   /** Sentences that failed the check (empty on pass). */
   flagged_sentences: string[];
   /**
+   * Subset of flagged_sentences flagged ONLY by the token rule (net 4) — no
+   * hard net (YoE/title/puffery) and no semantic flag on the same sentence.
+   * Surfaced for human review; never a regeneration trigger on their own.
+   */
+  review_only_sentences: string[];
+  /**
    * True when the semantic (Layer 2) check could not run — LLM error or
    * unparseable verdict. The result is then the hard-rule (Layer 1) result
    * alone; never a silent downgrade of a flag to a pass.
@@ -98,6 +104,10 @@ export interface ApplicationPackage {
   fabrication_check: "pass" | "flag";
   /** Sentences that failed the fabrication check (empty on pass). */
   flagged_sentences: string[];
+  /** Subset of flagged_sentences that are review-only (net-4-only; no regen). */
+  review_only_sentences: string[];
+  /** True when the semantic (Layer 2) audit could not run — flags reflect hard rules only. */
+  semantic_degraded: boolean;
   /** What to verify before submitting (proof-thin / truncation warnings). */
   notes: string;
 }

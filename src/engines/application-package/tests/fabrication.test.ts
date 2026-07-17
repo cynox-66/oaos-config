@@ -6,8 +6,17 @@
 // content-token rule), and the #7 false-positive connectives now passing.
 
 import { describe, it, expect } from "vitest";
-import { checkFabrication } from "../fabrication";
-import { INVENTORY, makeBaseResume, makeOpportunity, CLEAN_LETTER, FLAGGED_LETTER } from "./helpers";
+import { checkFabrication, requiresRegen } from "../fabrication";
+import type { FabricationResult } from "../types";
+import {
+  INVENTORY,
+  makeBaseResume,
+  makeOpportunity,
+  CLEAN_LETTER,
+  FLAGGED_LETTER,
+  PARAPHRASE_SENTENCE,
+  PARAPHRASE_PLUS_PUFFERY_SENTENCE,
+} from "./helpers";
 
 const base = makeBaseResume();
 const opportunity = makeOpportunity();
@@ -165,5 +174,84 @@ describe("checkFabrication — narrowed token rule (connective stopwords never c
     const result = check(letter);
     expect(result.fabrication_check).toBe("pass");
     expect(result.flagged_sentences).toEqual([]);
+  });
+});
+
+describe("regen routing (#11) — hard vs. review-only classification", () => {
+  it("net 1 alone (YoE) → hard: not review-only, requires regen", () => {
+    const result = check("I have 7 years experience with Kubernetes.");
+    expect(result.fabrication_check).toBe("flag");
+    expect(result.review_only_sentences).toEqual([]);
+    expect(requiresRegen(result)).toBe(true);
+  });
+
+  it("net 2 alone (title) → hard: not review-only, requires regen", () => {
+    const result = check("I am a Staff Engineer at AccuKnox.");
+    expect(result.fabrication_check).toBe("flag");
+    expect(result.review_only_sentences).toEqual([]);
+    expect(requiresRegen(result)).toBe(true);
+  });
+
+  it("net 3 alone (puffery) → hard: not review-only, requires regen", () => {
+    const result = check("A seasoned veteran with a proven track record.");
+    expect(result.fabrication_check).toBe("flag");
+    expect(result.review_only_sentences).toEqual([]);
+    expect(requiresRegen(result)).toBe(true);
+  });
+
+  it("net 4 alone (token rule) → review-only: flag retained, NO regen", () => {
+    const result = check(PARAPHRASE_SENTENCE);
+    expect(result.fabrication_check).toBe("flag"); // verdict unchanged — still surfaced
+    expect(result.flagged_sentences).toEqual([PARAPHRASE_SENTENCE]);
+    expect(result.review_only_sentences).toEqual([PARAPHRASE_SENTENCE]);
+    expect(requiresRegen(result)).toBe(false);
+  });
+
+  it("GENERALIZATION: true paraphrase + puffery in one sentence → net 3 drives regen, unblocked by net 4", () => {
+    const result = check(PARAPHRASE_PLUS_PUFFERY_SENTENCE);
+    expect(result.fabrication_check).toBe("flag");
+    expect(result.review_only_sentences).toEqual([]); // hard, not review-only
+    expect(requiresRegen(result)).toBe(true);
+  });
+
+  it("net 4 + net 1 across a letter → regen fires; only the paraphrase sentence is review-only", () => {
+    const letter = `${PARAPHRASE_SENTENCE} I have 7 years experience with Kubernetes.`;
+    const result = check(letter);
+    expect(result.flagged_sentences).toHaveLength(2);
+    expect(result.review_only_sentences).toEqual([PARAPHRASE_SENTENCE]);
+    expect(requiresRegen(result)).toBe(true); // net 4 never blocks a regen another net earned
+  });
+
+  it("clean letter → nothing flagged, nothing review-only, no regen", () => {
+    const result = check(CLEAN_LETTER);
+    expect(result.flagged_sentences).toEqual([]);
+    expect(result.review_only_sentences).toEqual([]);
+    expect(requiresRegen(result)).toBe(false);
+  });
+});
+
+describe("requiresRegen — explicit set-difference semantics", () => {
+  const make = (flagged: string[], reviewOnly: string[]): FabricationResult => ({
+    fabrication_check: flagged.length > 0 ? "flag" : "pass",
+    flagged_sentences: flagged,
+    review_only_sentences: reviewOnly,
+  });
+
+  it("no flags → false", () => {
+    expect(requiresRegen(make([], []))).toBe(false);
+  });
+
+  it("all flags review-only → false", () => {
+    expect(requiresRegen(make(["a", "b"], ["a", "b"]))).toBe(false);
+  });
+
+  it("any flag outside the review-only set → true", () => {
+    expect(requiresRegen(make(["a", "b"], ["a"]))).toBe(true);
+  });
+
+  it("stays correct under duplicate flagged entries (set semantics, not length arithmetic)", () => {
+    // Length arithmetic (flagged.length > reviewOnly.length) would wrongly
+    // return true here; the set-difference correctly sees only review-only.
+    expect(requiresRegen(make(["a", "a"], ["a"]))).toBe(false);
   });
 });

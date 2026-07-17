@@ -169,7 +169,7 @@ specific. Caveat: see #11 — critic edits can still be discarded when
 regen fires on token-rule flags (#7's grammar-noise trigger is resolved;
 the paraphrase-vocabulary trigger remains).
 
-## 11. D8 critic edits discarded when the regen path fires — IMPROVED 2026-07-16, not cleared (LOG ONLY)
+## 11. D8 critic edits discarded when the regen path fires — RESOLVED 2026-07-18
 
 D8 critic edits are discarded when the regeneration path fires, and under
 known-issue #7's current conservatism (fabrication_check flags generic
@@ -204,7 +204,32 @@ candidate design as of this session. Cross-reference #12 (approval
 surface): token-flags-as-review-signals only works once a reviewer
 actually sees flags.
 
-## 12. Package contents never reach a human approval surface (LOG ONLY)
+RESOLVED 2026-07-18 (supervised session): regen routing fixed. Final
+rule: regeneration fires on nets 1/2/3/5 (YoE / title / puffery /
+semantic audit) — never on net 4 (token rule) alone. Net-4-only flags
+are retained as `review_only_sentences` (FabricationResult +
+ApplicationPackage), still set `fabrication_check="flag"`, and surface
+at the #12a CLI acknowledgment gate; net 4 co-occurring with a hard net
+never blocks a regen that net earned. Detection predicates for all five
+nets are byte-for-byte unchanged — this is routing only. The regen
+decision is `requiresRegen()` (fabrication.ts), an explicit
+set-difference (any flagged sentence outside the review-only set), not
+length arithmetic. A sentence net 5 names is promoted out of
+review-only; a degraded net 5 adds no flags (deliberate: Q2 Option A,
+safe because degradation renders inside the same CLI flag block).
+Test-pinned with synthetic generalization fixtures (true paraphrase →
+net 4 alone, no regen; paraphrase + puffery → regen via net 3), not
+just the single AccuKnox observation — per-net routing, promotion,
+degradation, and edit-survival tests across fabrication/semantic/
+package suites (405 → 438). Proven live on the AccuKnox re-run: 3
+net-4-only flags, NO regen call in the Gemini sequence, letter passed
+through intact. One caveat: live confirmation of edit-survival
+specifically is currently masked by #13 (anchoring skips edits before
+survival is testable on this letter); edit-survival-through-no-regen is
+pinned by package.test.ts where edits do apply. We observed regen not
+fire — which is the fix — not edits surviving live.
+
+## 12. Package contents never reach a human approval surface — #12a SHIPPED 2026-07-18; #12b deferred (LOG ONLY)
 
 Application/outreach package contents (letter, fabrication flags,
 degradation warnings, notes) are not persisted by writePipelineResult and
@@ -215,3 +240,42 @@ results. This is a gap in the human-gate guarantee: spec §6 requires
 but nothing systematically presents the package (or its warnings, e.g.
 the semantic-layer degradation note) to the human at decision time. Fix
 requires cli/ + persistence work; deferred to a supervised session.
+
+UPDATE 2026-07-18: #12a (CLI acknowledgment gate) shipped alongside the
+#11 fix. `oaos intake` now prints the application package's fabrication
+flags before the Airtable write — hard flags and review-only (net-4-only)
+flags in visually distinct sections of one block, with the
+semantic-degradation state rendered inside that same block — and, iff
+review-only flags exist, blocks on an explicit y/n confirmation
+(`acknowledgeReviewFlags`, cli/commands/intake.ts; pure renderer
+`formatPackageFlags`, cli/format.ts). "y" proceeds; "n" aborts before
+writePipelineResult with "Intake aborted — nothing written." (clean exit
+0 — an operator choice, not an error); no review-only flags → no prompt.
+Unit-tested with fake prompter + captured log (cli/tests/ack-gate.test.ts,
+format.test.ts); verified live on the AccuKnox re-run. The full persisted
+review surface (#12b — persistence of letter/flags/notes, a
+machine-readable approved flag) remains explicitly deferred, to be built
+alongside C9 (approval-based auto-execution), which is when a
+machine-readable "approved" flag actually becomes necessary.
+
+## 13. D8 critic edit anchors are not reliably verbatim — valid edits silently skipped (LOG ONLY)
+
+D8 critic structured-edit `old` strings are not reliably verbatim
+against the draft, so applyEdits' exact-match guard silently skips
+valid edits (observed live on AccuKnox 2026-07-18: 4 sensible edits, 0
+applied, all skipped on non-verbatim anchors — e.g. the critic quoted
+"Dear Hiring Team at AccuKnox, I am writing…" where the draft reads
+"Dear Hiring Team, I am writing… at AccuKnox"). This is a correctness
+limitation in D8's edit protocol: the critic paraphrases the text it
+quotes instead of copying it verbatim, despite the prompt's
+copied-verbatim contract. Near-determinism made it reproduce
+byte-identically across runs on THIS letter, but the root cause is the
+anchoring failure, which will fire intermittently across different
+letters. It fails safe — the unmodified draft proceeds and is still
+fabrication-checked — but its effect is that D8's entire value can
+silently evaporate on a given letter, with only `criticEditsApplied: 0`
+as signal. Currently masks live confirmation of #11's edit-survival
+payoff. Needs a supervised session (candidate directions: fuzzy/
+normalized anchoring, sentence-index anchoring, or a retry-with-
+verbatim-reminder — all touch the D8 protocol and must not be done
+opportunistically). Do NOT fix outside a dedicated session.

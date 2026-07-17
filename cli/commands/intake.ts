@@ -14,6 +14,7 @@ import { createPersistence } from "../../src/persistence";
 import { loadInventory } from "../../src/engines/evidence-matching/inventory";
 import { createGeminiClient } from "../../src/engines/scoring/gemini";
 import { loadBaseResume, loadOperatorProfile } from "../resume";
+import type { ApplicationPackage } from "../../src/engines/application-package/types";
 import type { Channel, AskType } from "../../src/engines/outreach-package/types";
 import {
   buildManualRawItem,
@@ -23,7 +24,7 @@ import {
   type ManualEntry,
   type Prompter,
 } from "../prompts";
-import { formatIntakeSummary } from "../format";
+import { formatIntakeSummary, formatPackageFlags } from "../format";
 
 // ============================================================
 // F1 — source_type menu → SourceType mapping (config lives here)
@@ -110,6 +111,45 @@ export const ASK_TYPE_VALUES: readonly AskType[] = [
   "freelance_pitch",
   "referral_request",
 ];
+
+// ============================================================
+// #12a — CLI acknowledgment gate for review-only fabrication flags
+// ============================================================
+
+/**
+ * Print the package's fabrication flags (hard + review-only + semantic-
+ * degradation state, one distinct block) and, iff review-only flags exist,
+ * block on an explicit y/n confirmation. Returns true to proceed with
+ * persistence, false to abort (operator answered "n" — a normal choice, not
+ * an error). No package or no review-only flags → no prompt, no friction.
+ * All I/O goes through the injected prompter + log so this is testable with
+ * fakes (F6 pattern).
+ */
+export async function acknowledgeReviewFlags(
+  pkg: ApplicationPackage | null,
+  p: Prompter,
+  log: (line: string) => void = console.log
+): Promise<boolean> {
+  if (pkg === null) return true;
+  const reviewOnly = pkg.review_only_sentences;
+  const reviewSet = new Set(reviewOnly);
+  const block = formatPackageFlags({
+    hard: pkg.flagged_sentences.filter((s) => !reviewSet.has(s)),
+    reviewOnly,
+    semanticDegraded: pkg.semantic_degraded,
+  });
+  if (block !== "") log(block);
+  if (reviewOnly.length === 0) return true;
+  // eslint-disable-next-line no-constant-condition
+  while (true) {
+    const answer = (await p.ask("Acknowledge review-only flags and continue? (y/n): "))
+      .trim()
+      .toLowerCase();
+    if (answer === "y") return true;
+    if (answer === "n") return false;
+    log("  ! Please answer y or n.");
+  }
+}
 
 // ============================================================
 // Interactive helpers (impure)
@@ -238,6 +278,20 @@ export async function runIntake(): Promise<void> {
     channel: outreach.channel,
     ask_type: outreach.ask_type,
   });
+
+  // #12a — surface fabrication flags and, if any are review-only, require an
+  // explicit acknowledgment BEFORE anything is written to Airtable.
+  const gatePrompter = createPrompter();
+  let proceed: boolean;
+  try {
+    proceed = await acknowledgeReviewFlags(result.applicationPackage, gatePrompter);
+  } finally {
+    gatePrompter.close();
+  }
+  if (!proceed) {
+    console.log("Intake aborted — nothing written.");
+    return;
+  }
 
   const writes = await persistence.writePipelineResult(result);
   const oppWrite = writes[0];

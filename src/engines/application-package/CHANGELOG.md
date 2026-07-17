@@ -1,5 +1,30 @@
 # Changelog — Application Package Engine (Engine 6)
 
+## [Regen routing: net 4 review-only (#11) + CLI acknowledgment gate (#12a)] — 2026-07-18
+
+Regeneration now fires only when a hard net flags — (1) years-of-experience,
+(2) title keywords, (3) puffery, or (5) the semantic audit — and never on the
+unsupported-content-token rule (net 4) alone, which fires on true claims in
+vocabulary that doesn't lexically match the base resume (honest paraphrase)
+rather than on actual fabrication. Net-4-only flags are retained as
+`review_only_sentences` on `FabricationResult`/`ApplicationPackage` (still
+`fabrication_check="flag"`, noted in `notes`) and surface at a new CLI
+acknowledgment gate in `oaos intake`, which prints hard and review-only flags
+in distinct sections of one block — with any semantic-degradation state
+rendered inside that same block — and blocks on an explicit y/n confirmation
+before the Airtable write when review-only flags exist ("n" aborts cleanly
+with nothing written). Detection predicates for all five nets are
+byte-for-byte unchanged: this is a routing change, not a detection change.
+The regen decision is the exported `requiresRegen()` — an explicit
+set-difference (any flagged sentence outside the review-only set). A sentence
+net 5 names is promoted out of review-only; a degraded net 5 adds no flags
+(deliberate, safe because the degradation is visible at the gate). This ends
+the #11 failure mode where a net-4-only flag regenerated the letter and
+discarded the D8 critic's applied edits (AccuKnox: criticEditsApplied 4 → 0).
+Proven live on the AccuKnox re-run (3 net-4-only flags, no regen call, gate
+exercised end-to-end) and pinned by per-net routing, promotion, degradation,
+and edit-survival tests plus synthetic paraphrase fixtures. Suite: 405 → 438.
+
 ## [Layered fabrication check] — 2026-07-16
 
 Fixed known-issue #7 (fabrication_check over-conservatism) with a

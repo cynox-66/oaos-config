@@ -4,6 +4,7 @@
 import { describe, it, expect } from "vitest";
 import {
   formatIntakeSummary,
+  formatPackageFlags,
   formatScoreChange,
   formatContactsImport,
   formatReport,
@@ -129,5 +130,54 @@ describe("formatReport", () => {
       topUnactioned: [],
     });
     expect(out).toContain("(none)");
+  });
+});
+
+describe("formatPackageFlags (#12a)", () => {
+  it("returns empty string when there is nothing to show (no block, no friction)", () => {
+    expect(formatPackageFlags({ hard: [], reviewOnly: [], semanticDegraded: false })).toBe("");
+  });
+
+  it("review-only flags render distinctly, without a hard section", () => {
+    const out = formatPackageFlags({
+      hard: [],
+      reviewOnly: ["My chaos work equipped me to build robust tooling."],
+      semanticDegraded: false,
+    });
+    expect(out).toContain("REVIEW-ONLY");
+    expect(out).toContain("did NOT trigger regeneration");
+    expect(out).toContain("My chaos work equipped me to build robust tooling.");
+    expect(out).not.toContain("HARD");
+    expect(out).not.toContain("DEGRADED");
+  });
+
+  it("hard and review-only flags render as visually distinct sections in one block", () => {
+    const out = formatPackageFlags({
+      hard: ["I have 9 years experience."],
+      reviewOnly: ["A true paraphrase sentence."],
+      semanticDegraded: false,
+    });
+    expect(out).toContain("HARD fabrication flags");
+    expect(out).toContain("I have 9 years experience.");
+    expect(out).toContain("REVIEW-ONLY");
+    expect(out).toContain("A true paraphrase sentence.");
+    expect(out.indexOf("HARD")).toBeLessThan(out.indexOf("REVIEW-ONLY"));
+  });
+
+  it("semantic degradation renders INSIDE the same block as the flags (Q2: never buried)", () => {
+    const out = formatPackageFlags({
+      hard: [],
+      reviewOnly: ["A true paraphrase sentence."],
+      semanticDegraded: true,
+    });
+    expect(out).toContain("REVIEW-ONLY");
+    expect(out).toContain("SEMANTIC AUDIT DEGRADED");
+    // One contiguous block: degradation appears before the closing rule.
+    expect(out.indexOf("SEMANTIC AUDIT DEGRADED")).toBeLessThan(out.lastIndexOf("────"));
+  });
+
+  it("degradation alone (no flags) still renders — a failed AI check is never silent", () => {
+    const out = formatPackageFlags({ hard: [], reviewOnly: [], semanticDegraded: true });
+    expect(out).toContain("SEMANTIC AUDIT DEGRADED");
   });
 });
