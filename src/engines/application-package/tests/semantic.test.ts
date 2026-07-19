@@ -10,12 +10,13 @@ import {
   checkFabricationLayered,
   parseSemanticVerdict,
 } from "../semantic";
-import { checkFabrication } from "../fabrication";
+import { checkFabrication, requiresRegen } from "../fabrication";
 import type { GeminiClient } from "../types";
 import {
   CLEAN_LETTER,
   FLAGGED_LETTER,
   INVENTORY,
+  PARAPHRASE_SENTENCE,
   SEMANTIC_OK,
   makeBaseResume,
   makeOpportunity,
@@ -172,5 +173,51 @@ describe("checkFabricationLayered — FAIL-CLOSED (e): LLM failure never silentl
     expect(result.fabrication_check).toBe("pass");
     expect(result.flagged_sentences).toEqual([]);
     expect(result.semantic_degraded).toBe(false);
+  });
+});
+
+// ============================================================
+// regen routing (#11) — review-only through the layered composer
+// ============================================================
+
+describe("checkFabricationLayered — review-only survival and promotion", () => {
+  const letter = `${CLEAN_LETTER} ${PARAPHRASE_SENTENCE}`;
+
+  it("net 4 alone + clean semantic verdict → flag retained as review-only, NO regen", async () => {
+    const result = await layered(letter, rawClient(SEMANTIC_OK));
+    expect(result.fabrication_check).toBe("flag");
+    expect(result.flagged_sentences).toEqual([PARAPHRASE_SENTENCE]);
+    expect(result.review_only_sentences).toEqual([PARAPHRASE_SENTENCE]);
+    expect(requiresRegen(result)).toBe(false);
+  });
+
+  it("net 5 naming the SAME sentence net 4 flagged → promoted out of review-only, regen fires", async () => {
+    const result = await layered(letter, rawClient(verdictWith(PARAPHRASE_SENTENCE)));
+    expect(result.flagged_sentences).toEqual([PARAPHRASE_SENTENCE]);
+    expect(result.review_only_sentences).toEqual([]);
+    expect(requiresRegen(result)).toBe(true);
+  });
+
+  it("net 5 alone (Layer-1-clean letter) → hard flag, regen fires (explicit net-5 case)", async () => {
+    const flaggedSentence = "My Krkn chaos engineering work shows Kubernetes capability.";
+    const result = await layered(CLEAN_LETTER, rawClient(verdictWith(flaggedSentence)));
+    expect(result.flagged_sentences).toEqual([flaggedSentence]);
+    expect(result.review_only_sentences).toEqual([]);
+    expect(requiresRegen(result)).toBe(true);
+  });
+
+  it("Q2 Option A: net 4 alone + DEGRADED semantic layer → still review-only, no regen, loudly degraded", async () => {
+    const result = await layered(letter, THROWING_CLIENT);
+    expect(result.fabrication_check).toBe("flag");
+    expect(result.review_only_sentences).toEqual([PARAPHRASE_SENTENCE]);
+    expect(result.semantic_degraded).toBe(true); // visibility is what makes A safe
+    expect(requiresRegen(result)).toBe(false);
+  });
+
+  it("hard Layer-1 flags are never review-only regardless of the semantic verdict", async () => {
+    const result = await layered(FLAGGED_LETTER, rawClient(SEMANTIC_OK));
+    expect(result.fabrication_check).toBe("flag");
+    expect(result.review_only_sentences).toEqual([]);
+    expect(requiresRegen(result)).toBe(true);
   });
 });

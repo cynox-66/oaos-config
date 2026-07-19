@@ -66,6 +66,11 @@ export async function buildApplicationPackage(
   if (fabrication.fabrication_check === "flag") {
     notes.push("fabrication check flagged — review flagged sentences before submit.");
   }
+  if (fabrication.review_only_sentences.length > 0) {
+    notes.push(
+      `${fabrication.review_only_sentences.length} review-only flag(s) (token rule; paraphrase vocabulary) — no regen; verify before submit.`
+    );
+  }
   if (fabrication.semantic_degraded) {
     notes.push(
       "fabrication semantic layer degraded (LLM error) — hard rules only; verify claims manually before submit."
@@ -87,6 +92,8 @@ export async function buildApplicationPackage(
     evidence_cited,
     fabrication_check: fabrication.fabrication_check,
     flagged_sentences: fabrication.flagged_sentences,
+    review_only_sentences: fabrication.review_only_sentences,
+    semantic_degraded: fabrication.semantic_degraded ?? false,
     notes: notes.join(" "),
   };
 }
