@@ -9,3 +9,10 @@ discovery-inbox/*.eml
 discovery-inbox/*.txt
 discovery-inbox/processed/*
 !discovery-inbox/processed/.gitkeep
+
+research/phase0/adzuna-keys.txt
+research/phase0c/adzuna-keys.txt
+.DS_Store
+**/.DS_Store
+.codex/
+AGENTS.md
