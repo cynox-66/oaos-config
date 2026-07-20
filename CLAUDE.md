@@ -164,7 +164,68 @@
   - 77 new tests. Live-verified against the real repo artifacts (derivation
     + full interactive loop incl. aspirational add, duplicate refusal,
     freelance-lock refusal, abort-writes-nothing).
-- Test count: 553 passing (40 test files) — `vitest run`
+- Stage 3 source-family core complete (Phase 1 Wave 2): src/discovery/stage3/
+  — the shared frame Waves 3-5 hang ~14 concrete sources on. Interfaces and
+  scaffolding only; NO concrete source (no real company token, program name,
+  or feed URL), NO live network call, NO CLI wiring this wave.
+  - `Stage3Source` — the uniform surface every family presents:
+    `{ name, family, enabled, fetch(deps): Promise<FetchResult>,
+    healthCheck(deps): Promise<HealthCheckResult> }`.
+  - STANDING RULE — no source module ever imports fetch/http directly.
+    `SourceDeps` (`httpGet`, `httpPost`, `now`) is injected; real HTTP is
+    wired in ONLY at Wave 6's orchestrator. Every test in this tree injects
+    a fake `SourceDeps`. This is how "zero live network" and "testable
+    forever" are both true at once — do not special-case this for a future
+    source that "just needs one fetch call inline."
+  - `FetchResult.errors` makes partial failure a RESULT, never a thrown
+    total-stop — this is Engine 11's `survives_format_change` made
+    structural. `FetchResult` also carries an optional `calendarEntries?`
+    field (beyond the original spec) so calendar-sink Atom feeds can return
+    typed entries while `fetch()`'s return type stays uniform across all
+    three families.
+  - Health state machine (`health.ts`): `advanceHealth(state, result)` /
+    `createHealthState(source)`. One failure → probation. Two CONSECUTIVE
+    failures → auto_disabled (Wave 6 skips the source + surfaces it in the
+    weekly report: "fall back to Stage-1 manual"). Any success → healthy,
+    consecutiveFailures reset to 0 — including recovery from auto_disabled,
+    which ALSO sets `recoveredFromDisabled: true` for exactly that one
+    advance (cleared on the next advance, success or failure). Wave 6 MUST
+    read this flag and require an operator's manual re-enable rather than
+    silently resuming a recovered source. Pure, deterministic, all 8
+    transitions exhaustively tested.
+  - healthCheck SEMANTICS DIFFER BY FAMILY — deliberate, do not "simplify"
+    this back to one rule. `company_board` (multi-entry registry) is
+    family-level: `ok:false` ONLY when every enabled registry entry failed;
+    partial failure (e.g. one rotted token out of four companies) is
+    `ok:true` with the degraded entries named in `detail`. Reason: a naive
+    `ok: errors.length === 0` would let ONE bad token auto-disable the
+    ENTIRE platform after two runs, killing healthy companies and inverting
+    the whole point of per-entry isolation in `fetch()`. `github_repo` and
+    `atom_feed` are single-config (one owner/repo, one feed URL) — there is
+    no "partial" for one config, so they correctly keep the strict
+    `ok: errors.length === 0` rule. If a future session touches
+    `company-board.ts` healthCheck, re-read this paragraph first.
+  - `buildSourceProposal(meta: SourceMeta): SourceProposal` — Engine 11
+    admission scaffolding, imports the engine's real type, never redefines
+    it. `has_health_check`, `dedupe_compatible`, `survives_format_change`
+    default `true` because the `Stage3Source` contract makes them true BY
+    CONSTRUCTION. CAVEAT: that default is only valid for sources built
+    inside this contract — a future one-off source built outside
+    `Stage3Source` must not call `buildSourceProposal` and inherit those
+    defaults for free; it hasn't earned them.
+  - `ingestion_method` reuses Engine 11's existing `IngestionType` enum
+    (`"rss"|"api"|"email_alert"|"scrape"` — no dedicated "atom" value), so
+    Atom-family sources map to `"rss"` when building their SourceProposal.
+  - Atom parsing is a minimal HAND-ROLLED parser (`atom-feed.ts`) — no
+    XML-capable dependency exists in package.json and none was added
+    (NLnet/Outreachy are simple well-formed feeds; a real Wave 4 feed that
+    breaks it is a contained fix, not a redesign). Do not add an XML
+    dependency without asking first.
+  - 47 new tests (5 files: health, company-board, github-repo, atom-feed,
+    admission). NOT WIRED anywhere — Wave 3 builds concrete company_board
+    platform adapters; Wave 4 builds concrete github_repo/atom_feed sources
+    + the calendar writer; Wave 6 wires the orchestrator.
+- Test count: 600 passing (45 test files) — `vitest run`
 - No tsconfig.json by design — tsx direct execution throughout
 - Test framework: vitest (`npm test` = `vitest run`)
 
@@ -241,7 +302,15 @@
   repo — the operator must run `oaos setup-scope` in a real TTY and confirm
   to create it. Do not create it for them (see the unforgeability pattern
   above).
-- NEXT UP (hold for direction): Stage 3 (automated per-source feeds:
-  RSS / official APIs) — first Stage-3 source is also the prerank
-  gate's first live caller — or Wave 5 query builders (first consumer of
-  preferences.json) — or operator-chosen priority.
+- Stage 3 source-family core (Phase 1 Wave 2): COMPLETE, merged to main
+  (feat/stage3-interfaces). src/discovery/stage3/ — Stage3Source contract,
+  SourceDeps injection, health state machine, three family interfaces
+  (company_board, github_repo, atom_feed), Engine 11 admission scaffolding.
+  47 new tests; full suite 600 green (45 files). Zero diff to the 12
+  engines, pipeline, persistence, prerank, scope. Interfaces/scaffolding
+  only — no concrete source, no live network call, no CLI wiring.
+- NEXT UP (hold for direction): Wave 3 (concrete company_board platform
+  adapters: Greenhouse, Lever, Workday, Ashby — first live caller of both
+  Stage3Source and the prerank gate) — or Wave 4 (github_repo + atom_feed
+  concrete sources + calendar writer) — or Wave 5 query builders (first
+  consumer of preferences.json) — or operator-chosen priority.
