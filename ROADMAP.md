@@ -538,6 +538,9 @@ Long-term leverage: protected by treating Discovery (C1) and Intelligence (C12)
 
 ## EXCLUDED PERMANENTLY
 
-Multi-agent systems · RAG · vector databases · knowledge graphs · custom frontend ·
-local LLM infrastructure · relationship influence scoring · unapproved autonomous
-outreach · unapproved autonomous applications · enterprise-grade automation.
+Multi-agent systems · RAG · vector databases · knowledge graphs ·
+hosted/multi-tenant frontend (a local, self-hosted web UI served by OAOS on
+the operator's machine is permitted per D16 — see
+docs/DISCOVERY-SYNTHESIS-DECISIONS.md) · local LLM infrastructure ·
+relationship influence scoring · unapproved autonomous outreach · unapproved
+autonomous applications · enterprise-grade automation.
