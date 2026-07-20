@@ -1,0 +1,350 @@
+{
+  "cncf_mentoring": {
+    "url": "https://api.github.com/repos/cncf/mentoring/contents/programs/lfx-mentorship",
+    "status": 200,
+    "ok": true,
+    "headers": {
+      "x-ratelimit-limit": "5000",
+      "x-ratelimit-remaining": "4999",
+      "content-type": "application/json; charset=utf-8",
+      "last-modified": "Sun, 19 Jul 2026 05:25:16 GMT"
+    },
+    "body": [
+      {
+        "name": "2019",
+        "path": "programs/lfx-mentorship/2019",
+        "sha": "2d3c445e3dfea169d92bb1ea4b612b92d8d7907f",
+        "size": 0,
+        "url": "https://api.github.com/repos/cncf/mentoring/contents/programs/lfx-mentorship/2019?ref=main",
+        "html_url": "https://github.com/cncf/mentoring/tree/main/programs/lfx-mentorship/2019",
+        "git_url": "https://api.github.com/repos/cncf/mentoring/git/trees/2d3c445e3dfea169d92bb1ea4b612b92d8d7907f",
+        "download_url": null,
+        "type": "dir",
+        "_links": {
+          "self": "https://api.github.com/repos/cncf/mentoring/contents/programs/lfx-mentorship/2019?ref=main",
+          "git": "https://api.github.com/repos/cncf/mentoring/git/trees/2d3c445e3dfea169d92bb1ea4b612b92d8d7907f",
+          "html": "https://github.com/cncf/mentoring/tree/main/programs/lfx-mentorship/2019"
+        }
+      },
+      {
+        "name": "2020",
+        "path": "programs/lfx-mentorship/2020",
+        "sha": "b667bf69a48cf763344ad4b9c5c329057113de27",
+        "size": 0,
+        "url": "https://api.github.com/repos/cncf/mentoring/contents/programs/lfx-mentorship/2020?ref=main",
+        "html_url": "https://github.com/cncf/mentoring/tree/main/programs/lfx-mentorship/2020",
+        "git_url": "https://api.github.com/repos/cncf/mentoring/git/trees/b667bf69a48cf763344ad4b9c5c329057113de27",
+        "download_url": null,
+        "type": "dir",
+        "_links": {
+          "self": "https://api.github.com/repos/cncf/mentoring/contents/programs/lfx-mentorship/2020?ref=main",
+          "git": "https://api.github.com/repos/cncf/mentoring/git/trees/b667bf69a48cf763344ad4b9c5c329057113de27",
+          "html": "https://github.com/cncf/mentoring/tree/main/programs/lfx-mentorship/2020"
+        }
+      },
+      {
+        "name": "2021",
+        "path": "programs/lfx-mentorship/2021",
+        "sha": "7c1b8e79f403d942bcd9008e13153b52e2ce4c56",
+        "size": 0,
+        "url": "https://api.github.com/repos/cncf/mentoring/contents/programs/lfx-mentorship/2021?ref=main",
+        "html_url": "https://github.com/cncf/mentoring/tree/main/programs/lfx-mentorship/2021",
+        "git_url": "https://api.github.com/repos/cncf/mentoring/git/trees/7c1b8e79f403d942bcd9008e13153b52e2ce4c56",
+        "download_url": null,
+        "type": "dir",
+        "_links": {
+          "self": "https://api.github.com/repos/cncf/mentoring/contents/programs/lfx-mentorship/2021?ref=main",
+          "git": "https://api.github.com/repos/cncf/mentoring/git/trees/7c1b8e79f403d942bcd9008e13153b52e2ce4c56",
+          "html": "https://github.com/cncf/mentoring/tree/main/programs/lfx-mentorship/2021"
+        }
+      },
+      {
+        "name": "2022",
+        "path": "programs/lfx-mentorship/2022",
+        "sha": "140b8085af18cef42cba608ce6e59fd65cfb3eb1",
+        "size": 0,
+        "url": "https://api.github.com/repos/cncf/mentoring/contents/programs/lfx-mentorship/2022?ref=main",
+        "html_url": "https://github.com/cncf/mentoring/tree/main/programs/lfx-mentorship/2022",
+        "git_url": "https://api.github.com/repos/cncf/mentoring/git/trees/140b8085af18cef42cba608ce6e59fd65cfb3eb1",
+        "download_url": null,
+        "type": "dir",
+        "_links": {
+          "self": "https://api.github.com/repos/cncf/mentoring/contents/programs/lfx-mentorship/2022?ref=main",
+          "git": "https://api.github.com/repos/cncf/mentoring/git/trees/140b8085af18cef42cba608ce6e59fd65cfb3eb1",
+          "html": "https://github.com/cncf/mentoring/tree/main/programs/lfx-mentorship/2022"
+        }
+      },
+      {
+        "name": "2023",
+        "path": "programs/lfx-mentorship/2023",
+        "sha": "a28ec1429d637f1361408b88fae4103510ca7301",
+        "size": 0,
+        "url": "https://api.github.com/repos/cncf/mentoring/contents/programs/lfx-mentorship/2023?ref=main",
+        "html_url": "https://github.com/cncf/mentoring/tree/main/programs/lfx-mentorship/2023",
+        "git_url": "https://api.github.com/repos/cncf/mentoring/git/trees/a28ec1429d637f1361408b88fae4103510ca7301",
+        "download_url": null,
+        "type": "dir",
+        "_links": {
+          "self": "https://api.github.com/repos/cncf/mentoring/contents/programs/lfx-mentorship/2023?ref=main",
+          "git": "https://api.github.com/repos/cncf/mentoring/git/trees/a28ec1429d637f1361408b88fae4103510ca7301",
+          "html": "https://github.com/cncf/mentoring/tree/main/programs/lfx-mentorship/2023"
+        }
+      },
+      {
+        "name": "2024",
+        "path": "programs/lfx-mentorship/2024",
+        "sha": "d567ca0794e38fd5f6a903925b70f998896b1e60",
+        "size": 0,
+        "url": "https://api.github.com/repos/cncf/mentoring/contents/programs/lfx-mentorship/2024?ref=main",
+        "html_url": "https://github.com/cncf/mentoring/tree/main/programs/lfx-mentorship/2024",
+        "git_url": "https://api.github.com/repos/cncf/mentoring/git/trees/d567ca0794e38fd5f6a903925b70f998896b1e60",
+        "download_url": null,
+        "type": "dir",
+        "_links": {
+          "self": "https://api.github.com/repos/cncf/mentoring/contents/programs/lfx-mentorship/2024?ref=main",
+          "git": "https://api.github.com/repos/cncf/mentoring/git/trees/d567ca0794e38fd5f6a903925b70f998896b1e60",
+          "html": "https://github.com/cncf/mentoring/tree/main/programs/lfx-mentorship/2024"
+        }
+      },
+      {
+        "name": "2025",
+        "path": "programs/lfx-mentorship/2025",
+        "sha": "8821dce55ccbd9537337b7980542c21f15fd8903",
+        "size": 0,
+        "url": "https://api.github.com/repos/cncf/mentoring/contents/programs/lfx-mentorship/2025?ref=main",
+        "html_url": "https://github.com/cncf/mentoring/tree/main/programs/lfx-mentorship/2025",
+        "git_url": "https://api.github.com/repos/cncf/mentoring/git/trees/8821dce55ccbd9537337b7980542c21f15fd8903",
+        "download_url": null,
+        "type": "dir",
+        "_links": {
+          "self": "https://api.github.com/repos/cncf/mentoring/contents/programs/lfx-mentorship/2025?ref=main",
+          "git": "https://api.github.com/repos/cncf/mentoring/git/trees/8821dce55ccbd9537337b7980542c21f15fd8903",
+          "html": "https://github.com/cncf/mentoring/tree/main/programs/lfx-mentorship/2025"
+        }
+      },
+      {
+        "name": "2026",
+        "path": "programs/lfx-mentorship/2026",
+        "sha": "e0b4a9288980951da6bf5b1a62124e1b525b185e",
+        "size": 0,
+        "url": "https://api.github.com/repos/cncf/mentoring/contents/programs/lfx-mentorship/2026?ref=main",
+        "html_url": "https://github.com/cncf/mentoring/tree/main/programs/lfx-mentorship/2026",
+        "git_url": "https://api.github.com/repos/cncf/mentoring/git/trees/e0b4a9288980951da6bf5b1a62124e1b525b185e",
+        "download_url": null,
+        "type": "dir",
+        "_links": {
+          "self": "https://api.github.com/repos/cncf/mentoring/contents/programs/lfx-mentorship/2026?ref=main",
+          "git": "https://api.github.com/repos/cncf/mentoring/git/trees/e0b4a9288980951da6bf5b1a62124e1b525b185e",
+          "html": "https://github.com/cncf/mentoring/tree/main/programs/lfx-mentorship/2026"
+        }
+      },
+      {
+        "name": "README.md",
+        "path": "programs/lfx-mentorship/README.md",
+        "sha": "e8955f7217879b19b4f1d664738082244698a1da",
+        "size": 15942,
+        "url": "https://api.github.com/repos/cncf/mentoring/contents/programs/lfx-mentorship/README.md?ref=main",
+        "html_url": "https://github.com/cncf/mentoring/blob/main/programs/lfx-mentorship/README.md",
+        "git_url": "https://api.github.com/repos/cncf/mentoring/git/blobs/e8955f7217879b19b4f1d664738082244698a1da",
+        "download_url": "https://raw.githubusercontent.com/cncf/mentoring/main/programs/lfx-mentorship/README.md",
+        "type": "file",
+        "_links": {
+          "self": "https://api.github.com/repos/cncf/mentoring/contents/programs/lfx-mentorship/README.md?ref=main",
+          "git": "https://api.github.com/repos/cncf/mentoring/git/blobs/e8955f7217879b19b4f1d664738082244698a1da",
+          "html": "https://github.com/cncf/mentoring/blob/main/programs/lfx-mentorship/README.md"
+        }
+      },
+      {
+        "name": "automation",
+        "path": "programs/lfx-mentorship/automation",
+        "sha": "248e63bb75b7c6c90e414a3f2beff5d82e1037ed",
+        "size": 0,
+        "url": "https://api.github.com/repos/cncf/mentoring/contents/programs/lfx-mentorship/automation?ref=main",
+        "html_url": "https://github.com/cncf/mentoring/tree/main/programs/lfx-mentorship/automation",
+        "git_url": "https://api.github.com/repos/cncf/mentoring/git/trees/248e63bb75b7c6c90e414a3f2beff5d82e1037ed",
+        "download_url": null,
+        "type": "dir",
+        "_links": {
+          "self": "https://api.github.com/repos/cncf/mentoring/contents/programs/lfx-mentorship/automation?ref=main",
+          "git": "https://api.github.com/repos/cncf/mentoring/git/trees/248e63bb75b7c6c90e414a3f2beff5d82e1037ed",
+          "html": "https://github.com/cncf/mentoring/tree/main/programs/lfx-mentorship/automation"
+        }
+      }
+    ]
+  },
+  "lfdt_mentorship": {
+    "url": "https://api.github.com/repos/lf-decentralized-trust-mentorships/mentorship-program",
+    "status": 200,
+    "ok": true,
+    "headers": {
+      "x-ratelimit-limit": "5000",
+      "x-ratelimit-remaining": "4999",
+      "content-type": "application/json; charset=utf-8",
+      "last-modified": "Tue, 14 Jul 2026 08:38:55 GMT"
+    },
+    "body": {
+      "id": 920242862,
+      "node_id": "R_kgDONtnKrg",
+      "name": "mentorship-program",
+      "full_name": "LF-Decentralized-Trust-Mentorships/mentorship-program",
+      "private": false,
+      "owner": {
+        "login": "LF-Decentralized-Trust-Mentorships",
+        "id": 195152371,
+        "node_id": "O_kgDOC6HJ8w",
+        "avatar_url": "https://avatars.githubusercontent.com/u/195152371?v=4",
+        "gravatar_id": "",
+        "url": "https://api.github.com/users/LF-Decentralized-Trust-Mentorships",
+        "html_url": "https://github.com/LF-Decentralized-Trust-Mentorships",
+        "followers_url": "https://api.github.com/users/LF-Decentralized-Trust-Mentorships/followers",
+        "following_url": "https://api.github.com/users/LF-Decentralized-Trust-Mentorships/following{/other_user}",
+        "gists_url": "https://api.github.com/users/LF-Decentralized-Trust-Mentorships/gists{/gist_id}",
+        "starred_url": "https://api.github.com/users/LF-Decentralized-Trust-Mentorships/starred{/owner}{/repo}",
+        "subscriptions_url": "https://api.github.com/users/LF-Decentralized-Trust-Mentorships/subscriptions",
+        "organizations_url": "https://api.github.com/users/LF-Decentralized-Trust-Mentorships/orgs",
+        "repos_url": "https://api.github.com/users/LF-Decentralized-Trust-Mentorships/repos",
+        "events_url": "https://api.github.com/users/LF-Decentralized-Trust-Mentorships/events{/privacy}",
+        "received_events_url": "https://api.github.com/users/LF-Decentralized-Trust-Mentorships/received_events",
+        "type": "Organization",
+        "user_view_type": "public",
+        "site_admin": false
+      },
+      "html_url": "https://github.com/LF-Decentralized-Trust-Mentorships/mentorship-program",
+      "description": "LF Decentralized Trust Mentorship Program",
+      "fork": false,
+      "url": "https://api.github.com/repos/LF-Decentralized-Trust-Mentorships/mentorship-program",
+      "forks_url": "https://api.github.com/repos/LF-Decentralized-Trust-Mentorships/mentorship-program/forks",
+      "keys_url": "https://api.github.com/repos/LF-Decentralized-Trust-Mentorships/mentorship-program/keys{/key_id}",
+      "collaborators_url": "https://api.github.com/repos/LF-Decentralized-Trust-Mentorships/mentorship-program/collaborators{/collaborator}",
+      "teams_url": "https://api.github.com/repos/LF-Decentralized-Trust-Mentorships/mentorship-program/teams",
+      "hooks_url": "https://api.github.com/repos/LF-Decentralized-Trust-Mentorships/mentorship-program/hooks",
+      "issue_events_url": "https://api.github.com/repos/LF-Decentralized-Trust-Mentorships/mentorship-program/issues/events{/number}",
+      "events_url": "https://api.github.com/repos/LF-Decentralized-Trust-Mentorships/mentorship-program/events",
+      "assignees_url": "https://api.github.com/repos/LF-Decentralized-Trust-Mentorships/mentorship-program/assignees{/user}",
+      "branches_url": "https://api.github.com/repos/LF-Decentralized-Trust-Mentorships/mentorship-program/branches{/branch}",
+      "tags_url": "https://api.github.com/repos/LF-Decentralized-Trust-Mentorships/mentorship-program/tags",
+      "blobs_url": "https://api.github.com/repos/LF-Decentralized-Trust-Mentorships/mentorship-program/git/blobs{/sha}",
+      "git_tags_url": "https://api.github.com/repos/LF-Decentralized-Trust-Mentorships/mentorship-program/git/tags{/sha}",
+      "git_refs_url": "https://api.github.com/repos/LF-Decentralized-Trust-Mentorships/mentorship-program/git/refs{/sha}",
+      "trees_url": "https://api.github.com/repos/LF-Decentralized-Trust-Mentorships/mentorship-program/git/trees{/sha}",
+      "statuses_url": "https://api.github.com/repos/LF-Decentralized-Trust-Mentorships/mentorship-program/statuses/{sha}",
+      "languages_url": "https://api.github.com/repos/LF-Decentralized-Trust-Mentorships/mentorship-program/languages",
+      "stargazers_url": "https://api.github.com/repos/LF-Decentralized-Trust-Mentorships/mentorship-program/stargazers",
+      "contributors_url": "https://api.github.com/repos/LF-Decentralized-Trust-Mentorships/mentorship-program/contributors",
+      "subscribers_url": "https://api.github.com/repos/LF-Decentralized-Trust-Mentorships/mentorship-program/subscribers",
+      "subscription_url": "https://api.github.com/repos/LF-Decentralized-Trust-Mentorships/mentorship-program/subscription",
+      "commits_url": "https://api.github.com/repos/LF-Decentralized-Trust-Mentorships/mentorship-program/commits{/sha}",
+      "git_commits_url": "https://api.github.com/repos/LF-Decentralized-Trust-Mentorships/mentorship-program/git/commits{/sha}",
+      "comments_url": "https://api.github.com/repos/LF-Decentralized-Trust-Mentorships/mentorship-program/comments{/number}",
+      "issue_comment_url": "https://api.github.com/repos/LF-Decentralized-Trust-Mentorships/mentorship-program/issues/comments{/number}",
+      "contents_url": "https://api.github.com/repos/LF-Decentralized-Trust-Mentorships/mentorship-program/contents/{+path}",
+      "compare_url": "https://api.github.com/repos/LF-Decentralized-Trust-Mentorships/mentorship-program/compare/{base}...{head}",
+      "merges_url": "https://api.github.com/repos/LF-Decentralized-Trust-Mentorships/mentorship-program/merges",
+      "archive_url": "https://api.github.com/repos/LF-Decentralized-Trust-Mentorships/mentorship-program/{archive_format}{/ref}",
+      "downloads_url": "https://api.github.com/repos/LF-Decentralized-Trust-Mentorships/mentorship-program/downloads",
+      "issues_url": "https://api.github.com/repos/LF-Decentralized-Trust-Mentorships/mentorship-program/issues{/number}",
+      "pulls_url": "https://api.github.com/repos/LF-Decentralized-Trust-Mentorships/mentorship-program/pulls{/number}",
+      "milestones_url": "https://api.github.com/repos/LF-Decentralized-Trust-Mentorships/mentorship-program/milestones{/number}",
+      "notifications_url": "https://api.github.com/repos/LF-Decentralized-Trust-Mentorships/mentorship-program/notifications{?since,all,participating}",
+      "labels_url": "https://api.github.com/repos/LF-Decentralized-Trust-Mentorships/mentorship-program/labels{/name}",
+      "releases_url": "https://api.github.com/repos/LF-Decentralized-Trust-Mentorships/mentorship-program/releases{/id}",
+      "deployments_url": "https://api.github.com/repos/LF-Decentralized-Trust-Mentorships/mentorship-program/deployments",
+      "created_at": "2025-01-21T20:06:55Z",
+      "updated_at": "2026-07-14T08:38:55Z",
+      "pushed_at": "2026-06-10T21:25:24Z",
+      "git_url": "git://github.com/LF-Decentralized-Trust-Mentorships/mentorship-program.git",
+      "ssh_url": "git@github.com:LF-Decentralized-Trust-Mentorships/mentorship-program.git",
+      "clone_url": "https://github.com/LF-Decentralized-Trust-Mentorships/mentorship-program.git",
+      "svn_url": "https://github.com/LF-Decentralized-Trust-Mentorships/mentorship-program",
+      "homepage": "https://lf-decentralized-trust-mentorships.github.io/mentorship-program/",
+      "size": 1910,
+      "stargazers_count": 46,
+      "watchers_count": 46,
+      "language": "HTML",
+      "has_issues": true,
+      "has_projects": true,
+      "has_downloads": false,
+      "has_wiki": true,
+      "has_pages": true,
+      "has_discussions": false,
+      "forks_count": 24,
+      "mirror_url": null,
+      "archived": false,
+      "disabled": false,
+      "open_issues_count": 31,
+      "license": {
+        "key": "apache-2.0",
+        "name": "Apache License 2.0",
+        "spdx_id": "Apache-2.0",
+        "url": "https://api.github.com/licenses/apache-2.0",
+        "node_id": "MDc6TGljZW5zZTI="
+      },
+      "allow_forking": true,
+      "is_template": false,
+      "web_commit_signoff_required": true,
+      "has_pull_requests": true,
+      "pull_request_creation_policy": "all",
+      "topics": [],
+      "visibility": "public",
+      "forks": 24,
+      "open_issues": 31,
+      "watchers": 46,
+      "default_branch": "main",
+      "permissions": {
+        "admin": false,
+        "maintain": false,
+        "push": false,
+        "triage": false,
+        "pull": true
+      },
+      "temp_clone_token": "",
+      "custom_properties": {},
+      "organization": {
+        "login": "LF-Decentralized-Trust-Mentorships",
+        "id": 195152371,
+        "node_id": "O_kgDOC6HJ8w",
+        "avatar_url": "https://avatars.githubusercontent.com/u/195152371?v=4",
+        "gravatar_id": "",
+        "url": "https://api.github.com/users/LF-Decentralized-Trust-Mentorships",
+        "html_url": "https://github.com/LF-Decentralized-Trust-Mentorships",
+        "followers_url": "https://api.github.com/users/LF-Decentralized-Trust-Mentorships/followers",
+        "following_url": "https://api.github.com/users/LF-Decentralized-Trust-Mentorships/following{/other_user}",
+        "gists_url": "https://api.github.com/users/LF-Decentralized-Trust-Mentorships/gists{/gist_id}",
+        "starred_url": "https://api.github.com/users/LF-Decentralized-Trust-Mentorships/starred{/owner}{/repo}",
+        "subscriptions_url": "https://api.github.com/users/LF-Decentralized-Trust-Mentorships/subscriptions",
+        "organizations_url": "https://api.github.com/users/LF-Decentralized-Trust-Mentorships/orgs",
+        "repos_url": "https://api.github.com/users/LF-Decentralized-Trust-Mentorships/repos",
+        "events_url": "https://api.github.com/users/LF-Decentralized-Trust-Mentorships/events{/privacy}",
+        "received_events_url": "https://api.github.com/users/LF-Decentralized-Trust-Mentorships/received_events",
+        "type": "Organization",
+        "user_view_type": "public",
+        "site_admin": false
+      },
+      "network_count": 24,
+      "subscribers_count": 21
+    }
+  },
+  "ebpf_foundation_page": {
+    "url": "https://ebpf.foundation/mentorship-program/",
+    "status": 200,
+    "ok": true,
+    "headers": {
+      "content-type": "text/html; charset=UTF-8"
+    },
+    "body": {
+      "__rawText": "<!doctype html>\r\n<html lang=\"en-US\" class=\"no-js\">\r\n<head>\r\n    <meta charset=\"UTF-8\"><script type=\"text/javascript\">(window.NREUM||(NREUM={})).init={privacy:{cookies_enabled:true},ajax:{deny_list:[\"bam.nr-data.net\"]},feature_flags:[\"soft_nav\"],distributed_tracing:{enabled:true}};(window.NREUM||(NREUM={})).loader_config={agentID:\"594424436\",accountID:\"4028038\",trustKey:\"66686\",xpid:\"UAYFWVZQABAFUFFVDggGUlE=\",licenseKey:\"NRJS-31a57c2b1fe38cc7620\",applicationID:\"540799145\",browserID:\"594424436\"};;/*! For license information please see nr-loader-spa-1.318.0.min.js.LICENSE.txt */\n(()=>{var e={8122(e,t,r){\"use strict\";r.d(t,{a:()=>s});var n=r(944);function s(e,t){try{if(!e||\"object\"!=typeof e)return(0,n.R)(3);if(!t||\"object\"!=typeof t)return(0,n.R)(4);const r=Object.create(Object.getPrototypeOf(t),Object.getOwnPropertyDescriptors(t)),i=0===Object.keys(r).length?e:r;for(let o in i)if(void 0!==e[o])try{if(null===e[o]){r[o]=null;continue}Array.isArray(e[o])&&Array.isArray(t[o])?r[o]=Array.from(new Set([...e[o],...t[o]])):e[o]instanceof Map||e[o]instanceof Set||e[o]instanceof Date||e[o]instanceof RegExp?r[o]=e[o]:\"object\"==typeof e[o]&&null!==t[o]&&\"object\"==typeof t[o]?r[o]=s(e[o],t[o]):r[o]=e[o]}catch(e){r[o]||(0,n.R)(1,e)}return r}catch(e){(0,n.R)(2,e)}}},2555(e,t,r){\"use strict\";r.d(t,{f:()=>o});var n=r(384),s=r(8122);const i={beacon:n.NT.beacon,errorBeacon:n.NT.errorBeacon,licenseKey:void 0,applicationID:void 0,sa:void 0,queueTime:void 0,applicationTime:void 0,ttGuid:void 0,user:void 0,account:void 0,product:void 0,extra:void 0,jsAttributes:{},userAttributes:void 0,atts:void 0,transactionName:void 0,tNamePlain:void 0};function o(e){try{return!!e.licenseKey&&!!e.errorBeacon&&!!e.applicationID}catch(e){return!1}}r.d(t,[\"D\",0,e=>(0,s.a)(e,i)])},7699(e,t,r){\"use strict\";var n=r(860);const s={[n.K7.logging]:!0,[n.K7.genericEvents]:!0,[n.K7.jserrors]:!0,[n.K7.ajax]:!0};r.d(t,[\"It\",0,1e6,\"KC\",0,s,\"qh\",0,\"SESSION_ERROR\"])},9324(e,t,r){\"use strict\";r.d(t,[\"A\",0,\"@newrelic/rrweb\",\"x\",0,\"1.318.0\"])},981(e,t,r){\"use strict\";r.d(t,[\"R\",0,{AJAX:\"AjaxRequest\",PA:\"PageAction\",UA:\"UserAction\",BP:\"BrowserPerformance\",WS:\"WebSocket\",SPV:\"SecurityPolicyViolation\",JSE:\"JavaScriptError\",LOG:\"Log\",PVE:\"PageView\",PVT:\"PageViewTiming\",SR:\"SessionReplay\",ST:\"SessionTrace\",BI:\"BrowserInteraction\"}])},6154(e,t,r){\"use strict\";var n=r(1863);const s=\"undefined\"!=typeof window&&!!window.document,i=\"undefined\"!=typeof WorkerGlobalScope&&(\"undefined\"!=typeof self&&self instanceof WorkerGlobalScope&&self.navigator instanceof WorkerNavigator||\"undefined\"!=typeof globalThis&&globalThis instanceof WorkerGlobalScope&&globalThis.navigator instanceof WorkerNavigator),o=s?window:\"undefined\"!=typeof WorkerGlobalScope&&(\"undefined\"!=typeof self&&self instanceof WorkerGlobalScope&&self||\"undefined\"!=typeof globalThis&&globalThis instanceof WorkerGlobalScope&&globalThis),a=Boolean(\"hidden\"===o?.document?.visibilityState),c=\"\"+o?.location,d=/iPad|iPhone|iPod/.test(o.navigator?.userAgent),u=d&&\"u"
+    }
+  },
+  "lfx_portal_page": {
+    "url": "https://mentorship.lfx.linuxfoundation.org/",
+    "status": 200,
+    "ok": true,
+    "headers": {
+      "content-type": "text/html",
+      "last-modified": "Mon, 29 Jun 2026 15:30:17 GMT"
+    },
+    "body": {
+      "__rawText": "<!DOCTYPE html><html lang=\"en\"><head>\n    <script src=\"https://code.jquery.com/jquery-3.3.1.slim.min.js\" integrity=\"sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo\" crossorigin=\"anonymous\"></script>\n    <script src=\"https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js\" integrity=\"sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy\" crossorigin=\"anonymous\"></script>\n    <script src=\"https://lfx-segment.platform.linuxfoundation.org/latest/lfx-segment-analytics.min.js\"></script>\n\n    <meta charset=\"utf-8\">\n    <title>Mentorship</title>\n    <base href=\"/\">\n\n    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1, user-scalable=no\">\n    <link rel=\"icon\" type=\"image/png\" href=\"https://cdn.platform.linuxfoundation.org/assets/lf-favicon.png\">\n    <meta name=\"msapplication-TileColor\" content=\"#FFFFFF\">\n    <meta name=\"msapplication-TileImage\" content=\"/assets/favicons/mstile-144x144.png\">\n\n    <link rel=\"stylesheet\" href=\"https://use.fontawesome.com/releases/v5.6.3/css/all.css\" integrity=\"sha384-UHRtZLI+pbxtHCWp1t77Bi1L4ZtiqrqD80Kn4Z8NTSRyMA2Fd33n5dQ8lWUE00s/\" crossorigin=\"anonymous\">\n  <style>@import\"https://fonts.googleapis.com/css?family=Poppins:400,500,600\";@import\"https://fonts.googleapis.com/css?family=Open+Sans\";@import\"https://fonts.googleapis.com/css?family=Source+Sans+Pro\";@charset \"UTF-8\";:root{--blue:#007bff;--indigo:#6610f2;--purple:#6f42c1;--pink:#e83e8c;--red:#dc3545;--orange:#fd7e14;--yellow:#ffc107;--green:#28a745;--teal:#20c997;--cyan:#17a2b8;--white:#fff;--gray:#6c757d;--gray-dark:#343a40;--primary:black;--secondary:#da3a16;--success:#1b8845;--info:#0e6dd4;--warning:#ffc107;--danger:#da3a16;--light:#6e6e6e;--dark:black;--paragraph:#444444;--breakpoint-xs:0;--breakpoint-sm:576px;--breakpoint-md:768px;--breakpoint-lg:992px;--breakpoint-xl:1200px;--font-family-sans-serif:-apple-system, BlinkMacSystemFont, \"Segoe UI\", Roboto, \"Helvetica Neue\", Arial, \"Noto Sans\", \"Liberation Sans\", sans-serif, \"Apple Color Emoji\", \"Segoe UI Emoji\", \"Segoe UI Symbol\", \"Noto Color Emoji\";--font-family-monospace:SFMono-Regular, Menlo, Monaco, Consolas, \"Liberation Mono\", \"Courier New\", monospace}*,*:before,*:after{box-sizing:border-box}html{font-family:sans-serif;line-height:1.15;-webkit-text-size-adjust:100%;-webkit-tap-highlight-color:rgba(0,0,0,0)}body{margin:0;font-family:-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Helvetica Neue,Arial,Noto Sans,Liberation Sans,sans-serif,\"Apple Color Emoji\",\"Segoe UI Emoji\",Segoe UI Symbol,\"Noto Color Emoji\";font-size:1rem;font-weight:400;line-height:1.5;color:#212529;text-align:left;background-color:#fff}@media print{*,*:before,*:after{text-shadow:none!important;box-shadow:none!important}@page{size:a3}body{min-width:992px!important}}html,body{height:100%;font-family:Poppins,Roboto,Helvetica Neue,Arial,sans-serif;font-weight:400;-webkit-font-smoothing:antialiased;-moz-font-smoothing:antialiased;color:#000}</style><link rel=\"stylesheet\" href="
+    }
+  }
+}

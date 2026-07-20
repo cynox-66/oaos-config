@@ -1,0 +1,25 @@
+{
+  "homepage": {
+    "url": "https://nlnet.nl/",
+    "status": 200,
+    "ok": true,
+    "headers": {
+      "content-type": "text/html",
+      "last-modified": "Thu, 16 Jul 2026 20:52:04 GMT"
+    },
+    "body": {
+      "__rawText": "<!DOCTYPE html>\n<html xmlns=\"http://www.w3.org/1999/xhtml\" xml:lang=\"en\" lang=\"en\">\n  <head>\n    <meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\"/>\n    <meta http-equiv=\"X-UA-Compatible\" content=\"IE=edge\" />\n    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1\" />\n    <meta name=\"theme-color\" content=\"#ffffff\" />\n    <meta name=\"robots\" content=\"index,follow\" />\n    <link rel=\"shortcut icon\" href=\"/favicon.ico\" />\n    <link rel=\"icon\" type=\"image/x-icon\" href=\"/favicon.ico\" />\n    <link rel=\"stylesheet\" type=\"text/css\" href=\"/nlnet.css\" media=\"screen, projection\" />\n    <link rel=\"alternate\" type=\"application/atom+xml\" title=\"NLnet News\" href=\"/feed.atom\" />\n    <title>NLnet; Welcome to NLnet Foundation</title>\n  </head>\n  <body class=\"home\" id=\"topofpage\">\n    <div class=\"notice\"><a href=\"#main\" class=\"skip\">To main content</a><div class=\"container\">\n        <div class=\"row\">\n          <div class=\"col12\" id=\"call_banner\"><strong><span><a href=\"/news/2026/20260601-call.html\">Send in your ideas for NGI Taler/Fediversity. Deadline August 1, 2026</a></span></strong><script>\n  if (document.location.host !== \"nlnet.nl\") {\n    const banner = document.getElementById('call_banner');\n    const a = document.createElement(\"a\");\n    a.href = \"https://nlnet.nl\" + document.location.pathname;\n    a.appendChild(document.createTextNode(\"compare\"));\n    a.style.float = \"right\";\n    banner.appendChild(a);\n  }\n</script></div>\n        </div>\n      </div>\n    </div>\n    <nav id=\"nav_main\">\n      <div class=\"container\" data-pagefind-body=\"\">\n        <div class=\"row\">\n          <div class=\"col12\">\n            <div class=\"flex wide_nav\"><a href=\"/\"><img src=\"/logo/banner.svg\" alt=\"NLnet logo\" class=\"header_logo\" /></a><div id=\"main_menu\"><label for=\"show-menu\" class=\"show-menu\"><span class=\"gg-menu\"></span><span class=\"hide\">Menu</span></label><input type=\"checkbox\" id=\"show-menu\" role=\"button\" /><ul>\n                  <li><a href=\"#\">Funding</a><ul class=\"hidden\">\n                      <li><a href=\"/funding.html\">Apply for funding</a></li>\n                      <li><a href=\"/themes/\">Theme funds</a></li>\n                      <li><a href=\"/NGI0/\">NGI Zero</a></li>\n                      <li><a href=\"/NGI0/services/\">Support services</a></li>\n                    </ul>\n                  </li>\n                  <li><a href=\"#\">Projects</a><ul class=\"hidden\">\n                      <li><a href=\"/project/index.html\">All projects</a></li>\n                      <li><a href=\"/project/current.html\">Currently running</a></li>\n                      <li><a href=\"/thema/\">Topic index</a></li>\n                      <li><a href=\"/stories/\">Stories</a></li>\n                    </ul>\n                  </li>\n                  <li><a href=\"#\">News &amp; events</a><ul class=\"hidden\">\n                      <li><a href=\"/news/\">News</a></li>\n                      <li><a href=\"/events/\">Events</a></li>\n                      <li><a href=\"/webinars/\">Webinars</"
+    }
+  },
+  "news_feed": {
+    "url": "https://nlnet.nl/news/news.xml",
+    "status": 404,
+    "ok": false,
+    "headers": {
+      "content-type": "text/html"
+    },
+    "body": {
+      "__rawText": "<html>\r\n<head><title>404 Not Found</title></head>\r\n<body>\r\n<center><h1>404 Not Found</h1></center>\r\n<hr><center>nginx/1.30.3</center>\r\n</body>\r\n</html>\r\n"
+    }
+  }
+}

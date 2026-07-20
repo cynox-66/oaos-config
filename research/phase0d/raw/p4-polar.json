@@ -1,0 +1,24 @@
+{
+  "docs_page": {
+    "url": "https://polar.sh/docs",
+    "status": 200,
+    "ok": true,
+    "headers": {
+      "content-type": "text/html; charset=utf-8"
+    },
+    "body": {
+      "__rawText": "<!DOCTYPE html><html lang=\"en\" class=\"inter_1d81deff-module__CYM0aG__variable papermono_89c757f2-module__6aS5zq__variable dark\" data-banner-state=\"visible\" data-assistant-state=\"closed\" data-page-mode=\"none\" data-current-path=\"/\"><head><meta charSet=\"utf-8\"/><meta name=\"viewport\" content=\"width=device-width, initial-scale=1, viewport-fit=cover\"/><link rel=\"preload\" as=\"image\" href=\"https://mintcdn.com/polar/0Af3hN6-oIM4IHT3/logo/light.png?fit=max&amp;auto=format&amp;n=0Af3hN6-oIM4IHT3&amp;q=85&amp;s=9c6ee3deeb9b114b709fd49565e54226\"/><link rel=\"preload\" as=\"image\" href=\"https://mintcdn.com/polar/0Af3hN6-oIM4IHT3/logo/dark.png?fit=max&amp;auto=format&amp;n=0Af3hN6-oIM4IHT3&amp;q=85&amp;s=6fda7c5d4099d48c20f0365316d20979\"/><link rel=\"stylesheet\" href=\"/docs/_next/static/chunks/a2c16a79b30ca688.css?dpl=dpl_43yEHpKKDDn7wuJvSSYFLwa8oe2y\" data-precedence=\"next\"/><link rel=\"stylesheet\" href=\"/docs/_next/static/chunks/dbd05088697ae39c.css?dpl=dpl_43yEHpKKDDn7wuJvSSYFLwa8oe2y\" data-precedence=\"next\"/><link rel=\"stylesheet\" href=\"/docs/_next/static/chunks/75720fc4a0c570db.css?dpl=dpl_43yEHpKKDDn7wuJvSSYFLwa8oe2y\" data-precedence=\"next\"/><style data-precedence=\"base-ui:low\" data-href=\"base-ui-disable-scrollbar\">.base-ui-disable-scrollbar{scrollbar-width:none}.base-ui-disable-scrollbar::-webkit-scrollbar{display:none}</style><link rel=\"preload\" as=\"script\" fetchPriority=\"low\" href=\"/docs/_next/static/chunks/3d8c775c5a406498.js?dpl=dpl_43yEHpKKDDn7wuJvSSYFLwa8oe2y\"/><script src=\"/docs/_next/static/chunks/cae723b407113d75.js?dpl=dpl_43yEHpKKDDn7wuJvSSYFLwa8oe2y\" async=\"\"></script><script src=\"/docs/_next/static/chunks/4a112c4711ee00c8.js?dpl=dpl_43yEHpKKDDn7wuJvSSYFLwa8oe2y\" async=\"\"></script><script src=\"/docs/_next/static/chunks/f486afc314643ce1.js?dpl=dpl_43yEHpKKDDn7wuJvSSYFLwa8oe2y\" async=\"\"></script><script src=\"/docs/_next/static/chunks/869b68c14c7bd633.js?dpl=dpl_43yEHpKKDDn7wuJvSSYFLwa8oe2y\" async=\"\"></script><script src=\"/docs/_next/static/chunks/turbopack-1f744c8172712a33.js?dpl=dpl_43yEHpKKDDn7wuJvSSYFLwa8oe2y\" async=\"\"></script><script src=\"/docs/_next/static/chunks/98184e2c6aa40e44.js?dpl=dpl_43yEHpKKDDn7wuJvSSYFLwa8oe2y\" async=\"\"></script><script src=\"/docs/_next/static/chunks/b664fc8bb1e7ab0d.js?dpl=dpl_43yEHpKKDDn7wuJvSSYFLwa8oe2y\" async=\"\"></script><script src=\"/docs/_next/static/chunks/979ccb417f1e19af.js?dpl=dpl_43yEHpKKDDn7wuJvSSYFLwa8oe2y\" async=\"\"></script><script src=\"/docs/_next/static/chunks/ff73f39f081c1b95.js?dpl=dpl_43yEHpKKDDn7wuJvSSYFLwa8oe2y\" async=\"\"></script><script src=\"/docs/_next/static/chunks/900aba840ccacc4e.js?dpl=dpl_43yEHpKKDDn7wuJvSSYFLwa8oe2y\" async=\"\"></script><script src=\"/docs/_next/static/chunks/5bd41f5158177e30.js?dpl=dpl_43yEHpKKDDn7wuJvSSYFLwa8oe2y\" async=\"\"></script><script src=\"/docs/_next/static/chunks/c5d8b184732b08fb.js?dpl=dpl_43yEHpKKDDn7wuJvSSYFLwa8oe2y\" async=\"\"></script><script src=\"/docs/_next/static/chunks/5ea460053f5a2fb2.js?dpl=dpl_43yEHpKKDDn7wuJvSSYFLwa8oe2y\" async=\"\"></script><script src=\"/doc"
+    }
+  },
+  "issues_endpoint": {
+    "url": "https://api.polar.sh/v1/issues/?limit=5",
+    "status": 404,
+    "ok": false,
+    "headers": {
+      "content-type": "application/json"
+    },
+    "body": {
+      "detail": "Not Found"
+    }
+  }
+}
