@@ -1,0 +1,1067 @@
+[
+  {
+    "url": "https://himalayas.app/jobs/api?limit=5",
+    "status": 200,
+    "ok": true,
+    "headers": {
+      "content-type": "application/json"
+    },
+    "body": {
+      "comments": "13/03/2026: The API has been updated to include the companySlug field in the response.",
+      "updatedAt": 1784472873,
+      "offset": 0,
+      "limit": 5,
+      "totalCount": 100738,
+      "jobs": [
+        {
+          "title": "Financial Leader | US Homebuilding Company (100% Remote – LATAM)",
+          "excerpt": "Are you an experienced accounting professional looking to take the next step toward a leadership position?",
+          "companyName": "INHAUS",
+          "companySlug": "inhaus",
+          "companyLogo": "https://cdn-images.himalayas.app/o6cy5qmt6mqwq1pffk7eb7q119bz",
+          "employmentType": "Full Time",
+          "minSalary": null,
+          "maxSalary": null,
+          "salaryPeriod": "annual",
+          "seniority": [
+            "Director"
+          ],
+          "currency": null,
+          "locationRestrictions": [
+            "Mexico"
+          ],
+          "timezoneRestrictions": [
+            -8,
+            -7,
+            -6,
+            -5
+          ],
+          "categories": [
+            "Financial-Controller",
+            "Head-of-Finance",
+            "Accounting-Manager",
+            "Senior-Accountant",
+            "Construction-Accounting",
+            "Remote-VP-Of-Finance-Strategy",
+            "Finance-Lead",
+            "FP&A-Lead",
+            "Remote-Technical-Accounting-Director"
+          ],
+          "parentCategories": [
+            "Finance"
+          ],
+          "description": "<p>Are you an experienced accounting professional looking to take the next step toward a leadership position?</p><p>We're looking for a <strong>Financial Leader</strong> with strong U.S. accounting experience who wants to become a key strategic partner to the company's founder and grow into a <strong>Controller / Head of Finance</strong> role as the business expands its residential homebuilding operations across Florida.</p><p>This is a unique opportunity to join a fast-growing company where you'll have real ownership, direct exposure to leadership, and the chance to build scalable financial processes from the ground up.</p><hr><h3>What you'll be responsible for</h3><ul><li><p>Lead accounting operations across multiple entities and residential construction projects.</p></li><li><p>Own month-end close, reconciliations, journal entries, and financial reporting.</p></li><li><p>Track project costs, job profitability, construction budgets, and cash flow.</p></li><li><p>Manage accounts payable, accounts receivable, and intercompany transactions.</p></li><li><p>Maintain accurate financial records using QuickBooks.</p></li><li><p>Prepare management reports and lender reporting packages.</p></li><li><p>Partner with external CPA firms on tax and year-end processes.</p></li><li><p>Improve financial systems, reporting, and internal controls as the company grows.</p></li></ul><hr><h3>We're looking for someone who has</h3><ul><li><p>Experience as a <strong>Senior Accountant, Financial Controller, Accounting Manager, or similar</strong> supporting U.S. companies.</p></li><li><p>Recent experience in <strong>homebuilding, residential construction, land development, or construction accounting</strong>.</p></li><li><p>Strong knowledge of <strong>job costing</strong> and project-based accounting.</p></li><li><p>Experience managing multiple legal entities and intercompany transactions.</p></li><li><p>Advanced <strong>QuickBooks</strong> experience (required).</p></li><li><p>Strong understanding of U.S. accounting principles and month-end close.</p></li><li><h3>Advanced Excel skills.</h3></li><li><p>Excellent attention to detail and the ability to work independently.</p></li><li><p>Professional English communication skills.</p></li></ul><hr><h3>What makes this opportunity different?</h3><ul><li><p>A clear career path toward <strong>Controller / Head of Finance</strong> as the company continues to scale.</p></li><li><p>Direct partnership with the founder and executive leadership.</p></li><li><p>High-impact role with significant autonomy and decision-making.</p></li><li><p>The opportunity to help build the financial infrastructure of a growing U.S. residential homebuilder.</p></li><li><p>100% remote work from anywhere in Latin America.</p></li></ul><hr><p>If you're looking for a role where you can go beyond traditional accounting, build scalable finance operations, and grow alongside an expanding U.S. business, we'd love to hear from you.</p><p>Originally posted on <a href=\"https://himalayas.app\">Himalayas</a></p>",
+          "pubDate": 1784472873,
+          "expiryDate": 1789656873,
+          "applicationLink": "https://himalayas.app/companies/inhaus/jobs/financial-leader-us-homebuilding-company-100-remote-latam",
+          "guid": "https://himalayas.app/companies/inhaus/jobs/financial-leader-us-homebuilding-company-100-remote-latam"
+        },
+        {
+          "title": "SEO & AI Search Specialist",
+          "excerpt": "🧬 About us We’re iubenda, the team turning compliance into a growth engine.",
+          "companyName": "iubenda",
+          "companySlug": "iubenda",
+          "companyLogo": "https://cdn-images.himalayas.app/f08t0m4fvtmra3vemy4zaomix5h4",
+          "employmentType": "Full Time",
+          "minSalary": 26400,
+          "maxSalary": 40000,
+          "salaryPeriod": "annual",
+          "seniority": [
+            "Mid-level"
+          ],
+          "currency": "EUR",
+          "locationRestrictions": [
+            "Czechia",
+            "Greece",
+            "Poland",
+            "Portugal",
+            "Spain"
+          ],
+          "timezoneRestrictions": [
+            -1,
+            0,
+            1,
+            2
+          ],
+          "categories": [
+            "SEO-Specialist",
+            "AI-Search-Specialist",
+            "GEO-Specialist",
+            "Organic-Growth-Specialist",
+            "AEO-Specialist",
+            "SEO-Specialist-With-AI-Expertise",
+            "AI-SEO-Specialist",
+            "AI-Powered-SEO-Specialist",
+            "AI-Search-Strategist",
+            "AI-Driven-SEO-Strategist",
+            "AI-SEO-Content-Strategist"
+          ],
+          "parentCategories": [],
+          "description": "<p><strong>🧬 About us</strong><br><br>We’re <a href=\"https://himalayas.app/companies/iubenda\">iubenda</a>, the team turning compliance into a growth engine. We help over 110K businesses all around the world build trust, boost performance, and grow without limits. Now <strong>part of team.blue (</strong><a href=\"https://team.blue/\" rel=\"nofollow ugc noopener noreferrer\" target=\"_blank\"><strong>https://team.blue/</strong></a><strong>)</strong>, we’re scaling privacy tech with confidence, creativity, and a little bit of attitude. Join a team that moves fast, thinks big, and makes privacy feel exciting again!<br><br>The proposed salary range (the final offer will be based on experience and seniority) is<strong>€</strong><strong>26</strong><strong>,400 – €40,000 gross annual total compensation</strong>, plus benefits (as listed in the relevant section below).<br><br><br><strong>🎯 Mission &amp; Core Purpose</strong><br><br>Your mission is to own and accelerate our organic growth across every search surface: traditional, conversational, and AI-generated. As our <strong>SEO &amp; AI Search Specialist</strong>(GEO/AEO), you will be the architect of how our entire product ecosystem (<a href=\"https://himalayas.app/companies/iubenda\">iubenda</a>, Consentmanager, Complianz, Cookiefirst) shows up across Google, ChatGPT, Claude, Gemini, Perplexity, and emerging discovery platforms.</p><p>You will make sure we are visible, accurate, and recommended at the moments that matter by combining strong SEO execution with Generative Engine Optimization (GEO) and Answer Engine Optimization (AEO).</p><p>You will drive organic discoverability during our brand consolidation, optimize product pages and templates, and build a unified search strategy that reaches founders, marketers, developers, agencies, and enterprises worldwide, turning search into a scalable growth engine for the entire <a href=\"https://himalayas.app/companies/iubenda\">iubenda</a> Group.<br><br><br><strong>💼 Key Responsibilities</strong><br><br>- <strong>Traditional SEO Strategy &amp; Execution</strong></p><ul><li><p>Developing and implementing SEO strategies that grow rankings and traffic across our core markets;</p></li><li><p>Conducting in-depth keyword research and competitive analysis to identify growth opportunities;</p></li><li><p>Detecting and fixing cross-brand keyword cannibalization, and owning unified keyword governance across the group;</p></li><li><p>Performing technical SEO audits and lead implementations (site architecture, page speed, mobile optimization, internal linking);</p></li><li><p>Building and executing scalable link-building and digital PR strategies, with a focus on the sources that both Google and LLMs trust;</p></li><li><p>Monitoring algorithm changes and adjusting strategies proactively.</p></li></ul><p>- <strong>AI Search Strategy &amp; Execution (GEO/AEO)</strong></p><ul><li><p>Developing and executing GEO/AEO strategies to improve brand visibility in AI-generated answers (ChatGPT, Perplexity, Gemini, Claude, Google AI Overviews, and others);</p></li><li><p>Building and maintaining the prompt sets we monitor: category questions, product comparisons, competitor comparisons, and buyer-intent prompts;</p></li><li><p>Implementing schema markup, structured data, llms.txt, and markdown resources to make our content easy for AI systems to read, cite, and recommend;</p></li><li><p>Researching how AI systems retrieve and cite content, identify the third-party sources they rely on in our category, and close authority gaps;</p></li><li><p>Partnering with content teams so our content is structured and formatted for AI visibility, citations, and recommendations;</p></li><li><p>Monitoring how our brands appear in AI-generated answers versus competitors and continuously optimizing;</p></li><li><p>Staying ahead of trends in AI discovery, LLM behavior, Google AI Overviews, and emerging GEO best practices.</p></li></ul><p>- <strong>Analytics &amp; Reporting</strong></p><ul><li><p>Tracking and analyzing performance across GA4, Google Search Console, Semrush, Looker Studio, and AI visibility tools, and turning data into actions;</p></li><li><p>Defining and reporting on KPIs like AI visibility, prompt coverage, citation share, keyword rankings, organic conversions, and pipeline contribution;</p></li><li><p>Continuously refining strategies based on performance data and user behavior trends.</p></li></ul><p>- <strong>Technical Integration</strong></p><ul><li><p>Optimizing Core Web Vitals and user experience metrics to keep pages fast and high-performing;</p></li><li><p>Collaborating with developers to implement technical SEO and GEO improvements.</p></li></ul><p><br>👤 <strong>Your Profile</strong><br><br>You are an organic growth expert with solid SEO foundations and a strong focus on GEO, AEO, and AI-driven discovery. You understand how LLMs retrieve, interpret, and recommend content across platforms like ChatGPT, Gemini, Claude, and Perplexity, and you know how to shape our presence within them. Organic search is a rollercoaster. We want someone who accepts that, enjoys it, and wants to learn and improve every day. You are curious, analytical, highly experimental, and comfortable working across multiple brands to keep our products visible, accurate, and recommended in both traditional search and AI-generated results.<br><br><br><strong>💡</strong><strong>Experience &amp; Skills</strong><br><br><strong>- Must have</strong></p><ul><li><p>3+ years of experience as an SEO Specialist or in a similar organic growth role;</p></li><li><p>Hands-on GEO/AEO experience: you understand how AI systems (ChatGPT, Gemini, Claude, Perplexity) source, rank, and cite information, and you have tried to influence it;</p></li><li><p>Solid foundations in technical, on-page, and off-page SEO;</p></li><li><p>Ability to structure content and data for LLM visibility, citations, and trust signals (schema, structured data, entity optimization);</p></li><li><p>Experience with SEO/GEO tooling (Semrush, Screaming Frog etc.);</p></li><li><p>Analytical mindset: you can turn GA4 and Search Console data into clear optimization actions;</p></li><li><p>Daily AI user: you work with LLMs (Claude) and AI tools to speed up audits, briefs, and analysis;</p></li><li><p>Comfortable collaborating with content, product, and engineering teams;</p></li><li><p>Understanding of HTML, CSS, and JavaScript fundamentals;</p></li><li><p>Full professional proficiency in English.</p></li></ul><h3>- Nice to have</h3><ul><li><p>Experience in international or multi-domain ecosystems, large-scale SEO migrations, or brand consolidation;</p></li><li><p>Documented GEO wins: concrete examples where you improved brand visibility or citations in AI answers;</p></li><li><p>Experience in B2B SaaS, legal tech, or the privacy/compliance space.</p></li></ul><p><br><strong>🌐 Location</strong><br><br>At <a href=\"https://himalayas.app/companies/iubenda\">iubenda</a> we believe in full-remote. You are free to work from anywhere in the world. If you prefer a hybrid model, you can work from one of our offices in Milan or Bologna.<br><br><br><strong>🎁 Benefits</strong></p><ul><li><p><strong>Remote work</strong>🌴 Work 100% remotely, or from our offices, whatever works best for you. We are fully structured for seamless remote onboarding and collaboration.</p></li><li><p><strong>Company retreats</strong>🏔️ Once a year, we hold fully paid, week-long retreats in beautiful locations such as Venice, Athens, and Palermo, where we work, connect, and recharge together.</p></li><li><p><strong>All-in-One flex budget</strong> 💳 A yearly sum of up to 1.000€ that you can tailor to your personal needs, whether it’s private health coverage, meal vouchers, childcare, learning, fitness, or other lifestyle choices. You can invest in what matters most to you (total amount, availability of specific services, payment method, and taxability may vary depending on local regulations).</p></li><li><p><strong>Work equipment supply scheme</strong>💻 A policy designed to help you create the perfect setup and perform at your best.</p></li><li><p><strong>Collaborative, multicultural team</strong>🧩Join a team of talented, international colleagues in a friendly, open, and highly collaborative environment.<br><br><br><strong>Please send your CV in English.<br>Want to know more about <a href=\"https://himalayas.app/companies/iubenda\">iubenda</a>?</strong> Check us out at:<br><a href=\"http://<a href='https://himalayas.app/companies/iubenda'>iubenda</a>.com\"></a><a href=\"https://himalayas.app/companies/iubenda\">iubenda</a>.com | <a href=\"https://www.linkedin.com/company/<a href='https://himalayas.app/companies/iubenda'>iubenda</a>/\" rel=\"nofollow ugc noopener noreferrer\" target=\"_blank\">LinkedIn</a> | <a href=\"https://www.facebook.com/<a href='https://himalayas.app/companies/iubenda'>iubenda</a>\" rel=\"nofollow ugc noopener noreferrer\" target=\"_blank\">Facebook</a> | <a href=\"https://twitter.com/<a href='https://himalayas.app/companies/iubenda'>iubenda</a>\" rel=\"nofollow ugc noopener noreferrer\" target=\"_blank\">Twitter</a><br><br><strong>Privacy</strong><br>By applying, you hereby declare that you have read and understood our privacy policy (<a href=\"https://www.<a href='https://himalayas.app/companies/iubenda'>iubenda</a>.com/privacy-policy/96274994\">https://www.</a><a href=\"https://himalayas.app/companies/iubenda\">iubenda</a>.com/privacy-policy/96274994). To ensure a fair selection process and verify your identity, we may ask you during video interviews to disable virtual backgrounds or filters, show an ID, or answer follow-up questions. If you need an alternative arrangement, please let us know, and we will accommodate.</p></li></ul><p>Originally posted on <a href=\"https://himalayas.app\">Himalayas</a></p>",
+          "pubDate": 1784472873,
+          "expiryDate": 1789656873,
+          "applicationLink": "https://himalayas.app/companies/iubenda/jobs/seo-ai-search-specialist",
+          "guid": "https://himalayas.app/companies/iubenda/jobs/seo-ai-search-specialist"
+        },
+        {
+          "title": "Senior Ecommerce Growth Manager for a U.S. E-commerce Agency",
+          "excerpt": "Paired is a global staffing and recruiting agency that pairs remote work with top-tier talent.",
+          "companyName": "Paired",
+          "companySlug": "paired-so",
+          "companyLogo": "https://cdn-images.himalayas.app/1fxfh3e5wgbqa5idmme30rmo8kkk",
+          "employmentType": "Full Time",
+          "minSalary": null,
+          "maxSalary": null,
+          "salaryPeriod": "annual",
+          "seniority": [
+            "Manager"
+          ],
+          "currency": null,
+          "locationRestrictions": [
+            "Mexico"
+          ],
+          "timezoneRestrictions": [
+            -8,
+            -7,
+            -6,
+            -5
+          ],
+          "categories": [
+            "E-Commerce-Growth-Manager",
+            "E-commerce-Strategy",
+            "Conversion-Rate-Optimization",
+            "Shopify-Development",
+            "Growth-Marketing",
+            "Senior-ECommerce-Marketing-Manager",
+            "E-Commerce-Growth-Marketing"
+          ],
+          "parentCategories": [],
+          "description": "<p><a href=\"https://himalayas.app/companies/paired-so\">Paired</a> is a global staffing and recruiting agency that pairs remote work with top-tier talent. We admire the importance of innovative social media strategies and are committed to connecting talented individuals with great companies that need their unique skills. Our mission is to provide great jobs to gifted people, regardless of location.</p><h3>About the Client</h3><p>Our client is an e-commerce agency that works exclusively with subscription CPG brands in food, beverage, supplements, and health &amp; wellness. We help brands convert and retain customers through Shopify optimization and Klaviyo retention marketing. </p><h3>About the Role</h3><h3>This is not a paid media role.</h3><p>This is not a traditional lifecycle marketing role.</p><p>The primary focus of this position is owning CRO strategy, Shopify site optimization, A/B testing programs, and managing website development projects from concept to implementation.</p><p>You will serve as a trusted advisor to clients, identifying growth opportunities, prioritizing testing roadmaps, managing cross-functional teams, and driving measurable improvements in conversion rates, average order value, customer experience, and revenue.</p><p>You'll work closely with designers, developers, project managers, and clients to ensure Shopify enhancements are strategically prioritized, properly executed, and continuously optimized.</p><h3>About You</h3><p>You're a strategist, not just a project manager. You don't wait for clients to tell you what to build - you bring ideas to them. You understand their business, their customers, and their goals well enough to make recommendations that move the needle. You're always learning what's working in subscription CPG so you can bring fresh thinking to your clients. </p><p>You're data-driven. You don't make strategic recommendations based on gut feel - you dig into the numbers, understand what's working, and use data to guide decisions. You measure what matters and optimize relentlessly. </p><p>You're a leader and a doer. You own outcomes, not just tasks. When something needs to happen, you make it happen - whether that means directing your team, jumping in yourself, or having a tough conversation with a client. </p><p>You're deeply curious. You're the kind of person who's always learning - not just during work hours, but because you genuinely enjoy getting better at your craft. You study what drives conversion, follow industry trends, and constantly sharpen your strategic thinking whether you're on the clock or not. </p><p>You care about the brands you're working with. Subscription CPG excites you - you get why retention matters, you understand the nuances of how customers buy consumable products, and you want to be part of helping great brands grow. </p><p>You see AI tools as leverage to work smarter and expand what you're capable of, not shortcuts to avoid doing the thinking.</p><h3>Ideal Candidate</h3><p>You are a Shopify growth strategist who understands how to improve conversion rates, optimize customer experiences, manage website projects, and drive measurable business outcomes.</p><p>You enjoy working directly with clients, leading cross-functional teams, and turning data into actionable recommendations. You're equally comfortable developing testing strategies, managing development priorities, and presenting growth opportunities to stakeholders.</p><p>If you're passionate about Shopify, CRO, subscription commerce, and helping brands scale through data-driven experimentation, we'd love to hear from you.</p><h3>Key Responsibilities</h3><h3>CRO &amp; Growth Strategy</h3><ul><li> Own conversion rate optimization strategies for Shopify-based subscription brands. </li><li> Analyze customer behavior, site performance, conversion funnels, and testing data to identify growth opportunities. </li><li> Develop and prioritize CRO roadmaps focused on increasing conversion rates, AOV, retention, and revenue. </li><li> Design, execute, and analyze A/B tests using data-driven methodologies. </li><li> Identify opportunities across landing pages, PDPs, cart flows, checkout experiences, bundles, subscription offers, and merchandising. </li></ul><h3>Shopify Site Development Management</h3><ul><li> Lead Shopify optimization projects from planning through launch. </li><li> Translate business goals into actionable project requirements and development priorities. </li><li> Coordinate workflows between designers, developers, and client stakeholders. </li><li> Manage project timelines, testing schedules, QA processes, and implementation plans. </li><li> Prioritize initiatives based on business impact and revenue potential. </li></ul><h3>Client Relationship Management</h3><ul><li> Act as the primary strategic point of contact for assigned clients. </li><li> Present recommendations, testing plans, and performance insights. </li><li> Build trusted relationships and become a strategic growth partner. </li><li> Lead recurring performance reviews and planning sessions. </li></ul><h3>Team Leadership</h3><ul><li> Collaborate with project managers, developers, designers, and technical leads. </li><li> Ensure projects are delivered on time and at a high standard. </li><li> Drive accountability, communication, and execution across cross-functional teams.</li></ul><h3>Requirements</h3><h3>Must-Have Experience</h3><ul><li> 5+ years of experience in eCommerce, Shopify growth, CRO, or digital optimization roles. </li><li> Proven experience owning conversion rate optimization initiatives for Shopify stores. </li><li> Experience managing Shopify site enhancement and development projects. </li><li> Strong understanding of UX, customer journey optimization, conversion psychology, and merchandising. </li><li> Experience designing and managing A/B testing programs. </li><li> Ability to analyze performance data and translate insights into actionable growth initiatives. </li><li> Strong client-facing communication and stakeholder management skills. </li><li> Experience working with designers and developers to execute website improvements. </li></ul><h3>Nice-to-Have Experience</h3><ul><li> Experience with subscription-focused Shopify brands. </li><li>Familiarity with subscription platforms such as Recharge, Skio, Stay.ai, Loop, or Ordergroove. </li><li>Experience with Intelligems, Hotjar, GA4, Shopify Analytics, and other CRO tools. </li><li>Knowledge of Klaviyo and retention marketing strategies. </li><li>Experience within health, wellness, supplements, food, beverage, or other CPG categories.</li></ul><p>Originally posted on <a href=\"https://himalayas.app\">Himalayas</a></p>",
+          "pubDate": 1784472863,
+          "expiryDate": 1789656863,
+          "applicationLink": "https://himalayas.app/companies/paired-so/jobs/senior-ecommerce-growth-manager-for-a-u-s-e-commerce-agency-8940279348",
+          "guid": "https://himalayas.app/companies/paired-so/jobs/senior-ecommerce-growth-manager-for-a-u-s-e-commerce-agency-8940279348"
+        },
+        {
+          "title": "SAP ECC 6.0 ABAP Developer (Open to Remote) (Westminster, United States, MD 2115",
+          "excerpt": "Company Description Penguin Random House is the leading adult and children's publishing house in North America, the United Kingdom and many other regions around the world.",
+          "companyName": "Bertelsmann SE & Co. KGaA",
+          "companySlug": "bertelsmann-se-co-kgaa",
+          "companyLogo": "https://cdn-images.himalayas.app/asjbx5zh1mw675gz6i7g78l0hrx2",
+          "employmentType": "Full Time",
+          "minSalary": 100000,
+          "maxSalary": 125000,
+          "salaryPeriod": "annual",
+          "seniority": [
+            "Mid-level"
+          ],
+          "currency": "USD",
+          "locationRestrictions": [
+            "United States"
+          ],
+          "timezoneRestrictions": [
+            -10,
+            -9,
+            -8,
+            -7,
+            -6,
+            -5,
+            14
+          ],
+          "categories": [
+            "SAP-ABAP-Developer",
+            "Sap-Developer",
+            "SAP-ECC-6.0",
+            "ABAP-Engineer",
+            "SAP-Software-Engineer",
+            "Senior-SAP-ABAP-Developer",
+            "Senior-ABAP-Developer",
+            "Abap-Developer",
+            "Senior-SAP-ABAP-RAP-Developer"
+          ],
+          "parentCategories": [],
+          "description": "<br><h3>Company Description</h3><br><p>Penguin Random House is the leading adult and children's publishing house in North America, the United Kingdom and many other regions around the world. In publishing the best books in every genre and subject for all ages, we are committed to quality, excellence in execution, and innovation throughout the entire publishing process: editorial, design, marketing, publicity, sales, production, and distribution. Our vibrant and diverse international community of nearly 300 publishing brands and imprints include Ballantine Bantam Dell, Berkley, Clarkson Potter, Crown, DK, Doubleday, Dutton, Grosset &amp; Dunlap, Little Golden Books, Knopf, Modern Library, Pantheon, Penguin Books, Penguin Press, Penguin Random House Audio, Penguin Young Readers, Portfolio, Puffin, Putnam, Random House, Random House Children's Books, Riverhead, Ten Speed Press, Viking, and Vintage, among others. More information can be found at <a href=\"http://www.penguinrandomhouse.com/.\" rel=\"nofollow ugc noopener noreferrer\" target=\"_blank\">http://www.penguinrandomhouse.com/.</a></p><br><h3>Job Description</h3><br><p>Are you a passionate SAP ABAP Software Engineer looking to make a significant impact in the publishing industry? Join Penguin Random House as a Software Engineer and be part of a team that is shaping the future of reading.</p><p>As a key member of our technology organization, you will play a vital role in designing, developing, and maintaining high-quality SAP ABAP solutions within ECC 6.0. We are seeking <strong>a hands-on software engineer</strong> with a background in <strong>active, recent SAP ABAP development</strong>, including dialogue programming, SAP Forms/SAP Script, ALV reporting, IDOC processing, and use of function modules, RFCs, BAPIs, and web services.  </p><br><h3>Qualifications</h3><br><h3>We are specifically looking for candidates who:</h3><ul><li><p>Have <strong>5 years of recent and relevant experience</strong> in SAP ABAP development.</p></li><li><p>Have a <strong>deep understanding of SAP ECC 6.0</strong> and AR, AP, SD, FI, and MM modules.</p></li><li><p>Are <strong>primarily software engineers</strong> with a strong focus on coding and technical implementation.</p></li><li><p>Are <strong>problem-solvers and team players</strong> with the ability to design, develop, and maintain high-quality technology solutions with cross-functional teams.</p></li></ul><h3>We are <u>not</u> seeking candidates who:</h3><ul><li><p>Are primarily SAP consultants or analysts without a strong focus on hands-on software development.</p></li><li><p>Have limited or no recent experience in SAP ABAP development.</p></li><li><h3>Have only worked with S/4 HANA. </h3></li><li><p>Have not worked on SAP ECC in the last 4 to 5 years.</p></li><li><p>Are looking for a primarily consulting or advisory role.</p></li></ul><br><h3>Additional Information</h3><br><p><strong>The Penguin Random House national headquarters is located in New York City. The position is open to remote candidates based in the United States.</strong></p><p><strong>The salary range for this position is $100,000 - $125,000.  All positions are currently eligible for annual profit award or bonus, subject to Company results.</strong></p><p><strong>Applications for this role will be accepted through July 20th or until the role is filled. We encourage you to apply early, as we review applications on a rolling basis. Please include your resume and cover letter for consideration. Before applying for any role at Penguin Random House, we recommend you review our </strong><a href=\"https://careers.penguinrandomhouse.com/applicant-resources/\" rel=\"nofollow ugc noopener noreferrer\" target=\"_blank\"><strong>applicant resources page</strong></a><strong> and our </strong><a href=\"https://careers.penguinrandomhouse.com/applicant-resources/frequently-asked-questions/\" rel=\"nofollow ugc noopener noreferrer\" target=\"_blank\"><strong>FAQs page.</strong></a></p><p>Penguin Random House job postings include a good faith compensation range for each open position. The salary range listed is specific to each particular open position and takes into account various factors including the specifics of the individual role, and candidate's relevant experience and qualifications.</p><p>Full-time employees are eligible for our comprehensive benefits program. Our range of benefits include, but are not limited to, Medical/Prescription drug insurance, Dental, Vision, Health Care/Dependent Care Flexible Spending Account, Health Savings Account, Pre-Tax and Roth 401(k), Short and Long-Term Disability Insurance, Life/AD&amp;D Insurance, Commuter Benefits, Student Loan Repayment Program, Educational Assistance &amp; generous paid time off.</p><p>Penguin Random House values the array of talents and perspectives that a diverse workforce brings. All qualified applicants will receive consideration for employment without regard to race, national origin, religion, age, color, sex, sexual orientation, gender identity, disability, or protected veteran status.</p><p>All your information will be kept confidential according to EEO guidelines.</p><p><strong>Disclosure requirements pertaining to the collection of your personal data:</strong></p><p>Responsible for processing the information provided in your application is the company specified in the job advertisement, with its registered office as indicated. The company processes your data for the purpose of establishing an employment relationship on the basis of Art. 6 (1) b GDPR / Section 26 (1) sentence 1 BDSG.</p><p>The retention period for your data is determined by the statutory time limits applicable in the respective country, beginning upon completion of the recruitment process. You can find these <a href=\"https://bertelsmann-hr.de/docs/Overview_of_Data_Retention_Periods_EN.pdf\" rel=\"nofollow ugc noopener noreferrer\" target=\"_blank\">here</a>.</p><p>You can contact the company’s Data Protection Officer at the above-mentioned postal address. </p><p>Further information on data protection and your rights can be found <a href=\"https://jobsearch.createyourowncareer.com/content/Privacy-Policy/?locale=en_US\" rel=\"nofollow ugc noopener noreferrer\" target=\"_blank\">here</a>.</p><p><strong>Recruiting-Platform powered by SmartRecruiters</strong>.</p><p>Originally posted on <a href=\"https://himalayas.app\">Himalayas</a></p>",
+          "pubDate": 1784472851,
+          "expiryDate": 1789656850,
+          "applicationLink": "https://himalayas.app/companies/bertelsmann-se-co-kgaa/jobs/sap-ecc-6-0-abap-developer-open-to-remote-westminster-united-states-md-2115",
+          "guid": "https://himalayas.app/companies/bertelsmann-se-co-kgaa/jobs/sap-ecc-6-0-abap-developer-open-to-remote-westminster-united-states-md-2115"
+        },
+        {
+          "title": "Customer Success Manager (m/w/d) for UK market - remote within Germany",
+          "excerpt": "dein beitrag • Eigenständige Betreuung eines Kundenstamms und Begleitung der Kundenprojekte.",
+          "companyName": "foodforecast",
+          "companySlug": "foodforecast",
+          "companyLogo": "",
+          "employmentType": "Full Time",
+          "minSalary": 45000,
+          "maxSalary": 50000,
+          "salaryPeriod": "annual",
+          "seniority": [
+            "Manager"
+          ],
+          "currency": "EUR",
+          "locationRestrictions": [
+            "Germany"
+          ],
+          "timezoneRestrictions": [
+            1
+          ],
+          "categories": [
+            "Customer-Success-Manager",
+            "Customer-Success",
+            "Customer-Account-Management",
+            "B2B-Customer-Service",
+            "Client-Relationship-Management",
+            "Customer-Success-Manager-EMEA",
+            "German-Speaking-Customer-Success-Manager",
+            "Senior-Customer-Success-Manager"
+          ],
+          "parentCategories": [
+            "Customer Service"
+          ],
+          "description": "<h3>dein beitrag</h3><p></p><ul><li><div>Eigenständige Betreuung eines Kundenstamms und Begleitung der Kundenprojekte.</div></li><li><div>Onboarding neuer Kunden und Aufbau einer vertrauensvollen Kundenbeziehung.</div></li><li><div>Kompetente Beantwortung von Kundenfragen per Telefon, E-Mail, Videocall rund um unser Produkt.</div></li><li><div>Enge Zusammenarbeit mit den Kolleg:innen aus dem Bereich Marketing/Sales.</div></li><li><div>Erarbeitung von Optimierungspotentialen durch regelmäßige Analyse der Kundenanforderungen  und -nutzung .</div></li><li><div>Regelmäßige Kommunikation mit Kunden, um die Kundenbindung langfristig zu stärken.</div></li><li><div>Sicherstellung einer hohen Kundenzufriedenheit durch proaktive Kommunikation und lösungs-orientierte Unterstützung.</div></li></ul><p></p><h3>dein profil</h3><p></p><ul><li><div>Abgeschlossene kaufmännische Ausbildung, ein abgeschlossenes Studium oder vergleichbare  Qualifikationen.</div></li><li><div>Du bist kommunikationsstark und hast ein gutes Sprachgefühl.</div></li><li><div>Du verfügst über hervorragende Englischkenntnisse auf C2-Niveau (Gemeinsamer Europäischer Referenzrahmen) in Wort und Schrift, idealerweise mit Erfahrung im Business-Kontext.</div></li><li><div>Eine ausgeprägte Vertrautheit mit dem britischen Markt und seinem kulturellen Kontext ist von Vorteil.</div></li><li><div>Du bist serviceorientiert, präsentationssicher und hast ein sicheres, kompetentes Auftreten.</div></li><li><div>Du bist ein echter Team-Player und packst gerne mit an.</div></li><li><div>Du möchtest etwas bewirken und arbeitest ziel- und ergebnisorientiert sowie verantwortungsbewusst.</div></li><li><div>Du besitzt ein hohes Maß an Eigeninitiative, Belastbarkeit und Flexibilität.</div></li><li><div>Du bist aufgeschlossen, empathisch und verfügst über eine schnelle Auffassungsgabe.</div></li><li><div>Ein sicherer Umgang mit MS Office und CRM sowie Ticketsystemen rundet dein Profil ab.</div></li></ul><p></p><h3>was wir dir bieten:</h3><p></p><ul><li><div>Aufregende und verantwortungsvolle Aufgaben in einem schnell-wachsenden, jungen Unternehmen mit Sinn.</div></li><li><div>Die Möglichkeit einer sinnstiftenden und zukunftsorientierten Tätigkeit-sorge mit uns dafür, dass weniger Lebensmittel in der Tonne landen.</div></li><li><div>Sehr gute Entwicklungsmöglichkeiten und Start-up Feeling in einem dynamischen jungen Team.</div></li><li><div>Flexible Arbeitszeiten, Home-Office und Verständnis für junge Eltern.</div></li><li><div>Verantwortung für eigene Projekte und Freiraum zur aktiven Mitgestaltung.</div></li><li><div>Eine familiäre Atmosphäre mit vielen tollen und motivierten Menschen, die sich vertrauen und gemeinsam viel bewegen wollen.</div></li><li style=\"border:0px solid;margin:0px;\">Mitarbeiter Benefits wie z.B. Urban Sports Mitgliedschaft, Bike Leasing, Zuschuss zur betrieblichen Altersvorsorge</li></ul><br><ul><li><div><div>Rahmenbedingungen:</div></div><ul><li><div>Die Stelle kann in Voll- oder Teilzeit besetzt werden, denn wir möchten auch jungen Eltern eine Chance geben.</div></li><li><div>Gleiche Arbeit, gleiches Gehalt. Wir vergüten all unsere Customer Success Manager mit einem fixem Bruttojahresgehalt in Höhe von 45.000 € plus einem variablen Anteil in Höhe von bis zu 5.000 € brutto pro Jahr.</div></li><li>Ort: Remote innerhalb Deutschlands oder im WeWork Köln</li></ul></li></ul><p></p><p>Originally posted on <a href=\"https://himalayas.app\">Himalayas</a></p>",
+          "pubDate": 1784472815,
+          "expiryDate": 1789656814,
+          "applicationLink": "https://himalayas.app/companies/foodforecast/jobs/customer-success-manager-m-w-d-for-uk-market-remote-within-germany",
+          "guid": "https://himalayas.app/companies/foodforecast/jobs/customer-success-manager-m-w-d-for-uk-market-remote-within-germany"
+        }
+      ]
+    }
+  },
+  {
+    "url": "https://himalayas.app/jobs/api/search?q=kubernetes&limit=5",
+    "status": 200,
+    "ok": true,
+    "headers": {
+      "content-type": "application/json"
+    },
+    "body": {
+      "comments": "13/03/2026: The API has been updated to include the companySlug field in the response.",
+      "updatedAt": 1784418773,
+      "offset": 0,
+      "limit": 20,
+      "totalCount": 69,
+      "jobs": [
+        {
+          "title": "Kubernetes Architect",
+          "excerpt": "Unleash your talents at Leidos!  Grow and advance rapidly in your career by letting Leidos challenge you with world toughest technical problems.",
+          "companyName": "Leidos",
+          "companySlug": "leidos",
+          "companyLogo": "https://cdn-images.himalayas.app/xvs9cfj7xl5w40ttgh25x1hxg46b",
+          "employmentType": "Full Time",
+          "minSalary": 131300,
+          "maxSalary": 237350,
+          "salaryPeriod": "annual",
+          "seniority": [
+            "Senior"
+          ],
+          "currency": "USD",
+          "locationRestrictions": [
+            "United States"
+          ],
+          "timezoneRestrictions": [
+            -10,
+            -9,
+            -8,
+            -7,
+            -6,
+            -5,
+            14
+          ],
+          "categories": [
+            "Kubernetes-Architect",
+            "Cloud-Infrastructure-Architect",
+            "DevOps-Engineer",
+            "Platform-Engineer",
+            "Solutions-Architect",
+            "Senior-Kubernetes-Platform-Architect",
+            "DevOps-Architect"
+          ],
+          "parentCategories": [
+            "Developer"
+          ],
+          "description": "<div><p><b>Unleash your talents at <a href=\"https://himalayas.app/companies/leidos\">Leidos</a>! Grow and advance rapidly in your career by letting <a href=\"https://himalayas.app/companies/leidos\">Leidos</a> challenge you with world toughest technical problems.</b></p><p><a href=\"https://himalayas.app/companies/leidos\">Leidos</a> has an opening for a highly qualified Secret cleared<b> Kubernetes Architect </b>for the Command, Control &amp; Battle Management (C2/BM) Business Area. This is an exciting opportunity to bring your experience to support across all-domain large-scale weapon systems, Information Technology Systems, and Command and Control Systems to realize the Department of Defense Joint All-Domain Command and Control (JADC2). In this role you will support an Integrated Product Team (IPT) for the Advanced Battle Management System (ABMS) Digital Infrastructure (DI) Processing Node (PN) to design and implement solutions that can be delivered at speed, scale, and with the necessary security to deliver operational advantages to the joint warfighter. ABMS is a top modernization priority for the Department of the Air Force and will be the backbone of a network-centric approach to battle management in partnership with all the services across JADC2. This position will work closely with Program Managers, other domain engineers, and Government counterparts across Government and Industry partners.   </p><p><b>***The Kubernetes Architect must be able to travel 10% of the time***</b></p><h3>Primary responsibilities: </h3><ul><li><p>Architect, build and manage end-to-end prototype lifecycle, from conceptual design and lab setup to software configuration, troubleshooting, and final documentation.</p></li><li><p>Identifies material requirements (hardware, software, supplemental staffing, etc.)</p></li><li><p>Ensures finalized thin-line prototype are validated by the Solution Architect and Engineering Leads.</p></li><li><p>Serve as a Kubernetes Subject Matter Expert (SME) providing architectural guidance, technical leadership and best practices to engineering teams.</p></li><li><p>Collaborate with cybersecurity, infrastructure, networking and development teams to ensure secure and compliant platform operations.</p></li></ul><h3>Required Qualifications : </h3><ul><li><p>BS degree and 12 – 15 years of prior relevant experience or Masters with 10 – 13 years of prior relevant experience. May possess a Doctorate in technical domain.</p></li><li><p>Active Secret security clearance, with ability to obtain and maintain a Top Secret clearance.</p></li><li><p>Must be able and willing and travel 10% of the time.</p></li><li><p>Deep expertise with enterprise Kubernetes distributions such as RKE2 or similar production-grade platforms</p></li><li><p>Hands-on experience with Kubernetes architecture, including control plane components, worker node design, scheduling, networking, storage and security</p></li><li><p>Strong understanding of DevSecOps methodologies, CI/CD pipelines, automation frameworks and container security best practices</p></li><li><p>Strong troubleshooting, performance optimization and platform reliability engineering skills</p></li><li><p>Experience deploying Kubernetes on-prem, preferably Harvester</p></li><li><p>Excellent written and verbal communication skills with the ability to explain complex technical concepts to diverse audiences</p></li><li><p>Curious self-starter that can excel in a prototyping environment to turn customer desire into executable solution candidates. Must be able to consider cost, schedule, technology, and risks.</p></li></ul></div><h3>Preferred Qualifications:</h3><div><ul><li><p>Experience with Rancher, Helm, ArgoCD, GitOps workflows, Istio or service mesh technologies, Prometheus/Grafana.</p></li><li><h3>Familiar with Zero Trust Architecture.</h3></li><li><p>Experience designing, implementing and support Kubernetes in DDIL environments.</p></li></ul></div><div><h3>DABAOPP1</h3></div><p>If you're looking for comfort, keep scrolling. At <a href=\"https://himalayas.app/companies/leidos\">Leidos</a>, we outthink, outbuild, and outpace the status quo — because the mission demands it. We're not hiring followers. We're recruiting the ones who disrupt, provoke, and refuse to fail. Step 10 is ancient history. We're already at step 30 — and moving faster than anyone else dares.</p><h3><u><b>Original Posting:</b></u></h3>May 27, 2026<div><div><div><div><div><div><div><p style=\"text-align:left\">For U.S. Positions: While subject to change based on business needs, <a href=\"https://himalayas.app/companies/leidos\">Leidos</a> reasonably anticipates that this job requisition will remain open for at least 3 days with an anticipated close date of no earlier than 3 days after the original posting date as listed above.</p></div></div></div></div></div></div></div><h3><b><u>Pay Range:</u></b></h3>Pay Range $131,300.00 - $237,350.00<p style=\"text-align:left\">The <a href=\"https://himalayas.app/companies/leidos\">Leidos</a> pay range for this job level is a general guideline only and not a guarantee of compensation or salary. Additional factors considered in extending an offer include (but are not limited to) responsibilities of the job, education, experience, knowledge, skills, and abilities, as well as internal equity, alignment with market data, applicable bargaining agreement (if any), or other law.</p><p>Originally posted on <a href=\"https://himalayas.app\">Himalayas</a></p>",
+          "pubDate": 1783946467,
+          "expiryDate": 1789130467,
+          "applicationLink": "https://himalayas.app/companies/leidos/jobs/kubernetes-architect-6006727572",
+          "guid": "https://himalayas.app/companies/leidos/jobs/kubernetes-architect-6006727572"
+        },
+        {
+          "title": "Kubernetes Engineer",
+          "excerpt": "SOSi is seeking a Kubernetes Engineer to support mission requirements for a structured approach to further develop, integrate, and sustain a scalable, federated data ecosystem that enhances interoperability, governance, and mission-driven analytics for a DoD customer.",
+          "companyName": "SOSi",
+          "companySlug": "sosi",
+          "companyLogo": "",
+          "employmentType": "Full Time",
+          "minSalary": null,
+          "maxSalary": null,
+          "salaryPeriod": "annual",
+          "seniority": [
+            "Senior"
+          ],
+          "currency": "USD",
+          "locationRestrictions": [
+            "United States"
+          ],
+          "timezoneRestrictions": [
+            -10,
+            -9,
+            -8,
+            -7,
+            -6,
+            -5,
+            14
+          ],
+          "categories": [
+            "Kubernetes-Engineer",
+            "DevOps-Engineer",
+            "Cloud-Infrastructure-Engineer",
+            "Platform-Engineer",
+            "Site-Reliability-Engineer",
+            "Azure-Kubernetes-Engineer",
+            "Kubernetes-Solutions-Engineer",
+            "Kubernetes-Platform-Engineer",
+            "Staff-Kubernetes-Engineer",
+            "Kubernetes-Security-Engineer",
+            "Kubernetes-Architect"
+          ],
+          "parentCategories": [
+            "Developer"
+          ],
+          "description": "<p><a href=\"https://himalayas.app/companies/sosi\">SOSi</a> is seeking a Kubernetes Engineer to support mission requirements for a structured approach to further develop, integrate, and sustain a scalable, federated data ecosystem that enhances interoperability, governance, and mission-driven analytics for a DoD customer. The primary objective of the program is to bridge the operational gaps between DoD, IC, interagency, and non-traditional international partners to enable real-time information sharing, dynamic data integration, and mission-tailored analytical capabilities. </p><h3>Essential Job Duties: </h3><ul><li>Configure, deploy, and maintain Kubernetes clusters tailored for each IL environment (IL2, IL4, IL5), ensuring support for ESRI ArcGIS services and integration with agency-provided infrastructure from WO-001. </li><li>Develop and manage Helm charts and Kubernetes Operators for declarative deployment and automated scaling of ESRI services, including Notebook Server and GeoAnalytics Server. </li><li>Configure persistent volume claims and provision container-native storage (e.g., AWS EBS, Azure Disks) to support ESRI workloads, ensuring durability and compliance with backup and recovery policies. </li><li>Integrate Kubernetes-native monitoring and logging solutions (e.g., Prometheus, Fluentd, or OpenTelemetry) to support observability and IL-compliant reporting across environments.  </li></ul><h3>Minimum Requirements: </h3><ul><li>Bachelor's degree in Computer Science, Cloud Computing, or a related field, or; five (5) years of equivalent experience in Kubernetes administration. </li><li>Demonstrated experience in deploying and managing Kubernetes clusters, troubleshooting containerized applications, and implementing service mesh architectures such as Istio or Linkerd. </li><li>Experience with Infrastructure as Code (IaC) tools such as Terraform or Ansible is required. </li><li>Possess the knowledge and capability to design, deploy, and manage containerized applications in a cloud-native environment using Kubernetes. </li><li>Proficient in Kubernetes cluster orchestration, container networking, Helm chart deployment, and automation of CI/CD pipelines. </li><li>Strong knowledge of cloud infrastructure services (AWS, Azure, GCP), security best practices, and Kubernetes monitoring/logging tools (Prometheus, Grafana, ELK stack) is required.</li></ul><h3>Preferred Qualifications: </h3><ul><li>Desirable but not required certifications include Certified Kubernetes Administrator (CKA), AWS Certified DevOps Engineer – Professional, or Google Cloud Professional Cloud DevOps Engineer. </li></ul><h3>Work Environment</h3><ul><li>Offsite/remote. </li><li>Must have strong internet connection.</li><li>Quit workspace free from interruptions and background noise.</li></ul><h3>Working at <a href=\"https://himalayas.app/companies/sosi\">SOSi</a></h3><p>All interested individuals will receive consideration and will not be discriminated against for any reason</p><p>Founded in 1989, <a href=\"https://himalayas.app/companies/sosi\">SOSi</a> is among the largest private, founder-owned technology and services integrators in the defense and government services industry. We deliver tailored solutions, tested leadership, and trusted results to enable national security missions worldwide.</p><p>Originally posted on <a href=\"https://himalayas.app\">Himalayas</a></p>",
+          "pubDate": 1780615940,
+          "expiryDate": 1785799940,
+          "applicationLink": "https://himalayas.app/companies/sosi/jobs/kubernetes-engineer",
+          "guid": "https://himalayas.app/companies/sosi/jobs/kubernetes-engineer"
+        },
+        {
+          "title": "Kubernetes Engineer",
+          "excerpt": "Role: Kubernetes Engineer Company: Kubegrade Location: Remote (global) Type: Full-time What Kubegrade DoesKubegrade automates Kubernetes upgrades, maintenance, drift detection, and troubleshooting using AI agents and GitOps workflows.",
+          "companyName": "Kubegrade",
+          "companySlug": "kubegrade",
+          "companyLogo": "https://cdn-images.himalayas.app/fofw2j8jinthaubpkgave3do51ww",
+          "employmentType": "Full Time",
+          "minSalary": null,
+          "maxSalary": null,
+          "salaryPeriod": "annual",
+          "seniority": [
+            "Senior"
+          ],
+          "currency": "USD",
+          "locationRestrictions": [
+            "India"
+          ],
+          "timezoneRestrictions": [
+            5.5
+          ],
+          "categories": [
+            "Kubernetes-Engineer",
+            "Platform-Engineer",
+            "SRE",
+            "DevOps-Engineer",
+            "Cloud-Infrastructure-Engineer",
+            "Staff-Kubernetes-Engineer",
+            "Senior-Kubernetes-OpenShift-Engineer"
+          ],
+          "parentCategories": [
+            "Developer"
+          ],
+          "description": "<p><strong>Role:</strong> Kubernetes Engineer<br><strong>Company:</strong> <a href=\"https://himalayas.app/companies/kubegrade\">Kubegrade</a><br><strong>Location:</strong> Remote (global)<br><strong>Type:</strong> Full-time</p><h3>What <a href=\"https://himalayas.app/companies/kubegrade\">Kubegrade</a> Does</h3><p><a href=\"https://himalayas.app/companies/kubegrade\">Kubegrade</a> automates Kubernetes upgrades, maintenance, drift detection, and troubleshooting using AI agents and GitOps workflows. We build for platform teams running real production clusters at scale. This is not a toy environment. This role assumes deep, hands-on Kubernetes experience.</p><h3>Mandatory Pre-Interview Requirement (Non-Negotiable)</h3><h3>Before any interview:</h3><ul><li>Access and create account on <strong>app.kubegrade.com</strong></li><li>Connect <strong>at least one Kubernetes cluster</strong> (cloud, on-prem, or local)</li><li>Use the product hands-on:<ul><li>Cluster and namespace visualization</li><li>Signals, issues, and context surfaced by the platform</li><li>AI agents for troubleshooting and remediation actions</li></ul></li><li>Come prepared to discuss:<ul><li>What the product does well</li><li>What is unclear or broken</li><li>How it fits (or doesnt) into real Kubernetes operations</li><li>How you would improve it for platform teams</li></ul></li></ul><p>This is a filter. If you cannot do this independently, this role is not a fit.</p><h3>Responsibilities</h3><ul><li>Design, operate, and troubleshoot Kubernetes clusters in production environments</li><li>Work directly with <a href=\"https://himalayas.app/companies/kubegrade\">Kubegrade</a>s platform to validate real-world Kubernetes workflows</li><li>Collaborate with product and engineering to:<ul><li>Improve cluster visibility and UX</li><li>Define troubleshooting and remediation logic</li><li>Translate Kubernetes operational pain into product requirements</li></ul></li><li>Analyze failures related to:<ul><li>Upgrades and API deprecations</li><li>Configuration drift</li><li>Misconfigured workloads, networking, storage, or security</li></ul></li><li>Contribute to internal tooling, automation, and best practices</li><li>Act as a Kubernetes domain expert in product discussions</li></ul><h3>Required Experience</h3><ul><li>Strong, practical Kubernetes experience (not theoretical)</li><li>Proven ability to:<ul><li>Debug production incidents</li><li>Reason about control plane vs workload issues</li><li>Understand real upgrade and lifecycle challenges</li></ul></li><li>Solid knowledge of:<ul><li>Kubernetes internals</li><li>Helm, Kustomize, or GitOps workflows</li><li>Observability stacks (Prometheus, Grafana, logs, traces)</li></ul></li><li>Comfortable working autonomously in a remote, async environment</li></ul><h3>Strong Plus</h3><ul><li>Platform / SRE / DevOps background in regulated or large-scale environments</li><li>Experience operating 10+ clusters</li><li>Familiarity with:<ul><li>Kubernetes upgrades across multiple versions</li><li>API deprecation management</li><li>Multi-cloud or hybrid environments</li></ul></li><li>Opinionated views on how Kubernetes tooling should work</li></ul><h3>What We Care About</h3><ul><li>Depth of Kubernetes understanding</li><li>Ability to reason clearly about complex systems</li><li>Direct, technical communication</li><li>Independent problem-solving</li><li>Product thinking grounded in real operational pain</li></ul><h3>What We Dont Care About</h3><ul><li>Buzzwords</li><li>Shallow certifications without hands-on experience</li><li>Passive users of managed platforms with no understanding of whats underneath</li></ul><h3>Interview Focus</h3><p>The interview is a technical discussion centered on:</p><ul><li>Your Kubernetes experience</li><li>Your hands-on usage of <a href=\"https://himalayas.app/companies/kubegrade\">Kubegrade</a></li><li>Your ability to critique, reason, and propose improvements</li></ul><p>If you cannot meaningfully discuss the product after using it, you will not pass.</p><p>Originally posted on <a href=\"https://himalayas.app\">Himalayas</a></p>",
+          "pubDate": 1780570529,
+          "expiryDate": 1785754528,
+          "applicationLink": "https://himalayas.app/companies/kubegrade/jobs/kubernetes-engineer",
+          "guid": "https://himalayas.app/companies/kubegrade/jobs/kubernetes-engineer"
+        },
+        {
+          "title": "Kubernetes & OpenShift Engineer",
+          "excerpt": "Bright Vision Technologies is a technology consulting and software development company delivering cloud, AI, data, and enterprise solutions across the United States.",
+          "companyName": "Bright Vision Technologies",
+          "companySlug": "bright-vision-technologies",
+          "companyLogo": "https://cdn-images.himalayas.app/tillsehd3opuq2p5lraeki82dq3v",
+          "employmentType": "Full Time",
+          "minSalary": 100000,
+          "maxSalary": 150000,
+          "salaryPeriod": "annual",
+          "seniority": [
+            "Senior"
+          ],
+          "currency": "USD",
+          "locationRestrictions": [
+            "United States"
+          ],
+          "timezoneRestrictions": [
+            -10,
+            -9,
+            -8,
+            -7,
+            -6,
+            -5,
+            14
+          ],
+          "categories": [
+            "Kubernetes-Engineer",
+            "OpenShift-Engineer",
+            "Platform-Engineer",
+            "DevOps-Engineer",
+            "Cloud-Infrastructure-Engineer",
+            "Senior-Kubernetes-OpenShift-Engineer",
+            "Senior-OpenShift-Engineer",
+            "Senior-Kubernetes-Engineer"
+          ],
+          "parentCategories": [
+            "Developer"
+          ],
+          "description": "<a href=\"https://himalayas.app/companies/bright-vision-technologies\">Bright Vision Technologies</a> is a technology consulting and software development company delivering cloud, AI, data, and enterprise solutions across the United States.<br><br>This is a fantastic opportunity to join an established and well-respected organization offering tremendous career growth potential.<br><br><b>Job Title:</b> Kubernetes &amp; OpenShift Engineer<br><b>Location:</b> 100% Remote (U.S.)<br><b>Position Type:</b> Full-time, Direct W2<br><b>Salary Range:</b> $100,000–$150,000 Annually<br><b>Experience Required:</b> 6+ years<br><br><b>Sponsorship:</b> U.S. Citizens, Green Card Holders, EAD Holders, and H-1B transfer candidates are encouraged to apply. We are unable to sponsor new H-1B visa petitions for this position.<br><br><b>Job Summary:</b><br>We are seeking an experienced Kubernetes &amp; OpenShift Engineer to design, deploy, and operate enterprise-grade Red Hat OpenShift container platforms running mission-critical workloads across on-premises and cloud environments. In this role you will own the end-to-end platform lifecycle — from cluster provisioning and hardening, through workload onboarding and developer enablement, to ongoing operations and continuous improvement. The ideal candidate will bring deep expertise in OpenShift and Kubernetes internals, strong Linux fundamentals, and a security-first mindset, and will partner with application teams, security engineers, and infrastructure stakeholders to deliver a stable, secure, and developer-friendly container platform.<br><br><b>Key Responsibilities</b><ul style=\"margin-bottom:4px;\"><li style=\"margin-bottom:4px;margin-left:8px;\">Architect, provision, and operate Red Hat OpenShift clusters across on-premises, virtualized, and major cloud environments, applying best practices for high availability, scalability, and security.</li><li style=\"margin-bottom:4px;margin-left:8px;\">Design and implement multi-tenant OpenShift platforms with appropriate project isolation, network policies, quotas, RBAC, and security context constraints.</li><li style=\"margin-bottom:4px;margin-left:8px;\">Automate cluster lifecycle operations — installation, upgrades, scaling, and decommissioning — using OpenShift installer, GitOps tooling (Argo CD, OpenShift GitOps), and IaC frameworks.</li><li style=\"margin-bottom:4px;margin-left:8px;\">Onboard application development teams to the platform, providing clear self-service patterns, project templates, CI/CD integrations, and supporting documentation.</li><li style=\"margin-bottom:4px;margin-left:8px;\">Operate OpenShift networking, including SDN/OVN-Kubernetes, ingress controllers, routes, network policies, and integration with enterprise firewalls and load balancers.</li><li style=\"margin-bottom:4px;margin-left:8px;\">Manage OpenShift storage strategies (block, file, object), including dynamic provisioning, OpenShift Data Foundation, and integration with external storage platforms.</li><li style=\"margin-bottom:4px;margin-left:8px;\">Implement comprehensive monitoring, logging, and tracing using the OpenShift observability stack (Prometheus, Grafana, EFK, Tempo) and integrate with enterprise SIEM and APM tools.</li><li style=\"margin-bottom:4px;margin-left:8px;\">Harden the platform in collaboration with security teams, including image scanning (Quay/Clair), runtime protection, secret management, and continuous compliance with regulatory frameworks.</li><li style=\"margin-bottom:4px;margin-left:8px;\">Design and maintain robust CI/CD pipelines on OpenShift using Tekton, Jenkins, GitLab CI, or Argo Workflows, enabling safe and frequent application deployments.</li><li style=\"margin-bottom:4px;margin-left:8px;\">Develop disaster-recovery and backup strategies for cluster state, etcd, and persistent workloads, validated through regular failover and restore drills.</li><li style=\"margin-bottom:4px;margin-left:8px;\">Plan, test, and execute cluster upgrades across minor and major versions with minimal disruption to workloads, including pre-upgrade validation and rollback strategies.</li><li style=\"margin-bottom:4px;margin-left:8px;\">Partner with application teams to right-size workloads, manage resource quotas, and tune cluster autoscaling for predictable performance and cost efficiency.</li><li style=\"margin-bottom:4px;margin-left:8px;\">Continuously evolve platform tooling and developer experience, capturing feedback from internal users and translating it into roadmap improvements.</li><li style=\"margin-bottom:4px;margin-left:8px;\">Mentor junior engineers and act as an OpenShift subject-matter expert across the broader organization.</li></ul><br><b>Required Qualifications</b><ul style=\"margin-bottom:4px;\"><li style=\"margin-bottom:4px;margin-left:8px;\">Bachelor’s degree in Computer Science, Engineering, or a related technical discipline.</li><li style=\"margin-bottom:4px;margin-left:8px;\">Five or more years of experience operating container platforms in production, with at least three years on Red Hat OpenShift.</li><li style=\"margin-bottom:4px;margin-left:8px;\">Deep, hands-on knowledge of Kubernetes and OpenShift internals, including operators, CRDs, RBAC, and networking.</li><li style=\"margin-bottom:4px;margin-left:8px;\">Strong Linux administration skills, including networking, performance tuning, and troubleshooting.</li><li style=\"margin-bottom:4px;margin-left:8px;\">Hands-on experience with infrastructure-as-code tools such as Ansible, Terraform, or Helm.</li><li style=\"margin-bottom:4px;margin-left:8px;\">Solid experience implementing CI/CD pipelines on OpenShift or Kubernetes using Tekton, Jenkins, or Argo CD.</li><li style=\"margin-bottom:4px;margin-left:8px;\">Strong scripting skills in Bash, Python, or Go.</li><li style=\"margin-bottom:4px;margin-left:8px;\">Working knowledge of cluster monitoring, logging, and tracing tools.</li><li style=\"margin-bottom:4px;margin-left:8px;\">Familiarity with container image security and supply chain hardening.</li><li style=\"margin-bottom:4px;margin-left:8px;\">Excellent troubleshooting, communication, and documentation skills.</li></ul><br><b>Preferred Qualifications</b><ul style=\"margin-bottom:4px;\"><li style=\"margin-bottom:4px;margin-left:8px;\">Red Hat Certified Specialist in OpenShift Administration or Architect-level Red Hat certification.</li><li style=\"margin-bottom:4px;margin-left:8px;\">Experience operating OpenShift on at least one major public cloud (AWS, Azure, GCP).</li><li style=\"margin-bottom:4px;margin-left:8px;\">Exposure to service mesh implementations (OpenShift Service Mesh, Istio, Linkerd).</li><li style=\"margin-bottom:4px;margin-left:8px;\">Familiarity with regulated environments such as PCI-DSS, HIPAA, or SOC 2.</li><li style=\"margin-bottom:4px;margin-left:8px;\">Experience with GitOps workflows using Argo CD or Flux.</li></ul><br><b>How to Apply</b><br>Would you like to know more about this opportunity? For immediate consideration, please send your resume to Harry@bvteck.com or contact us at (908)676-4399. Learn more about <a href=\"https://himalayas.app/companies/bright-vision-technologies\">Bright Vision Technologies</a> at <a href=\"http://www.bvteck.com\" style=\"color:#0563c1;text-decoration:underline;\" rel=\"nofollow ugc noopener noreferrer\" target=\"_blank\">www.bvteck.com</a>.<br><br><a href=\"https://himalayas.app/companies/bright-vision-technologies\">Bright Vision Technologies</a> is an Equal Opportunity Employer<p>Equal Employment Opportunity (EEO) Statement</p><p><a href=\"https://himalayas.app/companies/bright-vision-technologies\">Bright Vision Technologies</a> (BV Teck) is committed to equal employment opportunity (EEO) for all employees and applicants without regard to race, color, religion, sex, sexual orientation, gender identity or expression, national origin, age, genetic information, disability, veteran status, or any other protected status as defined by applicable federal, state, or local laws. This commitment extends to all aspects of employment, including recruitment, hiring, training, compensation, promotion, transfer, leaves of absence, termination, layoffs, and recall.</p><p>BV Teck expressly prohibits any form of workplace harassment or discrimination. Any improper interference with employees' ability to perform their job duties may result in disciplinary action up to and including termination of employment.</p><p>Originally posted on <a href=\"https://himalayas.app\">Himalayas</a></p>",
+          "pubDate": 1784412589,
+          "expiryDate": 1789596589,
+          "applicationLink": "https://himalayas.app/companies/bright-vision-technologies/jobs/kubernetes-openshift-engineer",
+          "guid": "https://himalayas.app/companies/bright-vision-technologies/jobs/kubernetes-openshift-engineer"
+        },
+        {
+          "title": "Kubernetes Platform Engineer - Consultant (m/f/d)",
+          "excerpt": "DevOps Engineer - Consultant (m/w/d) Du hast mehrere Jahre Erfahrung mit Kubernetes und Containerisierung und suchst spannende Herausforderungen in einem innovativen, agilen und inhabergeführten Unternehmen?",
+          "companyName": "evoila GmbH",
+          "companySlug": "evoila-gmbh",
+          "companyLogo": "https://cdn-images.himalayas.app/7fbm5fn59rpgy1ez2dkgcirb0a87",
+          "employmentType": "Full Time",
+          "minSalary": null,
+          "maxSalary": null,
+          "salaryPeriod": "annual",
+          "seniority": [
+            "Mid-level"
+          ],
+          "currency": null,
+          "locationRestrictions": [
+            "Germany"
+          ],
+          "timezoneRestrictions": [
+            1
+          ],
+          "categories": [
+            "Platform-Engineering",
+            "Kubernetes",
+            "DevOps",
+            "Cloud-Consulting",
+            "Kubernetes-Platform-Engineer",
+            "Kubernetes-Solutions-Engineer",
+            "Kubernetes-Engineer",
+            "Kubernetes-Operations-Engineer",
+            "Cloud-Native-Platform-Engineer",
+            "Cloud-Engineer"
+          ],
+          "parentCategories": [],
+          "description": "<div><div><h3>DevOps Engineer - Consultant (m/w/d)</h3></div></div><div><div><p>Du hast mehrere Jahre Erfahrung mit Kubernetes und Containerisierung und suchst spannende Herausforderungen in einem innovativen, agilen und inhabergeführten Unternehmen?</p></div><div><p>Du arbeitest gerne mit den neuesten top-of-the-notch Technologien?</p></div><div><p>Als Teil unseres Teams von erfahrenen Cloud Engineers übernimmst Du nach einem umfassenden Einarbeitungsprogramm Verantwortung in Kundenprojekten.</p><h3><b>Deine Aufgaben:</b></h3></div><div><ul><li><p>Aufnahme und Analyse von Kundenanforderungen im Kubernetes Umfeld</p></li><li><p>Erstellung und Abstimmung von Konzepten zum Aufbau von Entwicklerplattformen</p></li><li><p>Durchführung von Kundenworkshops und Strategieworkshops zum Aufbau neuer oder Weiterentwicklung bestehender Plattformen</p></li><li><p>Vermittlung von Auswirkung architektonischer Entscheidungen auf Usability der Plattform und Betriebsabläufe</p></li><li><p>Sicherstellung einer engen Zusammenarbeit mit anderen evoila-Teams und Verständnis ihrer Konzepte und Lösungen</p></li><li><p>Unterstützung im Vertrieb durch Aufbau und Pflege von Kundenbeziehungen</p></li><li><p>Sicherstellung einer langfristigen und partnerschaftlichen Zusammenarbeit mit unseren Kunden</p></li><li><p>Implementierung der designten Entscheidungen beim Kunden</p></li></ul></div></div><div><div><h3><b>Was Du mitbringen solltest:</b></h3></div><div><ul><li><p>Hochschulstudium der Informatik, E-Technik, Physik oder Mathematik oder einer verwandten Fachrichtung<br>Alternativ: Abgeschlossene Ausbildung als Fachinformatiker für Systemintegration (m/w/d)</p></li><li><h3>Mehrjährige Berufserfahrung</h3></li><li><p>Souveränes Auftreten, analytisch-konzeptionelle Fähigkeiten, Teamfähigkeit und Kundenorientierung</p></li><li><p>Erfahrung im Bereich Aufbau, Konzeption und Betrieb von kubernetes-basierten Plattformen</p></li><li><p>Erfahrung bei der Integration von Kubernetes in bestehende Business-/Enterpriseumgebungen</p></li><li><p>Container haben für Dich nichts mit Schiffen zu tun</p></li></ul></div><div><h3>​<b>Optimal wäre es, wenn ...:</b></h3></div><div><ul><li><p>Du über mindestens 4 Jahre Erfahrung im Bereich Cloud-Native, Kubernetes und DevSecOps verfügst.</p></li><li><p>Du tiefgreifende Erfahrung mit mindestens 2 Hyperscalern und 3 Alternativen für Kubernetes on-premise besitzt.</p></li><li><p>Du ausführlich erläutern kannst, welche Vor- und Nachteile bei der Einrichtung großer Multi-Cloud-Umgebungen bestehen (z. B. AKS und Tanzu oder GCP und Rancher).</p></li><li><p>Du gemeinsam mit unseren Kunden eine Multi-Cloud-Strategie entwickeln kannst, die auf ihren spezifischen Anforderungen basiert.</p></li><li><p>Du fundierte Kenntnisse über die am häufigsten verwendeten Cloud- und On-Premises-Infrastrukturanbieter hast und die architektonischen Anforderungen sowie den architektonischen Einfluss verstehst, den sie auf die Kubernetes-Plattform haben, die auf ihnen aufbaut.</p></li><li><p>Du Workshops auf Unternehmensebene für unsere Kunden leiten kannst und anhand praktischer Beispiele vermittelst, wie man eine Private Cloud (auf die richtige Art und Weise) entwirft und aufbaut.</p></li><li><p>Du in der Lage bist, eine Vergleichsmatrix für die wichtigsten Kubernetes-Tools und Komponenten zu erstellen und auf dieser Grundlage Entscheidungen zu treffen (z. B. die Auswahl eines CNI für eine Kubernetes-Infrastruktur mit tiefgründiger Erklärung der Vor- und Nachteile).</p></li><li><p>Du über mindestens 2 Jahre Erfahrung in Positionen gesammelt hast, die ähnlich wie die eines Senior Platform Engineers (m/w/d) sind.​​</p></li></ul><p>​<b>Eine intensive Einarbeitung und regelmäßige Fortbildungen finden bei uns nicht nur auf dem Papier statt, sondern sind selbstverständlich für alle unsere Mitarbeitenden.</b></p></div></div><p>Originally posted on <a href=\"https://himalayas.app\">Himalayas</a></p>",
+          "pubDate": 1782919277,
+          "expiryDate": 1788103276,
+          "applicationLink": "https://himalayas.app/companies/evoila-gmbh/jobs/kubernetes-platform-engineer-consultant-m-f-d-4734453294",
+          "guid": "https://himalayas.app/companies/evoila-gmbh/jobs/kubernetes-platform-engineer-consultant-m-f-d-4734453294"
+        },
+        {
+          "title": "Kubernetes Service Engineer",
+          "excerpt": "Kubernetes Service Engineer – Remote Bright Vision Technologies is a technology consulting and software development company delivering cloud, AI, data, and enterprise solutions across the United States.",
+          "companyName": "Bright Vision Technologies",
+          "companySlug": "bright-vision-technologies",
+          "companyLogo": "https://cdn-images.himalayas.app/tillsehd3opuq2p5lraeki82dq3v",
+          "employmentType": "Full Time",
+          "minSalary": 100000,
+          "maxSalary": 150000,
+          "salaryPeriod": "annual",
+          "seniority": [
+            "Senior"
+          ],
+          "currency": "USD",
+          "locationRestrictions": [
+            "United States"
+          ],
+          "timezoneRestrictions": [
+            -10,
+            -9,
+            -8,
+            -7,
+            -6,
+            -5,
+            14
+          ],
+          "categories": [
+            "Platform-Engineering",
+            "Kubernetes-Engineering",
+            "Service-Mesh-Engineering",
+            "Site-Reliability-Engineering",
+            "Cloud-Infrastructure-Engineering",
+            "Senior-Kubernetes-Engineer",
+            "Staff-Kubernetes-Engineer"
+          ],
+          "parentCategories": [],
+          "description": "<strong>Kubernetes Service Engineer – Remote</strong><br><br><a href=\"https://himalayas.app/companies/bright-vision-technologies\">Bright Vision Technologies</a> is a technology consulting and software development company delivering cloud, AI, data, and enterprise solutions across the United States.<br>This is a fantastic opportunity to join an established and well-respected organization offering tremendous career growth potential.<br><br><strong>Job Title: </strong>Kubernetes Service Engineer<br><strong>Location: </strong>100% Remote (U.S.)<br><strong>Position Type:</strong> Full-time, Direct W2<br><strong>Salary Range:</strong> $100,000–$150,000 Annually<br><strong>Experience Required:</strong> 6+ years<br><br><strong>Sponsorship:</strong> U.S. Citizens, Green Card Holders, EAD Holders, and H-1B transfer candidates are encouraged to apply. We are unable to sponsor new H-1B visa petitions for this position.<br><br><strong>Job Summary</strong><br>We are looking for a Kubernetes Service Engineer to design, deploy, and operate service mesh platforms — primarily Istio and Linkerd — that provide secure, observable, and reliable service-to-service communication across our Kubernetes estate. The role focuses on platform engineering, mesh adoption, mTLS, traffic policy, and helping application teams reap the benefits of a mesh without paying for unnecessary complexity. The ideal candidate has operated service mesh in production, deeply understands Envoy and the data plane, and brings both platform engineering discipline and pragmatic adoption strategies.<br><br><strong>Key Responsibilities</strong><ul><li>Design and operate service mesh platforms — primarily Istio and Linkerd — across multi-cluster Kubernetes environments.</li><li>Implement and operate mTLS, certificate rotation, and identity propagation across the mesh.</li><li>Define traffic management policies including routing, retries, circuit breaking, and fault injection.</li><li>Integrate the mesh with ingress, egress, and API gateway tiers for unified traffic management.</li><li>Build observability for mesh traffic including distributed tracing, golden signals, and topology visualization.</li><li>Design multi-cluster and cross-cluster mesh topologies for high availability and tenant isolation.</li><li>Profile and optimize mesh performance, sidecar resource usage, and control-plane footprint, applying systematic measurement, targeted improvements, and data-driven validation to deliver quantifiable gains in throughput, latency, or resource efficiency.</li><li>Develop paved-road adoption patterns and onboarding guides that make mesh adoption easy for app teams.</li><li>Implement authorization policies and zero-trust patterns at the service mesh layer.</li><li>Operate service mesh upgrades, control-plane lifecycle management, and configuration governance, applying disciplined release practices that keep the mesh current without disrupting workloads running on top of it.</li><li>Partner with SRE, platform, and security teams on mesh policy and incident response.</li><li>Troubleshoot complex networking, mTLS, and traffic issues spanning sidecar and gateway tiers.</li><li>Maintain runbooks, architecture diagrams, and onboarding materials for the service mesh platform.</li><li>Stay current with Istio, Linkerd, Cilium, and broader service mesh ecosystem developments.</li></ul><strong>Required Qualifications</strong><ul><li>Bachelor’s degree in Computer Science or a related field.</li><li>Five or more years of experience in platform engineering, SRE, or networking roles.</li><li>Hands-on experience operating Istio or Linkerd in production.</li><li>Strong understanding of Envoy proxy internals and configuration.</li><li>Deep Kubernetes expertise including networking, CNI, and ingress.</li><li>Strong understanding of mTLS, PKI, and certificate lifecycle management.</li><li>Experience with distributed tracing and observability for mesh traffic.</li><li>Proficiency in Go or Python for tooling and automation.</li><li>Strong troubleshooting skills across networking, application, and control plane layers.</li><li>Excellent communication and collaboration skills.</li></ul><strong>Preferred Qualifications</strong><ul><li>Experience with multi-cluster Istio or Linkerd deployments.</li><li>Familiarity with Cilium service mesh and eBPF networking.</li><li>Open-source contributions to service mesh projects.</li><li>Experience with SPIFFE/SPIRE for workload identity.</li><li>Exposure to zero-trust networking initiatives at enterprise scale.</li></ul><strong>How to Apply</strong><br>Would you like to know more about this opportunity?<br>For immediate consideration, please send your resume to jaya@bvteck.com or contact us at (908) 505-3545. Learn more about <a href=\"https://himalayas.app/companies/bright-vision-technologies\">Bright Vision Technologies</a> at www.bvteck.com.<br><a href=\"https://himalayas.app/companies/bright-vision-technologies\">Bright Vision Technologies</a> is an Equal Opportunity Employer.<p>Equal Employment Opportunity (EEO) Statement</p><p><a href=\"https://himalayas.app/companies/bright-vision-technologies\">Bright Vision Technologies</a> (BV Teck) is committed to equal employment opportunity (EEO) for all employees and applicants without regard to race, color, religion, sex, sexual orientation, gender identity or expression, national origin, age, genetic information, disability, veteran status, or any other protected status as defined by applicable federal, state, or local laws. This commitment extends to all aspects of employment, including recruitment, hiring, training, compensation, promotion, transfer, leaves of absence, termination, layoffs, and recall.</p><p>BV Teck expressly prohibits any form of workplace harassment or discrimination. Any improper interference with employees' ability to perform their job duties may result in disciplinary action up to and including termination of employment.</p><p>Originally posted on <a href=\"https://himalayas.app\">Himalayas</a></p>",
+          "pubDate": 1784418773,
+          "expiryDate": 1789602773,
+          "applicationLink": "https://himalayas.app/companies/bright-vision-technologies/jobs/kubernetes-service-engineer",
+          "guid": "https://himalayas.app/companies/bright-vision-technologies/jobs/kubernetes-service-engineer"
+        },
+        {
+          "title": "Software Architect for Kubernetes",
+          "excerpt": "Software Architect – KubernetesAs a Software Architect – Kubernetes, you will be responsible for designing and evolving cloud-native platform solutions that enable scalable, secure, and highly available applications.",
+          "companyName": "Data Edge",
+          "companySlug": "data-edge",
+          "companyLogo": "https://cdn-images.himalayas.app/eeqamt0pbu9rd7cvk1ikikz197g6",
+          "employmentType": "Full Time",
+          "minSalary": null,
+          "maxSalary": null,
+          "salaryPeriod": "annual",
+          "seniority": [
+            "Senior"
+          ],
+          "currency": null,
+          "locationRestrictions": [
+            "Romania"
+          ],
+          "timezoneRestrictions": [
+            2
+          ],
+          "categories": [
+            "Software-Architect",
+            "Cloud-Architect",
+            "Platform-Engineer",
+            "DevOps-Engineer",
+            "Site-Reliability-Engineer",
+            "Senior-Kubernetes-Platform-Architect",
+            "DevOps-Architect"
+          ],
+          "parentCategories": [
+            "Developer"
+          ],
+          "description": "<h5>Software Architect – Kubernetes</h5><p>As a <strong>Software Architect – Kubernetes</strong>, you will be responsible for designing and evolving cloud-native platform solutions that enable scalable, secure, and highly available applications. Working independently within the project, you will provide technical leadership while driving architecture decisions and implementation of Kubernetes-based solutions.</p><h5><strong>Key Responsibilities:</strong></h5><ul><li>Define and drive the architecture of Kubernetes-based platforms and cloud-native applications.</li><li>Design and implement Kubernetes Operators using Go to automate complex application lifecycle management.</li><li>Architect, design, and develop scalable, secure, and maintainable APIs following modern software architecture principles.</li><li>Develop internal platform tooling and command-line utilities in Go and Python to streamline deployment, monitoring, troubleshooting, and operational excellence.</li><li>Design and implement Kubernetes integrations with CI/CD pipelines, GitOps workflows, and DevOps automation.</li><li>Establish architecture standards, best practices, and governance for Kubernetes platform adoption across engineering teams.</li><li>Collaborate with platform engineers, application developers, DevOps, and infrastructure teams to define technical roadmaps and solution architectures.</li><li>Evaluate and adopt emerging Kubernetes and CNCF ecosystem technologies to continuously improve platform capabilities.</li><li>Lead technical investigations, incident analysis, and root cause analysis for complex Kubernetes platform issues.</li><li>Drive implementation of automated quality controls, security checks, and platform validation processes.</li><li>Produce architectural documentation, technical designs, and support knowledge transfer across engineering teams.</li></ul><h5>Required Skills:</h5><ul><li>Extensive experience in software architecture, distributed systems, and cloud-native application design.</li><li>Strong expertise in software design patterns, architecture principles, and API design.</li><li>Proven experience designing and developing scalable RESTful APIs and microservices.</li><li>Advanced programming skills in Go and Python.</li><li>Deep understanding of Kubernetes architecture, Controllers, CRDs, Operators, admission controllers, and custom resources.</li><li>Hands-on experience with Kubernetes Operator SDK, Kubebuilder, or equivalent operator frameworks.</li><li>Strong knowledge of containerization technologies including Docker and Kubernetes.</li><li>Experience with Helm, Kustomize, GitOps practices, and Infrastructure as Code.</li><li>Experience working with public cloud platforms such as AWS, Azure, or GCP.</li><li>Knowledge of Kubernetes observability, including monitoring, logging, and alerting solutions (Prometheus, Grafana, Loki, etc.).</li><li>Familiarity with Kubernetes security best practices and platform hardening.</li><li>Excellent communication, stakeholder management, and cross-functional collaboration skills.</li><li>Ability to mentor engineering teams and provide architectural guidance.</li></ul><p>Originally posted on <a href=\"https://himalayas.app\">Himalayas</a></p>",
+          "pubDate": 1784069884,
+          "expiryDate": 1789253883,
+          "applicationLink": "https://himalayas.app/companies/data-edge/jobs/software-architect-for-kubernetes",
+          "guid": "https://himalayas.app/companies/data-edge/jobs/software-architect-for-kubernetes"
+        },
+        {
+          "title": "Kubernetes Administrator",
+          "excerpt": "En Logicalis Spain estamos buscando a una persona con experiencia en administración y mantenimiento de entornos de infraestructura basados en Kubernetes (on premise, IBM Cloud y Google Cloud Platform) para incorporar en uno de nuestros equipos encargados de la gestión de entornos de infraestructura tecnológica basados en microservicios de Kubernetes y OpenShift.",
+          "companyName": "Logicalis Spain",
+          "companySlug": "logicalis-com",
+          "companyLogo": "",
+          "employmentType": "Full Time",
+          "minSalary": 34000,
+          "maxSalary": 38000,
+          "salaryPeriod": "annual",
+          "seniority": [
+            "Senior"
+          ],
+          "currency": "EUR",
+          "locationRestrictions": [
+            "United States"
+          ],
+          "timezoneRestrictions": [
+            -10,
+            -9,
+            -8,
+            -7,
+            -6,
+            -5,
+            14
+          ],
+          "categories": [
+            "Kubernetes-Administration",
+            "Cloud-Infrastructure",
+            "DevOps-Engineering",
+            "Container-Administration",
+            "Platform-Engineering",
+            "Kubernetes-Administrator",
+            "Certified-Kubernetes-Administrator",
+            "Kubernetes-Architect",
+            "Kubernetes-Operations",
+            "Kubernetes-Engineer"
+          ],
+          "parentCategories": [],
+          "description": "<p>En <a href=\"https://himalayas.app/companies/logicalis-com\">Logicalis Spain</a> estamos buscando a una persona con experiencia en administración y mantenimiento de entornos de infraestructura basados en Kubernetes (on premise, IBM Cloud y Google Cloud Platform) para incorporar en uno de nuestros equipos encargados de la gestión de entornos de infraestructura tecnológica basados en microservicios de Kubernetes y OpenShift.</p><p>La persona incorporada pasará a formar parte de un equipo especializado en dar servicios a una de las entidades bancarias con mayor envergadura tecnológica en España.</p><h3>Funciones del puesto:</h3><ul><li>Diseño y despliegue de entornos basados en Kubernetes.</li>\n<li>Mantenimiento y administración de contenedores (K8’s y OpenShift).</li>\n</ul><h3>·Monitorización de los contenedores.</h3><ul><li>Automatización e integración continua en el despliegue de entornos y aplicaciones (Python, Bash).</li>\n</ul><h3>·Despliegue mediante IaC Terraform.</h3><h3>·Gestión de seguridad mediante Istio.</h3><p>Buscamos a una persona con experiencia en la administración de los entornos mencionados, con capacidad de trabajo en equipo y acostumbrada a trabajar en proyectos y on going.</p><h3>¿Qué te ofrecemos en <a href=\"https://himalayas.app/companies/logicalis-com\">Logicalis Spain</a>?</h3><p>En <a href=\"https://himalayas.app/companies/logicalis-com\">Logicalis Spain</a>, impulsamos un entorno inclusivo donde la igualdad de oportunidades es el motor de nuestro éxito. Apostamos decididamente por el talento y el crecimiento profesional de todas las personas, con un compromiso firme por potenciar el liderazgo en todos nuestros niveles. Juntos, construimos una cultura diversa que valora cada voz y garantiza el desarrollo de todo nuestro equipo.</p><ul><li>Estabilidad laboral. Contrato indefinido.</li>\n</ul><h3>·Modalidad de trabajo 100% remoto.</h3><ul><li>Flexibilidad horaria: conciliación familiar/laboral.</li>\n<li>Rango salarial valorable entre 34.000€ y 38.000€ brutos anuales.</li>\n<li>Guardias remuneradas e intervenciones fuera de hora compensadas.</li>\n<li>Jornada intensiva los viernes y durante los dos meses de verano (julio y agosto).</li>\n<li>Plataformas de descuentos en sector retail, espectáculos, electrónica, alimentación.</li>\n<li>Posibilidad de acogerte a planes de retribución flexible: restaurante, transporte, seguro médico privado,</li>\n<li>Formación: aprovecha nuestras ventajas con clases en idiomas y formación a través de Udemy.</li>\n</ul><h3>·Certificaciones en fabricantes.</h3><p>Originally posted on <a href=\"https://himalayas.app\">Himalayas</a></p>",
+          "pubDate": 1781171382,
+          "expiryDate": 1786355382,
+          "applicationLink": "https://himalayas.app/companies/logicalis-com/jobs/kubernetes-administrator",
+          "guid": "https://himalayas.app/companies/logicalis-com/jobs/kubernetes-administrator"
+        },
+        {
+          "title": "Sr. Kubernetes Engineer",
+          "excerpt": "VERY URGENT AND IMMEDIATE NEED. Note: Need Only US Citizen, Green CardJob Title: Sr.",
+          "companyName": "Rapinno Tech",
+          "companySlug": "rapinno-tech",
+          "companyLogo": "",
+          "employmentType": "Full Time",
+          "minSalary": null,
+          "maxSalary": null,
+          "salaryPeriod": "annual",
+          "seniority": [
+            "Senior"
+          ],
+          "currency": null,
+          "locationRestrictions": [
+            "United States"
+          ],
+          "timezoneRestrictions": [
+            -10,
+            -9,
+            -8,
+            -7,
+            -6,
+            -5,
+            14
+          ],
+          "categories": [
+            "Senior-Kubernetes-Engineer",
+            "Cloud-Infrastructure-Engineer",
+            "Platform-Engineer",
+            "Site-Reliability-Engineer",
+            "DevOps-Engineer",
+            "Senior-Kubernetes-Platform-Architect",
+            "Staff-Kubernetes-Engineer",
+            "Senior-DevOps-Engineer",
+            "Kubernetes-Solutions-Engineer",
+            "Kubernetes-Platform-Engineer",
+            "Senior-OpenShift-Engineer"
+          ],
+          "parentCategories": [
+            "Developer"
+          ],
+          "description": "<h3>VERY URGENT AND IMMEDIATE NEED.</h3><h3><em>Note: Need Only US Citizen, Green Card</em></h3><h3>Job Title: Sr. Kubernetes Engineer</h3><p>Location: 100% Remote</p><h3>Duration: Long Term Contract</h3><p><strong><em>Manager Notes: Senior Kubernetes Engineer, working in his container's engineering team Experience in Containers and Kubernetes Automation Experience, no specific tools (Terraform, Ansible, Python Scripting) Experience in CI/CD (Jenkins, Gitlab) GITOPS model Not looking for DevOps, looking for Kubernetes Engineer Need to work on Kubernetes Cluster and troubleshoot the issues.</em></strong></p><h3><em>Required certifications</em></h3><h3><em>AWS Professional Certification</em></h3><h3><em>CKA - Certified Kubernetes Administrator</em></h3><h3>Job Description:</h3><p>You will be responsible for implementing/integrating our Cloud and Commercial kubernetes distributions into Verizon's ecosystem.</p><p>Translate application requirements into system requirements that can then be used to design and implement the operating environment for applications to run in a Kubernetes CaaS platform.</p><p>Evaluate legacy application design and recommend fundamental application redesign changes required to function in a Kubernetes CaaS platform.</p><p>Lead problem resolution for business impacting failures and drive the resolution to meet platform service level objectives. This includes assembling resources from existing team members and engaging other engineering resources from peer teams in order to restore service disruptions.</p><p>Understand architecting and engineering large enterprise solutions to achieve cost efficiencies, scaling, and availability for a large enterprise environment.</p><p>Share support and on call responsibilities with core team members</p><h3>Critical Skills</h3><p>Five or more years of experience with deployment and orchestration technologies (such as Docker, Kubernetes, EKS, Openshift,)</p><p>Three years or more of continuous integration and continuous delivery experience</p><p>Working knowledge of cloud computing including virtualization, hosted services, multi-tenant cloud infrastructures</p><p>Experience architecting and developing software or infrastructure for scalable, distributed systems</p><p>Experience creating and maintaining Gitlab CI pipelines</p><h3>Experience with the Linux kernel</h3><p>Knowledge of APIs design and implementation.</p><p>Knowledge of Monitoring tools: New Relic and or Prometheus/Grafana.</p><p>Originally posted on <a href=\"https://himalayas.app\">Himalayas</a></p>",
+          "pubDate": 1783677666,
+          "expiryDate": 1788861665,
+          "applicationLink": "https://himalayas.app/companies/rapinno-tech/jobs/sr-kubernetes-engineer",
+          "guid": "https://himalayas.app/companies/rapinno-tech/jobs/sr-kubernetes-engineer"
+        },
+        {
+          "title": "Product Software Engineer (mid/senior) - Kubermatic Dev Platform (f,m,d)",
+          "excerpt": "Location: Europe (Time zone: CET: +/- 4h) or on-site/hybrid in Hamburg, Germany.",
+          "companyName": "Kubermatic",
+          "companySlug": "kubermatic",
+          "companyLogo": "https://cdn-images.himalayas.app/aby5eqza77w3dw6jgssh9pxlzw18",
+          "employmentType": "Full Time",
+          "minSalary": null,
+          "maxSalary": null,
+          "salaryPeriod": "annual",
+          "seniority": [
+            "Senior"
+          ],
+          "currency": "USD",
+          "locationRestrictions": [
+            "Austria",
+            "Germany",
+            "Switzerland"
+          ],
+          "timezoneRestrictions": [
+            1
+          ],
+          "categories": [
+            "Go-Developer",
+            "Kubernetes-Engineer",
+            "Platform-Engineer",
+            "Backend-Engineer",
+            "Cloud-Engineer",
+            "Developer-Platform-Engineer"
+          ],
+          "parentCategories": [
+            "Developer"
+          ],
+          "description": "<p>Location: Europe (Time zone: CET: +/- 4h) or on-site/hybrid in Hamburg, Germany. We are a remote-first company.</p><h3>About Us</h3><p><a href=\"https://himalayas.app/companies/kubermatic\">Kubermatic</a> is an adaptable and autonomous software delivery startup based in Hamburg (founded 2016). Our tools are built with Kubernetes and cloud-native solutions to deliver the automated, flexible, and resilient infrastructure that modern businesses need to thrive and innovate.</p><p>We're maintainers of CNCF Sandbox Project kcp and among the leading European corporate contributors to Kubernetes. Our engineering team actively contributes to CNCF projects and open-sources our core products on GitHub. We regularly present at industry conferences and community events.</p><p>You'll be joining the KDP (<a href=\"https://himalayas.app/companies/kubermatic\">Kubermatic</a> Development Platform) team, which brings self-service developer platforms to enterprises. KDP leverages kcp to deliver a novel approach for building multi-tenant platforms. By providing a centralized catalog, it simplifies the creation, integration, and management of services, greatly lowering the operational burden for DevOps, platform, and developer teams.</p><p>We're a fast-moving startup with a strong engineering culture. If you're excited about experimentation, technology, and making a real impact, you'll thrive here. There's plenty of room for your ideas and growth!</p><h3>Role Summary</h3><p>As a product engineer on our 5-person team, you'll drive features from discovery to delivery and shape architectural and product decisions. You'll engage directly with users to understand their challenges and pain points. We work closely as a team, often pairing on features to deliver high-quality software faster. Our development approach emphasizes tracer-bullet development—getting working solutions in front of customers early—followed by iterative refinement.</p><p>You'll work primarily in Go, developing Kubernetes operators and high-availability services that power our platform. KDP is currently available as a standalone, on-premises solution, and as we prepare to launch a new SaaS offering, you'll help evolve our tech stack to meet these emerging requirements.</p><h3>What Will You Be Doing?</h3><ul><li>Design, build, and refine KDP features with a focus on user value and technical excellence.</li><li>Break down implementations into iterative deliverables and determine optimal rollout strategies.</li><li>Develop scalable services and Kubernetes Operators in Go that power our platform.</li><li>Own features end-to-end—from discovery through delivery—including direct engagement with users.</li><li>Stay current with customer challenges and emerging trends in the platform engineering space.</li><li>Contribute patches to upstream projects such as kcp.io when opportunities arise.</li><li>Extend the MCP server for KDP and integrate with leading AI tools.<br>Participate in the on-call rotation.</li></ul><h3>What You Should Bring</h3><ul><li>You genuinely enjoy creating tools that make other engineers' lives easier and their work more productive.</li><li>3+ years of professional experience with Go and 1+ year working with Kubernetes controllers and operators.</li><li>Strong proficiency in distributed systems, container technologies, Kubernetes, the cloud-native ecosystem, and AWS (or GCP).</li><li>Experience building internal developer platforms or infrastructure-as-code solutions using Operators is a big plus.</li><li>Familiarity with feature flags and progressive delivery practices is beneficial.</li><li>Ability to collaborate effectively with Product Management and cross-functional stakeholders.</li><li>Excellent communication skills, a pragmatic problem-solving mindset, genuine curiosity about customer challenges, and empathy for KDP users.</li></ul><h3>What We Offer</h3><ul><li>Competitive salary</li><li>B2B contracts available, with paid time off annually plus local bank holidays</li><li>Remote-first: work from anywhere in Europe (CET ±4h)</li><li>A dynamic yet laid-back team environment</li><li>Regular hackathons and company offsites</li><li>Best-in-class development tools of your choice</li><li>Full support for training and certifications (CKA, Linux Foundation, etc.) and conference attendance</li><li>Speaker support: we'll back you if you want to present at events</li><li>Active community involvement: enjoy our meetups and our flagship community conference, ContainerDays</li></ul><h3>Process</h3><p>1. 30-minute call with our People Manager</p><h3>2. 30-minute call with the KDP leader</h3><h3>3. Home assignment</h3><h3>4. 90-minute technical interview</h3><p>5. A 30-minute meeting with Engineering Leadership</p><p>6. A 45-minute meeting with Sebastian Scheele (Technical Co-founder and CEO)</p><p>Originally posted on <a href=\"https://himalayas.app\">Himalayas</a></p>",
+          "pubDate": 1782246638,
+          "expiryDate": 1784689739,
+          "applicationLink": "https://himalayas.app/companies/kubermatic/jobs/product-software-engineer-mid-senior-kubermatic-dev-platform-f-m-d-84841875",
+          "guid": "https://himalayas.app/companies/kubermatic/jobs/product-software-engineer-mid-senior-kubermatic-dev-platform-f-m-d-84841875"
+        },
+        {
+          "title": "Kubernetes Engineer",
+          "excerpt": "OverviewWe are seeking a Kubernetes Engineer to join our global infrastructure team and help scale, automate, and secure our container orchestration environments across on-premises and public cloud platforms.",
+          "companyName": "InterSystems",
+          "companySlug": "intersystems",
+          "companyLogo": "https://cdn-images.himalayas.app/2g23l7vi26ljvl71jpqqlpmkk9bc",
+          "employmentType": "Full Time",
+          "minSalary": null,
+          "maxSalary": null,
+          "salaryPeriod": "annual",
+          "seniority": [
+            "Mid-level"
+          ],
+          "currency": "USD",
+          "locationRestrictions": [
+            "Ireland"
+          ],
+          "timezoneRestrictions": [
+            1
+          ],
+          "categories": [
+            "Kubernetes-Engineering",
+            "DevOps-Engineering",
+            "Site-Reliability-Engineering",
+            "Cloud-Infrastructure",
+            "Container-Orchestration"
+          ],
+          "parentCategories": [],
+          "description": "<h3><u>Overview</u></h3><p>We are seeking a Kubernetes Engineer to join our global infrastructure team and help scale, automate, and secure our container orchestration environments across on-premises and public cloud platforms. As a Kubernetes specialist, you’ll work closely with DevOps, SRE, and security teams to deliver reliable, self-service, and production-ready Kubernetes clusters that power mission-critical applications.</p><h3><u>Key Responsibilities</u></h3><h3>Cluster Management</h3><ul><li>Deploy, manage, and upgrade Kubernetes clusters using tools like kubeadm, EKS, AKS, GKE, or Rancher.</li><li>Implement robust RBAC, network policies, ingress controllers, and security frameworks in Kubernetes.</li></ul><h3>Automation &amp; IaC</h3><ul><li>Automate cluster provisioning and application deployment pipelines using Terraform, Helm, and ArgoCD.</li><li>Build reusable modules for consistent infrastructure delivery across staging and production.</li></ul><h3>CI/CD Integration</h3><ul><li>Integrate Kubernetes with modern CI/CD workflows for rapid, safe application delivery.</li><li>Support GitOps practices and continuous deployment automation.</li></ul><h3>Monitoring, Logging &amp; Troubleshooting</h3><ul><li>Implement observability for Kubernetes using Prometheus, Grafana, Loki, and Fluentd/Fluent Bit.</li><li>Troubleshoot performance issues, failed pods, memory leaks, and cluster degradation events.</li></ul><h3>Cloud &amp; Hybrid Deployments</h3><ul><li>Operate Kubernetes workloads across AWS, Azure, GCP, and hybrid/on-prem environments.</li><li>Use tools like Velero, Kasten, or Stash for backup/restore strategies in Kubernetes.</li></ul><h3>Collaboration &amp; Support</h3><ul><li>Partner with application developers, SREs, and security teams to implement best practices.</li><li>Serve as a technical advisor on cloud-native architectures and containerization s</li></ul><h3>Experience/Qualification Required</h3><ul><li>Certified Kubernetes Administrator (CKA) –<strong> </strong><strong>Highly preferred</strong></li><li>Certified Kubernetes Application Developer (CKAD)</li><li>Certified Kubernetes Security Specialist (CKS)</li><li>AWS Certified DevOps Engineer – Professional</li><li>Google Professional Cloud DevOps Engineer</li><li>HashiCorp Certified: Terraform Associate</li><li>Linux Foundation Certified System Administrator (LFCS)</li></ul><h3>Nice to have:</h3><ul><li>Experience with GitOps tools (ArgoCD, Flux).</li><li>Observability tools like Prometheus, Grafana, ELK/EFK stack.</li><li>Experience with service mesh technologies (Istio, Linkerd).</li><li>Open-source contributions in Kubernetes-related projects</li><li>Spectro cloud, Incus, Cloud 9 etc…</li></ul><hr><div class=\"content-conclusion\"><h3>About <a href=\"https://himalayas.app/companies/intersystems\">InterSystems</a></h3><p style=\"font-weight: 400;\"><a href=\"https://himalayas.app/companies/intersystems\">InterSystems</a>, a creative data technology provider, delivers a unified foundation for next-generation applications for healthcare, finance, manufacturing, and supply chain customers in more than 80 countries. Our data platforms solve interoperability, speed, and scalability problems for large organizations around the globe to unlock the power of data and allow people to perceive data in imaginative ways. Established in 1978, <a href=\"https://himalayas.app/companies/intersystems\">InterSystems</a> is committed to excellence through its 24×7 support for customers and partners around the world. Privately held and headquartered in Boston, Massachusetts, <a href=\"https://himalayas.app/companies/intersystems\">InterSystems</a> has 38 offices in 28 countries worldwide. For more information, please visit <a href=\"https://cts.businesswire.com/ct/CT?id=smartlink&amp;url=https://www.intersystems.com/&amp;esheet=53379223&amp;newsitemid=20230410005415&amp;lan=en-US&amp;anchor=<a href='https://himalayas.app/companies/intersystems'>InterSystems</a>.com&amp;index=4&amp;md5=3edf749fa33f5a2ac0c355c410576e90\" data-outlook-id=\"1e721f69-f681-4067-9281-970e94b3ef11\" rel=\"nofollow ugc noopener noreferrer\" target=\"_blank\"><strong></strong></a><strong><a href=\"https://himalayas.app/companies/intersystems\">InterSystems</a>.com</strong>.</p></div><p>Originally posted on <a href=\"https://himalayas.app\">Himalayas</a></p>",
+          "pubDate": 1779755533,
+          "expiryDate": 1784939532,
+          "applicationLink": "https://himalayas.app/companies/intersystems/jobs/kubernetes-engineer",
+          "guid": "https://himalayas.app/companies/intersystems/jobs/kubernetes-engineer"
+        },
+        {
+          "title": "DevOps Engineer",
+          "excerpt": "About MenloMenlo Research is an Applied R&D lab building Asimov, an open-source humanoid robot platform, and the full software stack that powers it.",
+          "companyName": "Menlo",
+          "companySlug": "menlo-ai",
+          "companyLogo": "https://cdn-images.himalayas.app/rivj7y50xnwend6jctssudmrd44o",
+          "employmentType": "Full Time",
+          "minSalary": null,
+          "maxSalary": null,
+          "salaryPeriod": "annual",
+          "seniority": [
+            "Mid-level"
+          ],
+          "currency": null,
+          "locationRestrictions": [
+            "Singapore",
+            "United States"
+          ],
+          "timezoneRestrictions": [
+            -10,
+            -9,
+            -8,
+            -7,
+            -6,
+            -5,
+            8,
+            14
+          ],
+          "categories": [
+            "DevOps-Engineer",
+            "DevOps-Engineer-Jobs",
+            "Cloud-DevOps-Engineer",
+            "DevOps-Automation-Engineer",
+            "Infrastructure-DevOps-Engineer",
+            "AWS-DevOps-Engineer",
+            "Lead-DevOps-Engineer"
+          ],
+          "parentCategories": [
+            "Developer"
+          ],
+          "description": "<h3>About <a href=\"https://himalayas.app/companies/menlo-ai\">Menlo</a></h3><p style=\"min-height:1.5em\"><a href=\"https://himalayas.app/companies/menlo-ai\">Menlo</a> Research is an Applied R&amp;D lab building Asimov, an open-source humanoid robot platform, and the full software stack that powers it. Our mission is to make humanoid labor economically viable -- turning software into physical labor at scale. We build across the full stack: hardware architecture, locomotion, autonomy, simulation, and infrastructure. We move fast, ship to real robots, and open-source everything we can. If you want your work to matter beyond a paper or a demo, this is the place.</p><h3>The Role</h3><p style=\"min-height:1.5em\">As an DevOps Engineer, you will own and evolve the platform that everything at <a href=\"https://himalayas.app/companies/menlo-ai\">Menlo</a> runs on -- from inference serving, to training rigs, to the agentic coding infrastructure that powers day-to-day engineering. You will work deep in the stack across Kubernetes, networking, and where it matters bare metal, and help set the technical direction for how <a href=\"https://himalayas.app/companies/menlo-ai\">Menlo</a> Cloud scales.</p><h3>What You'll Do</h3><ul style=\"min-height:1.5em\"><li><p style=\"min-height:1.5em\">Operate and evolve our Kubernetes platform across multiple clusters and environments (Prod, Dev, hybrid on-prem and public cloud), covering control plane operations, node lifecycle, upgrades, and autoscaling at every layer (Cluster Autoscaler, HPA, KEDA).</p></li><li><p style=\"min-height:1.5em\">Architect and manage hybrid cloud infrastructure spanning on-premises and public clouds (GCP, AWS), including workload placement, cross-cloud networking, and unified resource management.</p></li><li><p style=\"min-height:1.5em\">Own the CI/CD and GitOps experience end-to-end: container build pipelines, image optimization, and progressive delivery via ArgoCD / FluxCD.</p></li><li><p style=\"min-height:1.5em\">Own the observability stack as a single pane of glass across all clusters: Grafana, Mimir, Tempo, Loki, Pyroscope, OnCall, Prometheus -- and help push toward agent-assisted SRE workflows.</p></li><li><p style=\"min-height:1.5em\">Manage and improve our inference platform: vLLM serving and AIBrix for multi-model orchestration and autoscaling across a fleet of NVIDIA GPUs.</p></li><li><p style=\"min-height:1.5em\">Operate platform services: Kafka, Redis, PostgreSQL, OpenSearch.</p></li><li><p style=\"min-height:1.5em\">Manage identity and access via Keycloak integrated with Google Workspace; harden SSO, RBAC, and secrets management across the platform.</p></li><li><p style=\"min-height:1.5em\">Harden network security across private load balancers, firewalls, and VPC segmentation; design and maintain hub-and-spoke / multi-AZ topologies.</p></li><li><p style=\"min-height:1.5em\">Support training infrastructure: self-service VM provisioning, RunPod burst capacity, Weights and Biases integration.</p></li><li><p style=\"min-height:1.5em\">Drive infrastructure reliability, cost efficiency, and capacity planning as the platform scales.</p></li></ul><h3>What We're Looking For</h3><ul style=\"min-height:1.5em\"><li><p style=\"min-height:1.5em\">Kubernetes -- deep, hands-on. Strong production experience with Kubernetes, fluent in workloads and controllers, networking (Services, Ingress, CNI basics), storage (PV/PVC, CSI), RBAC, and the autoscaling story end-to-end (HPA, VPA, Cluster Autoscaler, KEDA). Cloud-managed Kubernetes (GKE, EKS, AKS) is fine; on-premises / self-managed Kubernetes (kubeadm, Cluster API, k3s, etc.) is a strong plus.</p></li><li><p style=\"min-height:1.5em\">Networking -- design-level, not just operator-level. You have designed real network topologies at some point in your career -- hub-and-spoke, multi-AZ / multi-VPC, or an equivalent enterprise pattern -- and can defend the tradeoffs. Comfortable with VPCs, firewalls, load balancers, private cluster architecture, DNS, and routing. On-premises networking experience (VLANs, BGP, L2/L3 fabrics, pfSense / Fortinet / Palo Alto / Cisco) is a strong plus.</p></li><li><p style=\"min-height:1.5em\">CI/CD and Docker -- concepts over tooling. You can build and optimize Dockerfiles (multi-stage builds, layer caching, small/secure base images) and have owned full CI/CD pipelines end-to-end. Tooling is flexible -- GitHub Actions, GitLab CI, Azure Pipelines, Jenkins, Argo Workflows, etc. -- but you should be able to clearly articulate the full lifecycle of a typical pipeline, and explain how CI/CD changes when the deployment target is Kubernetes (ArgoCD / FluxCD, GitOps patterns, progressive delivery).</p></li><li><p style=\"min-height:1.5em\">Observability -- you have built this before. You have stood up a full observability stack from scratch and operated it in production -- metrics, logs, traces, alerting, on-call. Familiarity with the Grafana stack (Grafana, Mimir, Tempo, Loki, Pyroscope, OnCall, Prometheus) is a strong plus. Bonus points if you have experimented with agent-assisted SRE workflows or LLM-driven incident triage.</p></li><li><p style=\"min-height:1.5em\">SSO and identity. When you bring a new tool into the platform, your instinct is to wire it into a central IdP rather than leave it on local accounts. Comfortable with OpenID Connect, SAML, and traditional directory services (LDAP / Active Directory), and you have integrated tools with an IdP like Keycloak, Okta, Azure AD, or equivalent.</p></li><li><p style=\"min-height:1.5em\">Linux and automation fundamentals. Strong Linux proficiency (RHEL/Ubuntu or equivalent) including basic performance and networking debugging. Comfort with infrastructure-as-code (Terraform / Terragrunt / Pulumi or equivalent) and configuration management.</p></li><li><p style=\"min-height:1.5em\">Ownership mindset. Comfortable operating in a high-ownership environment where you make architecture decisions, push them to production, and own the outcomes.</p></li><li><p style=\"min-height:1.5em\">Optional but valuable: hands-on experience operating any of Kafka, Redis, PostgreSQL, OpenSearch -- at production scale, including HA, backup/restore, and upgrade planning.</p></li></ul><h3>Bonus points for:</h3><ul style=\"min-height:1.5em\"><li><p style=\"min-height:1.5em\">Experience with OpenStack in production: Nova, Neutron, Cinder, Trove, Horizon, and CLI administration.</p></li><li><p style=\"min-height:1.5em\">Experience with KVM virtualization and storage backends like Ceph or Rook-Ceph on Kubernetes.</p></li><li><p style=\"min-height:1.5em\">Familiarity with vLLM internals: PagedAttention, continuous batching, tensor parallelism.</p></li><li><p style=\"min-height:1.5em\">Background in AI/ML infrastructure or GPU cluster operations at scale.</p></li><li><p style=\"min-height:1.5em\">Experience with KEDA or event-driven autoscaling patterns in anger.</p></li><li><p style=\"min-height:1.5em\">Prior open-source contributions to Kubernetes, OpenStack, or adjacent projects.</p></li><li><p style=\"min-height:1.5em\">Kernel-level Linux debugging and performance tuning.</p></li></ul><h3>Why Join <a href=\"https://himalayas.app/companies/menlo-ai\">Menlo</a>?</h3><p style=\"min-height:1.5em\">Most infrastructure teams manage someone else's cloud. At <a href=\"https://himalayas.app/companies/menlo-ai\">Menlo</a>, you own the metal. <a href=\"https://himalayas.app/companies/menlo-ai\">Menlo</a> Cloud is a first-class investment built from the ground up, and it sits at the center of everything we do, from coding agents to humanoid robots. You will have genuine ownership over a platform that is technically ambitious, cost-conscious by design, and critical to the mission. If you want to build infrastructure that actually matters and have the autonomy to do it right, this is the place.</p><h3>A Note on AI</h3><p style=\"min-height:1.5em\">You don't need deep AI expertise for every role, but we do expect everyone at <a href=\"https://himalayas.app/companies/menlo-ai\">Menlo</a> to be intellectually curious, drawn to tinkering and discovery, and excited to use AI as a real collaborator in their work. For some roles, AI fluency is a core requirement. When that's the case, we'll say so explicitly in the qualifications. People who thrive here don't treat AI as a novelty. They use it to think better, and make their work easier for others to build on.</p><h3>Equal Opportunity and Accommodations</h3><p style=\"min-height:1.5em\">We hire talented people from a wide range of backgrounds. If you're excited about a role but don't meet every bullet, we still encourage you to apply. <a href=\"https://himalayas.app/companies/menlo-ai\">Menlo</a> Research is an equal opportunity employer and does not discriminate on the basis of any legally protected characteristic. <a href=\"https://himalayas.app/companies/menlo-ai\">Menlo</a> provides reasonable accommodations during the application process. If you need one, please let your recruiter know.</p><p>Originally posted on <a href=\"https://himalayas.app\">Himalayas</a></p>",
+          "pubDate": 1781744562,
+          "expiryDate": 1786928561,
+          "applicationLink": "https://himalayas.app/companies/menlo-ai/jobs/devops-engineer",
+          "guid": "https://himalayas.app/companies/menlo-ai/jobs/devops-engineer"
+        },
+        {
+          "title": "Openshift Container platform",
+          "excerpt": "Key skill sets:• Expertise with the Red Hat Open Shift Container Platform administration • Deploying application through Container orchestration technologies using Docker, Kubernetes, and Red Hat Open Shift Container Platform • Manage the container platform ecosystem (installation, upgrade, patching, monitoring, SSL certificates deployment, configuring ingress controllers, integrating with load balancers, integrating with identity management tools, etc.",
+          "companyName": "Pyramid Global Technologies",
+          "companySlug": "pyramid-global-technologies",
+          "companyLogo": "https://cdn-images.himalayas.app/8cynyt7ultm1lbbpf1xtk0nj7vgt",
+          "employmentType": "Full Time",
+          "minSalary": null,
+          "maxSalary": null,
+          "salaryPeriod": "annual",
+          "seniority": [
+            "Senior"
+          ],
+          "currency": null,
+          "locationRestrictions": [
+            "Australia"
+          ],
+          "timezoneRestrictions": [
+            8,
+            8.75,
+            9,
+            9.5,
+            10,
+            10.5
+          ],
+          "categories": [
+            "OpenShift-Administration",
+            "DevOps-Engineering",
+            "Platform-Engineering",
+            "Cloud-Infrastructure",
+            "Kubernetes-Administration",
+            "OpenShift-Platform-Engineer",
+            "Senior-OpenShift-Platform-Architect",
+            "OpenShift-Infrastructure-Architect"
+          ],
+          "parentCategories": [],
+          "description": "<h3>Key skill sets:</h3><ul><li>Expertise with the Red Hat Open Shift Container Platform administration </li>\n<li>Deploying application through Container orchestration technologies using Docker, Kubernetes, and Red Hat Open Shift Container Platform </li>\n<li>Manage the container platform ecosystem (installation, upgrade, patching, monitoring, SSL certificates deployment, configuring ingress controllers, integrating with load balancers, integrating with identity management tools, etc.) </li>\n<li>Configuring/administering monitoring tools (Prometheus, Grafana, similar tools) </li>\n<li>Logging Tools (ELK Stack, Dynatrace, similar tools) administration </li>\n<li>Good knowledge of management of containers and container images through hands-on experience, along with deploying and troubleshooting containerized applications. </li>\n<li>Knowledge of containers including the ability to find, customize, run, and manage containerized services in both stand-alone environments, and environments with Red Hat Open Shift. </li>\n<li>Review the installation of clusters, including configuration and day-to-day management </li>\n<li>Ability to create, configure, and manage a cloud application platform using Red Hat Open Shift Container Platform </li>\n<li>Essential skills for installing an Open Shift cluster in a range of environments, from proof of concept to production, and how to identify customizations that may be required because of the underlying cloud, virtual, or physical infrastructure. </li>\n<li>Skills required to manage Open Shift clusters at scale to productively support a growing number of stakeholders, applications, and users </li>\n<li>Troubleshoot application deployments issues. </li>\n<li>Control access to projects using role-based access control (RBAC) </li>\n<li>Expose applications to clients external to the cluster using TLS encryption </li>\n<li>Configure network isolation between services and applications using network policies </li>\n<li>Configure application scheduling using labels and selectors </li>\n<li>Limit compute resource usage of applications with resource limits and quotas </li>\n<li>Install Kubernetes Operators with the Web Console </li>\n<li>Deploy and configure resources with the OC commands </li>\n<li>Deploying multi-container applications. </li>\n<li>Query and visualize cluster-wide logs, metrics, and alerts. </li>\n<li>Excellent knowledge in Red Hat Linux/Unix administration</li>\n</ul><p>Originally posted on <a href=\"https://himalayas.app\">Himalayas</a></p>",
+          "pubDate": 1783991141,
+          "expiryDate": 1789175141,
+          "applicationLink": "https://himalayas.app/companies/pyramid-global-technologies/jobs/openshift-container-platform",
+          "guid": "https://himalayas.app/companies/pyramid-global-technologies/jobs/openshift-container-platform"
+        },
+        {
+          "title": "Containerization platform (Saudi National Only)-Remote",
+          "excerpt": "Müller's Solutions is seeking a skilled Containerization Platform Engineer (Saudi National Only) to support our innovative remote team.",
+          "companyName": "Müller`s Solutions",
+          "companySlug": "muller-s-solutions",
+          "companyLogo": "https://cdn-images.himalayas.app/32zf3yg3gc3r37blovga3gdqchw6",
+          "employmentType": "Full Time",
+          "minSalary": null,
+          "maxSalary": null,
+          "salaryPeriod": "annual",
+          "seniority": [
+            "Mid-level"
+          ],
+          "currency": null,
+          "locationRestrictions": [
+            "Saudi Arabia"
+          ],
+          "timezoneRestrictions": [
+            3
+          ],
+          "categories": [
+            "Containerization-Platform-Engineering",
+            "DevOps-Engineering",
+            "Systems-Engineering",
+            "Kubernetes-Administration",
+            "Containerization-Engineering-Manager",
+            "Container-Orchestration-Engineer",
+            "Container-Engineer",
+            "Cloud-Engineer"
+          ],
+          "parentCategories": [],
+          "description": "<p>Müller's Solutions is seeking a skilled Containerization Platform Engineer (Saudi National Only) to support our innovative remote team. This role involves the design, implementation, and administration of containerized applications and environments using technologies such as Docker and Kubernetes. As a Containerization Platform Engineer, you will ensure the smooth operation, security, and scalability of our containerized solutions.</p><h3>Key Responsibilities:</h3><ul><li>Design and implement containerization strategies using Docker and Kubernetes.</li><li>Create and manage secure container images and deployments, adhering to best practices for security and performance.</li><li>Monitor and optimize container performance and resource utilization.</li><li>Develop and maintain CI/CD pipelines to automate application deployments and updates.</li><li>Provide technical support and troubleshooting for containerized applications.</li><li>Collaborate with development teams to ensure seamless integration of containerization into the application lifecycle.</li><li>Keep up-to-date with the latest trends and technologies in containerization and cloud services.</li><li>Document processes, workflows, and best practices for container management.</li></ul><h3>Requirements<p></p><p><strong>Requirements:</strong></p></h3><ul><li><strong>Bachelor's degree in Computer Science, Information Technology, or a related field.</strong></li><li><strong>Hands-on experience with containerization technologies, specifically Docker and Kubernetes.</strong></li><li><strong>Experience of 1-2 years with Kubernetes or OpenShift is essential.</strong></li><li><strong>3-5 years of experience in a relevant DevOps, Cloud, or Systems Engineering role is preferred.</strong></li><li><strong>Solid understanding of microservices architecture and associated deployment methodologies.</strong></li><li><strong>Familiarity with cloud platforms such as AWS, Azure, or Google Cloud is required.</strong></li><li><strong>Proficient in scripting languages like Python or Bash for automation tasks.</strong></li><li><strong>Familiarity with Infrastructure as Code (IaC) tools like Terraform or Ansible is a plus.</strong></li><li><strong>Excellent problem-solving skills in fast-paced environments.</strong></li><li><strong>Strong communication skills and the ability to collaborate effectively with remote teams.</strong></li></ul><h3><strong>Benefits</strong></h3><h3><strong>Why Join Us:</strong></h3><p><strong>Opportunity to work with a talented and passionate team.</strong></p><h3><strong>Competitive salary and benefits package.</strong></h3><p><strong>Exciting projects and innovative work environment.</strong></p><p>Originally posted on <a href=\"https://himalayas.app\">Himalayas</a></p>",
+          "pubDate": 1781853597,
+          "expiryDate": 1787037595,
+          "applicationLink": "https://himalayas.app/companies/muller-s-solutions/jobs/containerization-platform-saudi-national-only-remote",
+          "guid": "https://himalayas.app/companies/muller-s-solutions/jobs/containerization-platform-saudi-national-only-remote"
+        },
+        {
+          "title": "Sr. Infrastructure Engineer - Kubernetes",
+          "excerpt": "As a global leader in cybersecurity, CrowdStrike protects the people, processes and technologies that drive modern organizations.",
+          "companyName": "Crowdstrike",
+          "companySlug": "crowdstrike",
+          "companyLogo": "https://cdn-images.himalayas.app/95gzgg20hqvtq04pae5z2598mdmo",
+          "employmentType": "Full Time",
+          "minSalary": 140000,
+          "maxSalary": 215000,
+          "salaryPeriod": "annual",
+          "seniority": [
+            "Senior"
+          ],
+          "currency": "USD",
+          "locationRestrictions": [
+            "United States"
+          ],
+          "timezoneRestrictions": [
+            -10,
+            -9,
+            -8,
+            -7,
+            -6,
+            -5,
+            14
+          ],
+          "categories": [
+            "Infrastructure-Engineering",
+            "Kubernetes-Administration",
+            "Cloud-Infrastructure-Engineering",
+            "Site-Reliability-Engineering",
+            "DevOps-Engineering",
+            "Senior-Infrastructure-Engineer",
+            "Senior-Cloud-Infrastructure-Engineer",
+            "Senior-Kubernetes-Platform-Architect",
+            "Senior-Kubernetes-OpenShift-Engineer"
+          ],
+          "parentCategories": [],
+          "description": "<p style=\"text-align:left\">As a global leader in cybersecurity, CrowdStrike protects the people, processes and technologies that drive modern organizations. Since 2011, our mission hasn’t changed — we’re here to stop breaches, and we’ve redefined modern security with the world’s most advanced AI-native platform. Our customers span all industries, and they count on CrowdStrike to keep their businesses running, their communities safe and their lives moving forward. We’re also a mission-driven company. We cultivate a culture that gives every CrowdStriker both the flexibility and autonomy to own their careers. We’re always looking to add talented CrowdStrikers to the team who have limitless passion, a relentless focus on innovation and a fanatical commitment to our customers, our community and each other. Ready to join a mission that matters? The future of cybersecurity starts with you.</p><p><b>About the Role:</b><br>CrowdStrike is hiring for a Sr. Infrastructure Engineer to help with continued global expansion of the Falcon platform. We are looking for a highly technical, hands-on Engineer with experience using several open source projects commonly found in large scale deployments. The right candidate will have in depth experience with Kubernetes, its many add-ons, Prometheus, Thanos, Alertmanager, and Grafana. Additionally, the candidate will have experience and opinions on how to ensure reliability of platforms that are operating at massive scale.</p><h3>What You’ll Do:</h3><ul><li><p>Design and implement scalable hybrid multi-cloud Kubernetes platform solutions using your deep expertise in cloud-native infrastructure architecture and operations at scale</p></li><li><p>Optimize and maintain high reliability of large-scale infrastructure platform systems</p></li><li><p>Evaluate and integrate open-source technologies into existing systems workflows</p></li><li><p>Provide insights and technical direction for the continued evolution of Kubernetes infrastructure services</p></li><li><p>Mentor and help develop less-senior engineers to drive collaborative technical decision-making for infrastructure choices</p></li></ul><div><h3>What You’ll Need:</h3></div><ul><li><p>5+ years of Kubernetes experience including management of clusters with thousands of nodes</p></li><li><h3>Prometheus</h3></li><li><h3>Thanos</h3></li><li><h3>Alertmanager</h3></li><li><h3>Golang</h3></li><li><p>Experience with large scale, business-critical Linux environments</p></li><li><p>Experience operating in clouds: AWS, GCP, OCI</p></li><li><p>Experience operating in custom data centers</p></li><li><p>Familiarity and ability to manage on call shifts</p></li></ul><h3>Bonus Points:</h3><ul><li><h3>Experience writing Kubernetes operators</h3></li><li><p>Proven ability to work effectively with both local and remote teams</p></li><li><p>Rock solid communication skills, verbal and written</p></li><li><p>A combination of confidence and independence…with the prudence to know when to ask for help from the rest of the team.</p></li><li><p>Bachelor’s degree in an applicable field, such a CS, CIS or Engineering</p></li></ul>This role will require the candidate to periodically undergo and pass additional background and fingerprint check(s) consistent with government customer requirements.<h3>Benefits of Working at CrowdStrike:</h3><ul><li style=\"text-align:left !important\"><p>Market leader in compensation and equity awards</p></li><li style=\"text-align:left !important\"><p>Comprehensive physical and mental wellness programs </p></li><li style=\"text-align:left !important\"><p>Competitive vacation and holidays for recharge  </p></li><li style=\"text-align:left !important\"><h3>Paid parental and adoption leaves</h3></li><li style=\"text-align:left !important\"><p>Professional development opportunities for all employees regardless of level or role</p></li><li style=\"text-align:left !important\"><p>Employee Networks, geographic neighborhood groups, and volunteer opportunities to build connections</p></li><li style=\"text-align:left !important\"><p>Vibrant office culture with world class amenities</p></li><li style=\"text-align:left !important\"><p>Great Place to Work Certified™ across the globe</p></li></ul><p>CrowdStrike is proud to be an equal opportunity employer. We are committed to fostering a culture of belonging where everyone is valued for who they are and empowered to succeed. We support veterans and individuals with disabilities through our affirmative action program.</p><p>CrowdStrike is committed to providing equal employment opportunity for all employees and applicants for employment. The Company does not discriminate in employment opportunities or practices on the basis of race, color, creed, ethnicity, religion, sex (including pregnancy or pregnancy-related medical conditions), sexual orientation, gender identity, marital or family status, veteran status, age, national origin, ancestry, physical disability (including HIV and AIDS), mental disability, medical condition, genetic information, membership or activity in a local human rights commission, status with regard to public assistance, or any other characteristic protected by law. We base all employment decisions--including recruitment, selection, training, compensation, benefits, discipline, promotions, transfers, lay-offs, return from lay-off, terminations and social/recreational programs--on valid job requirements.</p><p>If you need assistance accessing or reviewing the information on this website or need help submitting an application for employment or requesting an accommodation, please contact us at <a href=\"mailto:recruiting@crowdstrike.com\">recruiting@crowdstrike.com</a>for further assistance.</p><p><a href=\"http://www.eeoc.gov/sites/default/files/2023-06/22-088_EEOC_KnowYourRights6.12ScreenRdr.pdf\" rel=\"nofollow ugc noopener noreferrer\" target=\"_blank\">Find out more about your rights as an applicant.</a></p><p>CrowdStrike participates in the E-Verify program.</p><p><a href=\"https://www.e-verify.gov/sites/default/files/everify/posters/EVerifyParticipationPoster.pdf\" rel=\"nofollow ugc noopener noreferrer\" target=\"_blank\"><u>Notice of E-Verify Participation</u></a></p><p><a href=\"https://www.e-verify.gov/sites/default/files/everify/posters/IER_RightToWorkPoster%20Eng_Es.pdf\" rel=\"nofollow ugc noopener noreferrer\" target=\"_blank\">Right to Work</a></p>CrowdStrike, Inc. is committed to fair and equitable compensation practices. Placement within the pay range is dependent on a variety of factors including, but not limited to, relevant work experience, skills, certifications, job level, supervisory status, and location. The base salary range for this position for all U.S. candidates is $140,000 - $215,000 per year, with eligibility for bonuses, equity grants and a comprehensive benefits package that includes health insurance, 401k and paid time off.<p>For detailed information about the U.S. benefits package, please <a href=\"http://crowdstrike.wd5.myworkdayjobs.com/crowdstrikecareers/page/a78c53e64ec61001f47d48a4699e0000\" rel=\"nofollow ugc noopener noreferrer\" target=\"_blank\">click here</a>. </p>Expected Close Date of Job Posting is:08-12-2026<p>Originally posted on <a href=\"https://himalayas.app\">Himalayas</a></p>",
+          "pubDate": 1784414701,
+          "expiryDate": 1789598700,
+          "applicationLink": "https://himalayas.app/companies/crowdstrike/jobs/sr-infrastructure-engineer-kubernetes-4889631701",
+          "guid": "https://himalayas.app/companies/crowdstrike/jobs/sr-infrastructure-engineer-kubernetes-4889631701"
+        },
+        {
+          "title": "DevOps Engineer (AI Inference)",
+          "excerpt": "Role OverviewJoin a global team of 550+ professionals building infrastructure and software that supports the entire digital ecosystem.",
+          "companyName": "Gcore",
+          "companySlug": "gcore",
+          "companyLogo": "",
+          "employmentType": "Full Time",
+          "minSalary": null,
+          "maxSalary": null,
+          "salaryPeriod": "annual",
+          "seniority": [
+            "Entry-level"
+          ],
+          "currency": null,
+          "locationRestrictions": [
+            "Cyprus",
+            "Poland",
+            "Serbia",
+            "United States"
+          ],
+          "timezoneRestrictions": [
+            -10,
+            -9,
+            -8,
+            -7,
+            -6,
+            -5,
+            1,
+            2,
+            14
+          ],
+          "categories": [
+            "DevOps-Engineer-Jobs",
+            "DevOps-Engineer"
+          ],
+          "parentCategories": [
+            "Developer"
+          ],
+          "description": "<h3>Role Overview</h3><p>Join a global team of 550+ professionals building infrastructure and software that supports the entire digital ecosystem. As a DevOps Engineer, you will be responsible for designing, deploying, and maintaining infrastructure and services that enable scalable and secure AI inference workloads on-premises.</p><h3>What You Will Do</h3><p>Design, develop, and maintain infrastructure for AI inference workloads, including GPU scheduling, model deployment pipelines, and data access patterns in on-prem environments. Build and manage monitoring and observability tools for AI inference platforms, including dashboards, alerts, and runbooks for model health and system performance.</p><h3>Why It Might Be a Fit</h3><p>Strong understanding of Kubernetes architecture, including CNI, CSI, operators, ingress/gateway, and control plane components. Hands-on experience operating and troubleshooting production Kubernetes clusters. Strong Linux and networking troubleshooting skills, including DNS, routing, firewalling, TLS, MTU, connectivity and performance issues.</p><h3>Requirements</h3><ul><li>Strong understanding of Kubernetes architecture</li><li>Hands-on experience operating and troubleshooting production Kubernetes clusters</li><li>Strong Linux and networking troubleshooting skills</li><li>Ability to develop automation and operational tooling using Python, Go, or Bash</li><li>Experience with Terraform, Ansible, or similar IaC/configuration management tools</li><li>Experience with VictoriaMetrics/Grafana or similar monitoring, alerting, and troubleshooting tools</li><li>Strong experience with Git-based workflows and CI/CD pipelines</li></ul><h3>Benefits</h3><ul><li>Competitive compensation</li><li>Flexible working hours and hybrid or remote options</li><li>Work from anywhere in the world for up to 45 days per year</li><li>Private medical insurance for you and your family</li><li>Extra paid vacation and sick leave days</li><li>Support for life’s important moments and celebrations</li><li>Language courses to help you connect and grow</li><li>Modern, welcoming offices with snacks, drinks, and entertainment</li><li>Team sports and social activities</li></ul><p>Originally posted on <a href=\"https://himalayas.app\">Himalayas</a></p>",
+          "pubDate": 1783017218,
+          "expiryDate": 1788201217,
+          "applicationLink": "https://himalayas.app/companies/gcore/jobs/devops-engineer-ai-inference",
+          "guid": "https://himalayas.app/companies/gcore/jobs/devops-engineer-ai-inference"
+        },
+        {
+          "title": "Senior Software Engineer - Accelerated Kubernetes Runtime Team",
+          "excerpt": "Join NVIDIA's Accelerated Kubernetes Runtime team and be at the forefront of building the next generation of GPU-accelerated Kubernetes runtime distributions.",
+          "companyName": "NVIDIA",
+          "companySlug": "nvidia",
+          "companyLogo": "https://cdn-images.himalayas.app/9jkqq85jdsq9vtt2fuhb5vq8y2zy",
+          "employmentType": "Full Time",
+          "minSalary": 184000,
+          "maxSalary": 356500,
+          "salaryPeriod": "annual",
+          "seniority": [
+            "Senior"
+          ],
+          "currency": "USD",
+          "locationRestrictions": [
+            "United States"
+          ],
+          "timezoneRestrictions": [
+            -10,
+            -9,
+            -8,
+            -7,
+            -6,
+            -5,
+            14
+          ],
+          "categories": [
+            "Software-Engineering",
+            "Platform-Engineering",
+            "Kubernetes",
+            "Cloud-Infrastructure",
+            "DevOps",
+            "Senior-Kubernetes-Engineer",
+            "Senior-Kubernetes-OpenShift-Engineer",
+            "Senior-Kubernetes-Platform-Architect",
+            "Staff-Kubernetes-Engineer",
+            "Senior-Cloud-Software-Engineer",
+            "Senior-Language-Runtime-Engineer",
+            "Software-Engineer"
+          ],
+          "parentCategories": [
+            "Developer"
+          ],
+          "description": "<p>Join <a href=\"https://himalayas.app/companies/nvidia\">NVIDIA</a>'s Accelerated Kubernetes Runtime team and be at the forefront of building the next generation of GPU-accelerated Kubernetes runtime distributions. As a Software Engineer on the Runtime team, you will design and build automation systems that enable engineers to seamlessly install, upgrade, and manage cluster runtime packages powering <a href=\"https://himalayas.app/companies/nvidia\">NVIDIA</a>'s AI Accelerators. You'll work on innovative controller systems that optimize runtime components for the latest GPU architectures including GB200/GB300, Vera Rubin and beyond, ensuring that AI researchers and developers have reliable, secure, and performant infrastructure at their fingertips.</p><p>The Runtime team is responsible for providing an <a href=\"https://himalayas.app/companies/nvidia\">NVIDIA</a>-Accelerated Kubernetes runtime that can be applied to any cluster using <a href=\"https://himalayas.app/companies/nvidia\">NVIDIA</a> accelerators, empowering engineers with automation-first, self-service tools that minimize manual effort while enhancing reliability and reproducibility.</p><h3>What you will be doing:</h3><ul><li><p>Design and implement runtime features that orchestrate the lifecycle of runtime components across thousands of Kubernetes clusters without manual intervention</p></li><li><p>Build and maintain the systems that configure,  package, validate, and distribute accelerated compute components</p></li><li><p>Develop Kubernetes controllers, CRDs, and operators that automate runtime installation, upgrade, and rollback operations with API driven workflows</p></li></ul><h3>What we need to see:</h3><ul><li><p>Bachelors in Computer Science, or equivalent experience</p></li><li><p>8+ years of professional experience, with at least 3 years of experience with Kubernetes development</p></li><li><p>Experience building production Kubernetes systems with significant expertise in controllers, operators, and CustomResourceDefinitions</p></li><li><p>Strong proficiency in Go and experience building scalable Go services that manage complex distributed systems</p></li><li><p>Hands-on experience with Helm, Kustomize, and managing Kubernetes manifest packaging and templating</p></li><li><p>Demonstrated ability to design and implement automation systems that replace manual processes with reliable, self-service tooling</p></li></ul><h3>Ways to stand out from the crowd:</h3><ul><li><p>Experience working with <a href=\"https://himalayas.app/companies/nvidia\">NVIDIA</a> Kubernetes components such as GPU operator, device plugins, or other HPC components in large scale production environments</p></li><li><p>Deep familiarity with OCI registries, artifact signing, SBOM generation, and supply chain security practices</p></li><li><p>Experience building multi-tenant platform services with focus on API design, versioning, and backward compatibility</p></li><li><p>Track record of migrating legacy systems to modern, automated platforms while maintaining zero-downtime operations and contributions to upstream Kubernetes/CNCF projects or experience extending Kubernetes API machinery</p></li><li><p>Deep understanding of Kubernetes architecture including API machinery, admission controllers, and resource lifecycle management</p></li></ul><p><a href=\"https://himalayas.app/companies/nvidia\">NVIDIA</a> is leading the way in groundbreaking developments in Artificial Intelligence, High-Performance Computing and Visualization. The GPU, our invention, serves as the visual cortex of modern computers and is at the heart of our products and services. Our work opens up new universes to explore, enables amazing creativity and discovery, and powers what were once science fiction inventions from artificial intelligence to autonomous cars. <a href=\"https://himalayas.app/companies/nvidia\">NVIDIA</a> is looking for great people like you to help us accelerate the next wave of artificial intelligence. <a href=\"https://himalayas.app/companies/nvidia\">NVIDIA</a> is widely considered to be one of the technology world's most desirable employers. We have some of the most forward-thinking and hardworking people on the planet working for us. If you're a creative, curious, and driven technical leader, we want to hear from you!</p>Your base salary will be determined based on your location, experience, and the pay of employees in similar positions. The base salary range is 184,000 USD - 287,500 USD for Level 4, and 224,000 USD - 356,500 USD for Level 5.<div><div><div><div><div><div><div><p>You will also be eligible for equity and <a href=\"https://www.nvidia.com/en-us/benefits/\" rel=\"nofollow ugc noopener noreferrer\" target=\"_blank\">benefits</a>.</p></div></div></div></div></div></div></div>Applications for this job will be accepted at least until April 11, 2026.<p>This posting is for an existing vacancy. </p><p><a href=\"https://himalayas.app/companies/nvidia\">NVIDIA</a> uses AI tools in its recruiting processes.</p><a href=\"https://himalayas.app/companies/nvidia\">NVIDIA</a> is committed to fostering a diverse work environment and proud to be an equal opportunity employer. As we highly value diversity in our current and future employees, we do not discriminate (including in our hiring and promotion practices) on the basis of race, religion, color, national origin, gender, gender expression, sexual orientation, age, marital status, veteran status, disability status or any other characteristic protected by law.<p>Originally posted on <a href=\"https://himalayas.app\">Himalayas</a></p>",
+          "pubDate": 1783950272,
+          "expiryDate": 1789134272,
+          "applicationLink": "https://himalayas.app/companies/nvidia/jobs/senior-software-engineer-accelerated-kubernetes-runtime-team",
+          "guid": "https://himalayas.app/companies/nvidia/jobs/senior-software-engineer-accelerated-kubernetes-runtime-team"
+        },
+        {
+          "title": "Customer Support Engineer",
+          "excerpt": "As a Customer Support Engineer at vCluster Labs, you aren’t just answering tickets; you are the technical lifeline our customers rely on when their Kubernetes and vCluster environments hit the wall.",
+          "companyName": "vCluster Labs",
+          "companySlug": "vcluster-labs",
+          "companyLogo": "https://cdn-images.himalayas.app/x1hbq3zkjtxl5nqf3bfm0yv47e47",
+          "employmentType": "Full Time",
+          "minSalary": 95000,
+          "maxSalary": 125000,
+          "salaryPeriod": "annual",
+          "seniority": [
+            "Entry-level"
+          ],
+          "currency": "EUR",
+          "locationRestrictions": [
+            "Germany",
+            "Poland"
+          ],
+          "timezoneRestrictions": [
+            1
+          ],
+          "categories": [
+            "Customer-Support-Engineer",
+            "Customer-Service-Engineer",
+            "Support-Engineer",
+            "Client-Support-Engineer",
+            "Technical-Support-Engineer",
+            "Customer-Solutions-Engineer",
+            "Customer-Support"
+          ],
+          "parentCategories": [
+            "Customer Service",
+            "Developer"
+          ],
+          "description": "<p style=\"min-height:1.5em\">As a <strong>Customer Support Engineer </strong>at <a href=\"https://himalayas.app/companies/vcluster-labs\">vCluster Labs</a>, you aren’t just answering tickets; you are the technical lifeline our customers rely on when their Kubernetes and vCluster environments hit the wall. In this role, you will dig into logs, configurations, and source code to drive complex issues to root cause, working side-by-side with engineering to turn customer pain into product improvements. You will join a small, high-trust support team where ownership and direct customer impact define every day, and you will help shape how support works here as we grow.</p><h3><strong>As a Customer Support Engineer, your role will include:</strong></h3><ul style=\"min-height:1.5em\"><li><p style=\"min-height:1.5em\"><strong>Deep Technical Troubleshooting: </strong>You will dive into Kubernetes and vCluster environments, logs, configurations, and occasionally source code, to debug complex issues and drive them to root cause. Every escalation is a puzzle to solve, not a ticket to close.</p></li><li><p style=\"min-height:1.5em\"><strong>Conversational Customer Support: </strong>You will provide responsive, technical support primarily through Slack channels and our ticketing system. You explain complex issues clearly and build trust with customers in real time.</p></li><li><p style=\"min-height:1.5em\"><strong>Engineering Collaboration: </strong>You will partner with engineering to escalate critical issues, communicate customer needs, and influence product improvements. You are the customer’s voice inside the company and the company’s voice with customers.</p></li><li><p style=\"min-height:1.5em\"><strong>Knowledge Base Building: </strong>You will document common issues, solutions, and best practices to scale your impact across the team. One-off fixes become reusable resources that level up everyone who comes after you.</p></li><li><p style=\"min-height:1.5em\"><strong>On-Call Flexibility: </strong>You will show up for urgent customer issues and customers across time zones when it matters. You own problems through to resolution, even when the clock is awkward.</p></li><li><p style=\"min-height:1.5em\"><strong>Shaping How We Support: </strong>You will help define how support works at <a href=\"https://himalayas.app/companies/vcluster-labs\">vCluster Labs</a> as we grow. With a small team and significant autonomy, the playbook you write today is the standard tomorrow.</p></li></ul><h3><strong>This role could be a fit for you if you bring:</strong></h3><ul style=\"min-height:1.5em\"><li><p style=\"min-height:1.5em\"><strong>Production Kubernetes Experience: </strong>You have 2+ years of hands-on Kubernetes experience in production environments, well beyond tutorials or coursework. You have lived through outages, debugged real workloads, and know how clusters behave under stress.</p></li><li><p style=\"min-height:1.5em\"><strong>Linux Fundamentals: </strong>You are comfortable on the command line and have strong Linux/Unix system administration skills, with a real understanding of the OS layer beneath Kubernetes.</p></li><li><p style=\"min-height:1.5em\"><strong>Kubernetes Depth: </strong>You have a solid grasp of Kubernetes fundamentals, pods, services, deployments, networking, storage, and RBAC, and can navigate a manifest or a live cluster without a cheat sheet.</p></li><li><p style=\"min-height:1.5em\"><strong>Written Communication: </strong>You write excellent technical explanations for Slack and ticket conversations, breaking down complex issues so customers actually understand them.</p></li><li><p style=\"min-height:1.5em\"><strong>Independent Ownership: </strong>You work independently, juggle multiple customer issues at once, and see problems through to resolution without needing to be managed.</p></li><li><p style=\"min-height:1.5em\"><strong>Learning Agility: </strong>You pick up new concepts fast and adapt as the product evolves. You are energized, not frustrated, by working on something that is still being built.</p></li></ul><h3><strong>Bonus points for:</strong></h3><ul style=\"min-height:1.5em\"><li><p style=\"min-height:1.5em\"><strong>vCluster Knowledge: </strong>Hands-on experience with Tenant Clusters or Tenant Isolation in Kubernetes.</p></li><li><p style=\"min-height:1.5em\"><strong>Cloud Platforms: </strong>Working knowledge of AWS, GCP, or Azure.</p></li><li><p style=\"min-height:1.5em\"><strong>Scripting Skills: </strong>Comfort writing automation in Bash or Python.</p></li><li><p style=\"min-height:1.5em\"><strong>Kubernetes Certifications: </strong>CKA, CKAD, or CKS.</p></li><li><p style=\"min-height:1.5em\"><strong>IaC Tooling: </strong>Experience with Helm, Terraform, or Kustomize.</p></li><li><p style=\"min-height:1.5em\"><strong>Customer-Facing Background: </strong>Prior experience in a customer-facing technical support role.</p></li></ul><h3><strong>About <a href=\"https://himalayas.app/companies/vcluster-labs\">vCluster Labs</a></strong></h3><p style=\"min-height:1.5em\">We are a venture-backed tech startup and the company pioneering Kubernetes virtualization for the AI era. We raised +$30M from top-tier VCs such as Khosla Ventures (first investor in OpenAI, GitLab, Stripe, Doordash) and are in a hyper-growth phase looking for motivated people to complement our team. Our headquarters are in San Francisco (Salesforce Tower), but our team is distributed around the globe and we have a remote-first work culture.</p><p style=\"min-height:1.5em\">We are the leading platform for operating GPU infrastructure, enabling AI Cloud providers to deliver a hyperscaler-like experience to their customers and AI factories that need to build that same experience for their internal teams. Our platform delivers the full operational stack operators need to run their GPU data centers — managed Kubernetes, fast isolated tenant provisioning, and automated node provisioning and lifecycle management — enabling them to accelerate time to value, reduce operational burden, and maximize the ROI of every GPU.</p><p style=\"min-height:1.5em\">We're the company behind vCluster, an open-source technology for virtualizing Kubernetes (10k+ GitHub stars, 40M+ virtual clusters created since 2021). Open source is part of our DNA. At KubeCon North America 2025, we launched our Infrastructure Tenancy Platform for AI — a Kubernetes-native framework purpose-built for running AI, ML, and GPU-intensive workloads anywhere, with an NVIDIA-validated reference architecture for DGX systems.</p><h3>Benefits</h3><h3>We offer the following benefits:</h3><ul style=\"min-height:1.5em\"><li><p style=\"min-height:1.5em\"><strong>Competitive Salary</strong>: We offer a competitive compensation package, including equity.</p></li><li><p style=\"min-height:1.5em\"><strong>Platinum-Level Insurance</strong>: Health, dental, vision, and life Insurance, including plans for you and eligible dependents (benefits vary depending on country).</p></li><li><p style=\"min-height:1.5em\"><strong>Flexible Working Schedule:  </strong>You have a doctor’s appointment or need to head to the supermarket to get groceries at 2pm? We won’t have an issue with that. To us, results matter more than clocking in and out at the same time every day.</p></li><li><p style=\"min-height:1.5em\"><strong>Workplace Flexibility: </strong> We’re very flexible about where you work. We know things can change in life and we’re happy to adjust the work environment for you along the way.</p></li></ul><h3><strong>Culture &amp; Values</strong></h3><p style=\"min-height:1.5em\">At <a href=\"https://himalayas.app/companies/vcluster-labs\">vCluster Labs</a>, we value and stand for:</p><ol style=\"min-height:1.5em\"><li><p style=\"min-height:1.5em\"><strong>Make it Happen: </strong>We have a relentless bias for action and the grit to push through obstacles. We do whatever it takes to figure it out, put in the work, and ruthlessly prioritize the actions that drive measurable impact for the business.</p></li><li><p style=\"min-height:1.5em\"><strong>Own the Outcome: </strong>We understand that our responsibility doesn't end when a task is checked off; it ends when the value is delivered. We connect our daily individual actions to the broader success of the company and our customers.</p></li><li><p style=\"min-height:1.5em\"><strong>Create Wow: </strong>We measure success by the experience we generate, both inside and outside the company. For our customers, this means impressive speed and intuitive experiences. For our team, this means going the extra mile to support one another and to continuously drive each other to new heights.</p></li><li><p style=\"min-height:1.5em\"><strong>Open Source, Open Mind:</strong> We are actively contributing to and maintaining open-source projects. Internally, we foster meritocracy — the strongest ideas win, no matter who or where they come from.</p></li><li><p style=\"min-height:1.5em\"><strong>Build Tomorrow’s Standards, Intentionally:</strong> We don't just ship software; we define the state-of-the-art of tomorrow. We are fearless in tearing down old approaches to build something better, but we are disciplined in how we do it because we know our users rely on our technology to run mission-critical infrastructure platforms.</p></li></ol><h3>Compensation Range: €95K - €125K</h3><p>Originally posted on <a href=\"https://himalayas.app\">Himalayas</a></p>",
+          "pubDate": 1779595933,
+          "expiryDate": 1784779930,
+          "applicationLink": "https://himalayas.app/companies/vcluster-labs/jobs/customer-support-engineer-2992032298",
+          "guid": "https://himalayas.app/companies/vcluster-labs/jobs/customer-support-engineer-2992032298"
+        },
+        {
+          "title": "Kubernetes Engineer (English)",
+          "excerpt": "About VEXXHOSTVEXXHOST is a leading provider of cloud infrastructure solutions, offering four core services: OpenStack, Kubernetes, Zuul, and MigrateKit.",
+          "companyName": "VEXXHOST Inc.",
+          "companySlug": "vexxhost-inc",
+          "companyLogo": "https://cdn-images.himalayas.app/4ydf8k7giq3x2nvuieinwn09stac",
+          "employmentType": "Full Time",
+          "minSalary": null,
+          "maxSalary": null,
+          "salaryPeriod": "annual",
+          "seniority": [
+            "Mid-level"
+          ],
+          "currency": "USD",
+          "locationRestrictions": [
+            "Australia",
+            "Canada",
+            "Germany",
+            "India",
+            "Netherlands",
+            "United Kingdom",
+            "United States"
+          ],
+          "timezoneRestrictions": [
+            -10,
+            -9,
+            -8,
+            -7,
+            -6,
+            -5,
+            -4,
+            -3.5,
+            0,
+            1,
+            5.5,
+            8,
+            8.75,
+            9,
+            9.5,
+            10,
+            10.5,
+            14
+          ],
+          "categories": [
+            "DevOps",
+            "Kubernetes-Engineer",
+            "Cloud-Infrastructure",
+            "Site-Reliability-Engineering",
+            "Container-Orchestration"
+          ],
+          "parentCategories": [],
+          "description": "<h3>About VEXXHOST</h3><p>VEXXHOST is a leading provider of cloud infrastructure solutions, offering four core services: OpenStack, Kubernetes, Zuul, and MigrateKit. We're committed to delivering high-performance, reliable, and secure cloud services to businesses worldwide. Our team is passionate about open-source technology and building cutting-edge infrastructure solutions.</p><h3>Position Overview</h3><p>We're seeking an experienced Kubernetes Engineer with deep, hands-on expertise to join our growing team. We're not looking for someone who simply knows how to use Kubernetes—we need someone who truly understands how it works at a fundamental level. In this role, you'll be responsible for designing, implementing, and maintaining Kubernetes infrastructure that powers our cloud platform. You'll work with a talented team of engineers to ensure our container orchestration systems are scalable, secure, and highly available.</p><h3>Key Responsibilities</h3><ul><li>Design, deploy, and manage production-grade Kubernetes clusters</li><li>Develop and maintain container orchestration solutions and CI/CD pipelines</li><li>Implement monitoring, logging, and alerting systems for Kubernetes environments</li><li>Troubleshoot and resolve complex issues in containerized applications and infrastructure</li><li>Collaborate with development teams to optimize application deployment and performance</li><li>Implement security best practices for container and cluster management</li><li>Automate infrastructure provisioning and configuration management</li><li>Participate in on-call rotation for production support</li><li>Document architecture, procedures, and best practices</li><li>Work with clients directly to solve their technical problems</li><li>Stay current with Kubernetes ecosystem developments and emerging technologies</li></ul><h3>Required Qualifications</h3><ul><li>5+ years of hands-on experience with Kubernetes in production environments</li><li>Deep understanding of Kubernetes internals and architecture</li><li>Experience with Cluster API</li><li>Strong understanding of container technologies</li><li>Proficiency with infrastructure as code tools (Terraform, Ansible, or similar)</li><li>Experience with Linux system administration and networking concepts</li><li>Knowledge of CI/CD pipelines and tools</li><li>Experience with monitoring and observability tools (Prometheus, Grafana, ELK stack)</li><li>Strong scripting skills (Python or Go)</li><li>Understanding of security principles and compliance requirements</li><li>Excellent problem-solving and troubleshooting abilities</li><li>Strong communication skills and ability to work in a collaborative environment</li></ul><h3>Preferred Qualifications </h3><ul><li>Certified Kubernetes Administrator (CKA) or Certified Kubernetes Application Developer (CKAD)</li><li>Experience with OpenStack and cloud infrastructure</li><li>Contributions to open-source projects</li><li>Experience with multi-cloud or hybrid cloud environments</li><li>Familiarity with Ceph storage solutions</li></ul><h3>What We Offer</h3><ul><li>Remote-first work environment</li><li>Professional development opportunities and conference attendance</li><li>Access to cutting-edge technology and infrastructure</li><li>Collaborative and inclusive team culture</li><li>Opportunity to work with open-source technologies</li><li>Be part of the foundation of a growing company</li></ul><p>Originally posted on <a href=\"https://himalayas.app\">Himalayas</a></p>",
+          "pubDate": 1783110645,
+          "expiryDate": 1785633181,
+          "applicationLink": "https://himalayas.app/companies/vexxhost-inc/jobs/kubernetes-engineer-english",
+          "guid": "https://himalayas.app/companies/vexxhost-inc/jobs/kubernetes-engineer-english"
+        }
+      ]
+    }
+  }
+]

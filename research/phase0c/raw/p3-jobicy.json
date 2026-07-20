@@ -1,0 +1,14 @@
+[
+  {
+    "url": "https://jobicy.com/api/v2/remote-jobs?count=10&industry=software-engineering",
+    "status": 400,
+    "ok": false,
+    "headers": {
+      "content-type": "application/json; charset=utf-8"
+    },
+    "body": {
+      "success": false,
+      "error": "Invalid 'industry' value. This value must contain a predefined 'industrySlug'. See here: https://jobicy.com/api/v2/remote-jobs?get=industries"
+    }
+  }
+]

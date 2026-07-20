@@ -1,0 +1,98 @@
+{
+  "recruitee": [
+    {
+      "url": "https://recruitee.recruitee.com/api/offers/",
+      "status": 404,
+      "ok": false,
+      "headers": {
+        "content-type": "application/json; charset=utf-8"
+      },
+      "body": {
+        "error": "Not Found"
+      }
+    }
+  ],
+  "smartrecruiters": [
+    {
+      "url": "https://api.smartrecruiters.com/v1/companies/VisaInc/postings",
+      "status": 200,
+      "ok": true,
+      "headers": {
+        "content-type": "application/json; charset=utf-8"
+      },
+      "body": {
+        "offset": 0,
+        "limit": 100,
+        "totalFound": 0,
+        "content": []
+      }
+    }
+  ],
+  "polymer": [
+    {
+      "url": "https://api.polymer.co/v1/hire/organizations/polymer/jobs",
+      "status": 422,
+      "ok": false,
+      "headers": {
+        "content-type": "application/json; charset=utf-8"
+      },
+      "body": {
+        "errors": {
+          "organization": [
+            "could not be found"
+          ]
+        }
+      }
+    }
+  ],
+  "workable": [
+    {
+      "url": "https://apply.workable.com/api/v1/accounts/workable?details=true",
+      "status": 404,
+      "ok": false,
+      "headers": {
+        "content-type": "text/plain; charset=utf-8"
+      },
+      "body": {
+        "__rawText": "Not Found"
+      }
+    },
+    {
+      "url": "https://www.workable.com/api/accounts/workable?details=true",
+      "status": 404,
+      "ok": false,
+      "headers": {
+        "content-type": "text/plain; charset=utf-8"
+      },
+      "body": {
+        "__rawText": "Not Found"
+      }
+    }
+  ],
+  "personio": [
+    {
+      "url": "https://personio.jobs.personio.de/xml?language=en",
+      "status": 200,
+      "ok": true,
+      "headers": {
+        "content-type": "text/xml"
+      },
+      "body": {
+        "__rawText": "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n\n<workzag-jobs>\n\n<position>\n    <id>1834171</id>\n    <subcompany>Personio SE &amp; Co. KG</subcompany>\n    <office>Munich</office>\n    <additionalOffices>\n        <office>Berlin</office>\n    </additionalOffices>\n    <department>Product and Tech</department>\n    <recruitingCategory>Engineering</recruitingCategory>\n    <name>Staff Software Engineer, Data Platform</name>\n    <jobDescriptions>\n        <jobDescription>\n            <name>The Role: How you&#039;ll make an impact at Personio</name>\n            <value>\n                <![CDATA[<strong>This position is hybrid based in either Dublin or Munich locations</strong><br><br>At Personio, your work transforms the way millions of people experience work every day. Join our Product &amp; Technology team, where we drive our customers’ outcomes by designing, developing and delivering innovative and high quality products. Be empowered to take ownership of your areas and make an impact on your team, our product, and our customers. <br><br>The Data <em>Platform</em> team is on a mission to enable all Personio engineers to build data rich experiences across Personio’s product. We are a rapidly growing, enablement-focused domain that strives to create secure, reusable, and extensible systems that accelerate the ability of our internal teams to create customer value, at scale. <br><br>To support our mission, we are looking for a Software Engineer with expertise in event-driven architecture and tooling, effective data governance, developer experience as well as continuously enhancing system reliability and operational excellence. You’ll partner with product and engineering peers across the organization to build a reliable, resilient, scalable and future-proof Personio data <em>platform</em>.]]>\n            </value>\n        </jobDescription>\n        <jobDescription>\n            <name>Role Responsibilities: What you&#039;ll do</name>\n            <value>\n                <![CDATA[<ul><li>You will conceptualize and own technical solutions end-to-end. Organizing effective groups of engineers to brainstorm, design and deliver impactful work.</li><li>You will invest in experimenting and building <em>platform</em> solutions that improve the developer experience for all product teams.</li><li>Your scope will include everything from how software components are built, tested, deployed, released and monitored across all environments, from the local machine straight through to our production clusters.</li><li>You will foster relationships and work closely with product teams to support them through <em>platform</em> specific migrations. Learn from and understand the challenges they face so that you can translate them into result-oriented solutions that help improve the reliability of the <em>platform</em>. </li><li>You will also spend time teaching engineers (especially new joiners) how to use our <em>tools</em>, whether by giving internal talks, organizing internal onboarding workshops"
+      }
+    }
+  ],
+  "pinpoint": [
+    {
+      "url": "https://pinpoint.pinpointhq.com/postings.json",
+      "status": 404,
+      "ok": false,
+      "headers": {
+        "content-type": "text/html; charset=utf-8"
+      },
+      "body": {
+        "__rawText": "<!DOCTYPE html>\n<html lang=\"en-GB\">\n  <head>\n<script nonce=\"34ef29b21fb377d166a2b90aff7276e7\">var _rollbarConfig = {\"accessToken\":\"0ab41f8274e04d638238b61af91c297a\",\"captureUncaught\":true,\"payload\":{\"environment\":\"production\",\"client\":{\"javascript\":{\"source_map_enabled\":true,\"code_version\":\"bf20e44e5223a69177a6424f8e0b9bb2d84734cd\",\"guess_uncaught_frames\":true}}},\"ignoredMessages\":[\"SP401 - Unauthorized\",\"SP403 - Forbidden\"],\"checkIgnore\":function(isUncaught, args, payload) {\n  var message = args[0];\n  var ignoredMobileMessages = [\n    `Uncaught SyntaxError: Unexpected token ';'`,\n    `SyntaxError: Unexpected token ';'. Expected ')' to end a compound expression.`\n  ];\n  var userAgentContainsMobile = window && window.navigator && window.navigator.userAgent && window.navigator.userAgent.indexOf('Mobile') !== -1;\n  if(userAgentContainsMobile && ignoredMobileMessages.includes(message)) {\n    // ignore this message\n    return true;\n  }\n  var ignoredMessages = [\n    `ResizeObserver loop completed with undelivered notifications.`,\n    `Script error.`\n  ];\n  if(ignoredMessages.includes(message)) {\n    // ignore this message\n    return true;\n  }\n  // Ignore errors from browser autofill and password managers (Safari, LastPass, 1Password, etc.)\n  if(message && message.indexOf('_AutofillCallbackHandler') !== -1) {\n    return true;\n  }\n  // Ignore errors from browser extensions (chrome, firefox, safari, edge)\n  var frames = payload && payload.body && payload.body.trace && payload.body.trace.frames;\n  if(frames && frames.some(function(frame) {\n    var filename = frame.filename || '';\n    return filename.indexOf('chrome-extension://') !== -1 ||\n           filename.indexOf('moz-extension://') !== -1 ||\n           filename.indexOf('safari-extension://') !== -1 ||\n           filename.indexOf('ms-browser-extension://') !== -1;\n  })) {\n    return true;\n  }\n  // Ignore errors from per-customer inline <script> snippets on careers sites: a\n  // single anonymous frame whose filename is the page URL (no /packs/ bundle frame).\n  // These bespoke snippets aren't tracked centrally so Rollbar can't tell us which\n  // one broke - non-actionable noise. Errors from our bundled JS still report.\n  if(frames && frames.length === 1) {\n    var inlineFrame = frames[0];\n    var inlineFilename = inlineFrame.filename || '';\n    var requestUrl = (payload && payload.request && payload.request.url) || '';\n    var pageUrl = requestUrl.split('?')[0];\n    if(inlineFrame.method === '[anonymous]' && inlineFilename.indexOf('/packs/') === -1 && inlineFilename === pageUrl) {\n      return true;\n    }\n  }\n  // Same root cause via Turbolinks: when Turbolinks navigates, assignNewBody\n  // sets document.body to the next page's HTML, which re-evaluates customer\n  // inline <script> snippets. If a snippet redeclares an identifier that's\n  // still on the source page, the browser throws and Turbolinks rethrows it\n  // with a stack made entirely of turbolinks.js frames - so the single-frame\n  // filter abo"
+      }
+    }
+  ]
+}

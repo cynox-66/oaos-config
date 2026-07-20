@@ -1,0 +1,641 @@
+{
+  "keySource": "research/phase0/adzuna-keys.txt (FALLBACK — phase0c copy absent)",
+  "results": [
+    {
+      "url": "https://api.adzuna.com/v1/api/jobs/in/search/1?app_id=269ef136&app_key=591b70cca3dcd5153e628ec00c163fc6&what=kubernetes&results_per_page=10",
+      "status": 200,
+      "ok": true,
+      "headers": {
+        "content-type": "application/json; charset=utf8"
+      },
+      "body": {
+        "results": [
+          {
+            "category": {
+              "__CLASS__": "Adzuna::API::Response::Category",
+              "label": "IT Jobs",
+              "tag": "it-jobs"
+            },
+            "longitude": 78.50806,
+            "company": {
+              "display_name": "Solugenix",
+              "__CLASS__": "Adzuna::API::Response::Company"
+            },
+            "adref": "eyJhbGciOiJIUzI1NiJ9.eyJzIjoiNEhZNVM0LUQ4Ukc2NGJwbS02Qnc2dyIsImkiOiI1Nzg2Nzg1NzM0In0.j5mVvIUA2kxXrCBH-BLnAuyDxcUfJq-Piqs4NLKS7Ns",
+            "location": {
+              "display_name": "Hyderabad, Telangana",
+              "area": [
+                "India",
+                "Telangana",
+                "Hyderabad"
+              ],
+              "__CLASS__": "Adzuna::API::Response::Location"
+            },
+            "salary_is_predicted": "0",
+            "redirect_url": "https://www.adzuna.in/land/ad/5786785734?se=4HY5S4-D8RG64bpm-6Bw6w&utm_medium=api&utm_source=269ef136&v=AAEADDF5DB2C5508A778459E46684D00EEDC4180",
+            "latitude": 17.40275,
+            "id": "5786785734",
+            "description": "We Are Hiring – AutoSys Administrator  Job Location: Hyderabad Shifts: 24/7 Rotational Shifts Work Mode: Onsite (5 Days Work From Office) Required Skills: ✅ Strong experience in AutoSys Administration (Installation, Configuration, Maintenance) ✅ Good Experience in AWS ✅ Good Experience in Kubernetes ✅ Immediate / Early joiners preferred We are looking for candidates with strong AutoSys administration experience along with working knowledge of AWS and Kubernetes.  Interested candidates can share…",
+            "created": "2026-07-03T17:38:14Z",
+            "__CLASS__": "Adzuna::API::Response::Job",
+            "title": "AutoSys Administrator"
+          },
+          {
+            "created": "2026-07-16T15:57:25Z",
+            "description": "Operations Engineer - Manufacturing Execution System(MES) Location: Bangalore (White Field) Mode: Hybrid Job Description We are looking for a Senior Operations Engineer for our MES. This role involves taking care of all the MES Operations activities of the Core Fundamental domain microservices of MES Foundations Team. Should be able to take care of all the monitoring, analysis and troubleshooting of all production issues and High Priority Incidents HPI. Should have hands on knowledge in ELK, Gr…",
+            "__CLASS__": "Adzuna::API::Response::Job",
+            "title": "Operations Engineer - Manufacturing Execution System(MES)",
+            "id": "5802784765",
+            "salary_is_predicted": "0",
+            "location": {
+              "display_name": "Bangalore, Karnataka",
+              "area": [
+                "India",
+                "Karnataka",
+                "Bangalore"
+              ],
+              "__CLASS__": "Adzuna::API::Response::Location"
+            },
+            "redirect_url": "https://www.adzuna.in/land/ad/5802784765?se=4HY5S4-D8RG64bpm-6Bw6w&utm_medium=api&utm_source=269ef136&v=BA3ED5FF3C3F16F807C94021569D4FFB5E76FAF4",
+            "category": {
+              "__CLASS__": "Adzuna::API::Response::Category",
+              "label": "IT Jobs",
+              "tag": "it-jobs"
+            },
+            "company": {
+              "__CLASS__": "Adzuna::API::Response::Company",
+              "display_name": "ITC Infotech"
+            },
+            "adref": "eyJhbGciOiJIUzI1NiJ9.eyJpIjoiNTgwMjc4NDc2NSIsInMiOiI0SFk1UzQtRDhSRzY0YnBtLTZCdzZ3In0.iglrnvM4Lj2f8YdRa-vbMQNsx-LzX26mBrHnkkEPxOE"
+          },
+          {
+            "adref": "eyJhbGciOiJIUzI1NiJ9.eyJpIjoiNTc5OTg4MTE1MiIsInMiOiI0SFk1UzQtRDhSRzY0YnBtLTZCdzZ3In0.NAf0lX8RAU-GNTCw5EPIdCvW-e7jDquxNBhBci53vxU",
+            "company": {
+              "__CLASS__": "Adzuna::API::Response::Company",
+              "display_name": "UPES"
+            },
+            "longitude": 77.946,
+            "category": {
+              "__CLASS__": "Adzuna::API::Response::Category",
+              "tag": "teaching-jobs",
+              "label": "Teaching Jobs"
+            },
+            "redirect_url": "https://www.adzuna.in/land/ad/5799881152?se=4HY5S4-D8RG64bpm-6Bw6w&utm_medium=api&utm_source=269ef136&v=12806A73FA136B28E6E4E2C15F671AF27858A0B9",
+            "salary_is_predicted": "0",
+            "location": {
+              "__CLASS__": "Adzuna::API::Response::Location",
+              "area": [
+                "India",
+                "Uttarakhand",
+                "Dehradun"
+              ],
+              "display_name": "Dehradun, Uttarakhand"
+            },
+            "id": "5799881152",
+            "latitude": 30.3541,
+            "__CLASS__": "Adzuna::API::Response::Job",
+            "title": "Assistant Professor-School of Computer Science",
+            "created": "2026-07-14T15:44:37Z",
+            "description": "UPES is looking to expand its team with dynamic individuals for the Assistant Professor(s) role in the School of Computer Science, Dehradun . We are seeking passionate academicians who are committed to excellence in teaching, research, and academic service . Key Responsibilities: Deliver engaging lectures and practical sessions. Develop and update course materials. Conduct high-quality research and publish in reputed journals/conferences. Mentor students and guide academic projects. Participate…"
+          },
+          {
+            "__CLASS__": "Adzuna::API::Response::Job",
+            "title": "Sales Engineering Lead — India",
+            "description": "About Operant AI Operant AI is the industry's most comprehensive real-time security platform for AI, Agents, and MCP. Recognized across six Gartner critical AI security reports — including AI TRiSM, MCP Gateways, API Protection, and Securing Custom-Built AI Agents — Operant is the category-defining company protecting the agentic AI era. Our platform delivers real-time discovery, detection, and defense across the full AI stack: LLM APIs, MCP servers and clients, autonomous agents, and the APIs t…",
+            "created": "2026-07-16T15:55:48Z",
+            "id": "5802783093",
+            "latitude": 17.40275,
+            "redirect_url": "https://www.adzuna.in/land/ad/5802783093?se=4HY5S4-D8RG64bpm-6Bw6w&utm_medium=api&utm_source=269ef136&v=291EA2FDB7B02386689A660517D7D8AEA320ABDC",
+            "location": {
+              "display_name": "Hyderabad, Telangana",
+              "area": [
+                "India",
+                "Telangana",
+                "Hyderabad"
+              ],
+              "__CLASS__": "Adzuna::API::Response::Location"
+            },
+            "salary_is_predicted": "0",
+            "company": {
+              "display_name": "Operant AI",
+              "__CLASS__": "Adzuna::API::Response::Company"
+            },
+            "adref": "eyJhbGciOiJIUzI1NiJ9.eyJzIjoiNEhZNVM0LUQ4Ukc2NGJwbS02Qnc2dyIsImkiOiI1ODAyNzgzMDkzIn0.5cVvhxnlkgcgmZ2wf7aD7XksGi1oHhFPco9Y0sMQl6M",
+            "category": {
+              "label": "Sales Jobs",
+              "tag": "sales-jobs",
+              "__CLASS__": "Adzuna::API::Response::Category"
+            },
+            "longitude": 78.50806
+          },
+          {
+            "adref": "eyJhbGciOiJIUzI1NiJ9.eyJzIjoiNEhZNVM0LUQ4Ukc2NGJwbS02Qnc2dyIsImkiOiI1NzgyNjA5MzAyIn0.32XAkILdc0t7NNEu1PExSQWOCkKRwnySeem9jn6Jhg8",
+            "company": {
+              "__CLASS__": "Adzuna::API::Response::Company",
+              "display_name": "Vrinda International"
+            },
+            "longitude": 72.82304,
+            "category": {
+              "__CLASS__": "Adzuna::API::Response::Category",
+              "tag": "it-jobs",
+              "label": "IT Jobs"
+            },
+            "redirect_url": "https://www.adzuna.in/details/5782609302?utm_medium=api&utm_source=269ef136",
+            "salary_is_predicted": "0",
+            "location": {
+              "area": [
+                "India",
+                "Maharashtra",
+                "Mumbai",
+                "Charni Road"
+              ],
+              "display_name": "Charni Road, Mumbai",
+              "__CLASS__": "Adzuna::API::Response::Location"
+            },
+            "id": "5782609302",
+            "latitude": 18.96301,
+            "contract_type": "permanent",
+            "__CLASS__": "Adzuna::API::Response::Job",
+            "title": "Kubernetes SME",
+            "created": "2026-07-01T04:14:45Z",
+            "description": "? Hiring Alert | Kubernetes SME ? ? Location: Mumbai ? Position: Kubernetes SME ? Experience: 7–10 Years We are looking for an experienced Kubernetes SME with strong expertise in container orchestration, cloud-native technologies, and enterprise Kubernetes environments. Requirements ✅ Strong hands-on experience with Kubernetes administration & architecture ✅ Experience managing Kubernetes clusters in enterprise environments ✅ Strong understanding of containerization (Docker) ✅ Experience with K…"
+          },
+          {
+            "__CLASS__": "Adzuna::API::Response::Job",
+            "title": "Product Engineer",
+            "description": "Role: Senior Product Engineers CICD Banking and Financial Services Exp: 3-10yr s Drive Date : 25 July 20 26Mode of Interview : Walk – in Dri veInterview Start Time : 10 AM- 1 pmLocation : TCS Yamuna Park, First floor – Noi da JDR oleCI/CD DevOps Product Engin eerRequired Technical Skill Set• CI/CD pipeline design & optimization (Jenkins, GitHub Actions, GitLab CI, Azure DevOps, AWS CodePipeli ne)• DevOps & Platform Engineering for enterprise produ cts• Containerization & Orchestration: Docker /…",
+            "created": "2026-07-19T02:12:42Z",
+            "id": "5806349693",
+            "latitude": 28.56579,
+            "redirect_url": "https://www.adzuna.in/land/ad/5806349693?se=4HY5S4-D8RG64bpm-6Bw6w&utm_medium=api&utm_source=269ef136&v=999472C9ADAD9563E08DD54BCC9CF7FDB802A26D",
+            "location": {
+              "__CLASS__": "Adzuna::API::Response::Location",
+              "display_name": "Noida, Ghaziabad",
+              "area": [
+                "India",
+                "Uttar Pradesh",
+                "Ghaziabad",
+                "Noida"
+              ]
+            },
+            "salary_is_predicted": "0",
+            "adref": "eyJhbGciOiJIUzI1NiJ9.eyJzIjoiNEhZNVM0LUQ4Ukc2NGJwbS02Qnc2dyIsImkiOiI1ODA2MzQ5NjkzIn0.NDKsNuNIt19BdPBrqu_L-EzwvQzMw56ukFd70QnbF9o",
+            "company": {
+              "__CLASS__": "Adzuna::API::Response::Company",
+              "display_name": "Tata Consultancy Services"
+            },
+            "category": {
+              "label": "IT Jobs",
+              "tag": "it-jobs",
+              "__CLASS__": "Adzuna::API::Response::Category"
+            },
+            "longitude": 77.3225
+          },
+          {
+            "redirect_url": "https://www.adzuna.in/land/ad/5774752603?se=4HY5S4-D8RG64bpm-6Bw6w&utm_medium=api&utm_source=269ef136&v=0737FED0799D7E4158DDC962E5AF83566055E486",
+            "location": {
+              "__CLASS__": "Adzuna::API::Response::Location",
+              "display_name": "Bangalore, Karnataka",
+              "area": [
+                "India",
+                "Karnataka",
+                "Bangalore"
+              ]
+            },
+            "salary_is_predicted": "0",
+            "adref": "eyJhbGciOiJIUzI1NiJ9.eyJpIjoiNTc3NDc1MjYwMyIsInMiOiI0SFk1UzQtRDhSRzY0YnBtLTZCdzZ3In0.Tzqiq7tjYLzbq5Ax98Zn-EmsWu-LAc3kp6hewOSxh1Q",
+            "company": {
+              "display_name": "ACL Digital",
+              "__CLASS__": "Adzuna::API::Response::Company"
+            },
+            "category": {
+              "tag": "it-jobs",
+              "label": "IT Jobs",
+              "__CLASS__": "Adzuna::API::Response::Category"
+            },
+            "__CLASS__": "Adzuna::API::Response::Job",
+            "title": "Network Software Engineering Leader - Presales & Delivery",
+            "description": "Dear All, Greetings of the day…! ACL Digital is actively hiring for Network Software Engineering Leader - Presales & Delivery to join our dynamic team in Bengaluru Job Requirement - 20 Years Industry Experience in Network Software Engineering Role Title - Networking Engineering Leader – Pre Sales & Delivery Role Overview We are seeking a senior, highly experienced Networking and Telecom Systems Architect who can own end to end responsibility from pre sales through delivery. This role requires d…",
+            "created": "2026-06-24T16:52:08Z",
+            "id": "5774752603"
+          },
+          {
+            "id": "3847732745",
+            "description": "We are looking to fill the role of Kubernetes engineer. To join our growing team, please review the list of responsibilities and qualifications. Kubernetes Engineer Responsibilities Install, configure, and maintain Kubernetes clusters. Develop Kubernetes-based solutions. Improve Kubernetes infrastructure. Work with other engineers to troubleshoot Kubernetes issues. Kubernetes Engineer Requirements & Skills Kubernetes administration experience, including installation, configuration, and troubles…",
+            "created": "2023-01-14T06:11:12Z",
+            "salary_max": 1000000,
+            "__CLASS__": "Adzuna::API::Response::Job",
+            "title": "Kubernetes Engineer",
+            "category": {
+              "__CLASS__": "Adzuna::API::Response::Category",
+              "tag": "it-jobs",
+              "label": "IT Jobs"
+            },
+            "company": {
+              "display_name": "Molecular Connections",
+              "__CLASS__": "Adzuna::API::Response::Company"
+            },
+            "adref": "eyJhbGciOiJIUzI1NiJ9.eyJpIjoiMzg0NzczMjc0NSIsInMiOiI0SFk1UzQtRDhSRzY0YnBtLTZCdzZ3In0.6FtGn5s4duaVdHQKdA3SrPeeemp5qzyFLzETAN7Yw_o",
+            "location": {
+              "__CLASS__": "Adzuna::API::Response::Location",
+              "display_name": "Bangalore, Karnataka",
+              "area": [
+                "India",
+                "Karnataka",
+                "Bangalore"
+              ]
+            },
+            "contract_time": "full_time",
+            "salary_is_predicted": "0",
+            "redirect_url": "https://www.adzuna.in/details/3847732745?utm_medium=api&utm_source=269ef136",
+            "salary_min": 500000
+          },
+          {
+            "__CLASS__": "Adzuna::API::Response::Job",
+            "title": "Java  Kubernetes",
+            "created": "2026-05-23T12:38:39Z",
+            "description": "Strong Java Developer with hands-on experience in building, deploying, debugging, and supporting Java applications on Kubernetes-based container platforms. Focus is on application development and deployment support rather than Kubernetes administration or security management. Experience with JMS/Messaging systems is preferred. Primary skills required: Core Java Kubernetes (Application Deployment & Execution) Docker & Containerization Build & Deployment Support scripting can be python also if no…",
+            "id": "5738530553",
+            "redirect_url": "https://www.adzuna.in/details/5738530553?utm_medium=api&utm_source=269ef136",
+            "salary_is_predicted": "0",
+            "contract_time": "full_time",
+            "location": {
+              "display_name": "Bangalore, Karnataka",
+              "area": [
+                "India",
+                "Karnataka",
+                "Bangalore"
+              ],
+              "__CLASS__": "Adzuna::API::Response::Location"
+            },
+            "adref": "eyJhbGciOiJIUzI1NiJ9.eyJzIjoiNEhZNVM0LUQ4Ukc2NGJwbS02Qnc2dyIsImkiOiI1NzM4NTMwNTUzIn0.H6NFPqLWxqhfH7og8ztVgd6QaFMFJwqMwD5RWcvetMI",
+            "company": {
+              "display_name": "Wissen Technology",
+              "__CLASS__": "Adzuna::API::Response::Company"
+            },
+            "category": {
+              "__CLASS__": "Adzuna::API::Response::Category",
+              "label": "IT Jobs",
+              "tag": "it-jobs"
+            }
+          },
+          {
+            "salary_is_predicted": "0",
+            "location": {
+              "area": [
+                "India",
+                "Assam",
+                "Kamrup",
+                "Guwahati"
+              ],
+              "display_name": "Guwahati, Kamrup",
+              "__CLASS__": "Adzuna::API::Response::Location"
+            },
+            "contract_time": "full_time",
+            "redirect_url": "https://www.adzuna.in/details/5720983015?utm_medium=api&utm_source=269ef136",
+            "longitude": 91.7317,
+            "category": {
+              "__CLASS__": "Adzuna::API::Response::Category",
+              "label": "IT Jobs",
+              "tag": "it-jobs"
+            },
+            "company": {
+              "__CLASS__": "Adzuna::API::Response::Company",
+              "display_name": "Jio"
+            },
+            "adref": "eyJhbGciOiJIUzI1NiJ9.eyJzIjoiNEhZNVM0LUQ4Ukc2NGJwbS02Qnc2dyIsImkiOiI1NzIwOTgzMDE1In0.hgkZnrMOjBJArI8mP44G2__KPzo4DxjhqFqoVHgvfz4",
+            "created": "2026-05-07T05:50:57Z",
+            "description": "Company Overview Jio, a leader in the Media & Telecommunications industry, is the driving force behind the growth of India's leading telecom operator with over 400 million customers. We provide innovative digital solutions for both B2C and B2B markets. Our offerings include an end-to-end 5G solution, cloud-native OSS platforms, probing solutions, and sophisticated BSS solutions, all designed to enhance functionality and engagement. We are headquartered in Navi Mumbai, Maharashtra. Learn more ab…",
+            "__CLASS__": "Adzuna::API::Response::Job",
+            "title": "Kubernetes Administrator",
+            "latitude": 26.1925,
+            "id": "5720983015"
+          }
+        ],
+        "count": 10326,
+        "mean": 1671081.87,
+        "__CLASS__": "Adzuna::API::Response::JobSearchResults"
+      }
+    },
+    {
+      "url": "https://api.adzuna.com/v1/api/jobs/in/search/1?app_id=269ef136&app_key=591b70cca3dcd5153e628ec00c163fc6&what=devops%20remote&results_per_page=10",
+      "status": 200,
+      "ok": true,
+      "headers": {
+        "content-type": "application/json; charset=utf8"
+      },
+      "body": {
+        "results": [
+          {
+            "salary_is_predicted": "0",
+            "created": "2026-01-26T11:22:07Z",
+            "company": {
+              "__CLASS__": "Adzuna::API::Response::Company",
+              "display_name": "Springer Capital"
+            },
+            "description": "About the Role We are seeking motivated DevOps Interns to join our team remotely for a 3-month internship . This internship provides hands-on experience with cloud platforms, CI/CD pipelines, and automation tools. While this is an unpaid internship , interns who successfully complete the program will receive a Completion Certificate and a Letter of Recommendation . Responsibilities Assist in setting up and managing CI/CD pipelines. Work with cloud infrastructure (AWS, Azure, or Google Cloud). S…",
+            "redirect_url": "https://www.adzuna.in/details/5600694866?utm_medium=api&utm_source=269ef136",
+            "salary_max": 4200000,
+            "contract_time": "full_time",
+            "location": {
+              "__CLASS__": "Adzuna::API::Response::Location",
+              "area": [
+                "India"
+              ],
+              "display_name": "India"
+            },
+            "id": "5600694866",
+            "salary_min": 600000,
+            "category": {
+              "label": "IT Jobs",
+              "tag": "it-jobs",
+              "__CLASS__": "Adzuna::API::Response::Category"
+            },
+            "contract_type": "contract",
+            "__CLASS__": "Adzuna::API::Response::Job",
+            "adref": "eyJhbGciOiJIUzI1NiJ9.eyJzIjoiSUZUQVRJLUQ4UkdUeU5PZ3l6LTVJUSIsImkiOiI1NjAwNjk0ODY2In0.Rb1td9sdDDEk3i6L4JQiWhrvzfIIidO4zxKhRMb3SWg",
+            "title": "DevOps Internship (Remote)"
+          },
+          {
+            "__CLASS__": "Adzuna::API::Response::Job",
+            "adref": "eyJhbGciOiJIUzI1NiJ9.eyJpIjoiMjgzMzEwNjA0MSIsInMiOiJJRlRBVEktRDhSR1R5Tk9neXotNUlRIn0.Zu9buJs9qz-2gXnPDFmzYd2_OaauZ-lJeB3RzCaMJ2k",
+            "title": "DevOps Engineer (Remote)",
+            "id": "2833106041",
+            "salary_min": 1500000,
+            "category": {
+              "tag": "it-jobs",
+              "label": "IT Jobs",
+              "__CLASS__": "Adzuna::API::Response::Category"
+            },
+            "location": {
+              "display_name": "India",
+              "__CLASS__": "Adzuna::API::Response::Location",
+              "area": [
+                "India"
+              ]
+            },
+            "salary_is_predicted": "0",
+            "created": "2022-01-22T04:51:38Z",
+            "redirect_url": "https://www.adzuna.in/details/2833106041?utm_medium=api&utm_source=269ef136",
+            "description": "Araali Networks is seeking a highly driven DevOps engineer to help streamline the release and deployment process, while assuring high quality. Responsibilities: Use best practices to streamline the release process Use IaC methods to manage cloud infrastructure Use test automation for release qualification Skills and Qualifications: Hands-on experience in managing release pipelines Good understanding of public cloud infrastructure Working knowledge of python test frameworks like pyunit, and auto…",
+            "company": {
+              "display_name": "Araali Networks Inc",
+              "__CLASS__": "Adzuna::API::Response::Company"
+            },
+            "contract_time": "full_time",
+            "salary_max": 2000000
+          },
+          {
+            "salary_is_predicted": "0",
+            "created": "2022-03-17T05:09:29Z",
+            "description": "ABOUT US: TURGAJO TECHNOLOGIES PVT TLD ( www.turgajo.com ) We are a product-based company, on a mission to capitalize on the evolution of new technologies and the new opportunities they present. We develop cutting-edge software solutions for the service industry and are working on some exciting projects that we believe have the power to fundamentally change and enhance the systems used by businesses every day. ROLE AND RESPONSIBILITIES At least 3 years of experience as a system administrator. K…",
+            "company": {
+              "__CLASS__": "Adzuna::API::Response::Company",
+              "display_name": "Turgajo Technologies"
+            },
+            "redirect_url": "https://www.adzuna.in/details/2977147745?utm_medium=api&utm_source=269ef136",
+            "salary_max": 1000000,
+            "contract_time": "full_time",
+            "location": {
+              "__CLASS__": "Adzuna::API::Response::Location",
+              "area": [
+                "India"
+              ],
+              "display_name": "India"
+            },
+            "id": "2977147745",
+            "salary_min": 700000,
+            "category": {
+              "label": "IT Jobs",
+              "tag": "it-jobs",
+              "__CLASS__": "Adzuna::API::Response::Category"
+            },
+            "contract_type": "permanent",
+            "__CLASS__": "Adzuna::API::Response::Job",
+            "adref": "eyJhbGciOiJIUzI1NiJ9.eyJpIjoiMjk3NzE0Nzc0NSIsInMiOiJJRlRBVEktRDhSR1R5Tk9neXotNUlRIn0.bgeisBni1oEPoNwAiMGEowIOGuF9JfZuA4qpRw3ov8Q",
+            "title": "DevOps Engineer (Permanent WFH)"
+          },
+          {
+            "created": "2026-07-19T15:09:46Z",
+            "salary_is_predicted": "0",
+            "company": {
+              "__CLASS__": "Adzuna::API::Response::Company",
+              "display_name": "Careersincloud"
+            },
+            "description": "About the opportunity: This role is with Sporty Group. CareersInCloud shares this opportunity to help professionals discover relevant technology careers. Hiring Company: Sporty Group Sporty Group is looking for an experienced DevOps Engineer to join its remote engineering team. This role involves managing AWS cloud infrastructure, Kubernetes environments, CI/CD pipelines, monitoring, automation, and improving system reliability. Key Responsibilities: • Manage AWS infrastructure and cloud operat…",
+            "redirect_url": "https://www.adzuna.in/details/5807034252?utm_medium=api&utm_source=269ef136",
+            "salary_max": 1200000,
+            "contract_time": "full_time",
+            "location": {
+              "display_name": "India",
+              "__CLASS__": "Adzuna::API::Response::Location",
+              "area": [
+                "India"
+              ]
+            },
+            "id": "5807034252",
+            "salary_min": 600000,
+            "category": {
+              "label": "IT Jobs",
+              "tag": "it-jobs",
+              "__CLASS__": "Adzuna::API::Response::Category"
+            },
+            "__CLASS__": "Adzuna::API::Response::Job",
+            "adref": "eyJhbGciOiJIUzI1NiJ9.eyJpIjoiNTgwNzAzNDI1MiIsInMiOiJJRlRBVEktRDhSR1R5Tk9neXotNUlRIn0.CeNpPRkrUolDU6ykV8zfcpqPSJinyRUNIY2kvnl7TYU",
+            "title": "DevOps Engineer (Remote) - Sporty Group"
+          },
+          {
+            "category": {
+              "label": "IT Jobs",
+              "tag": "it-jobs",
+              "__CLASS__": "Adzuna::API::Response::Category"
+            },
+            "id": "4926797603",
+            "salary_min": 1500000,
+            "title": "DevOps Engineer - remote, Full time",
+            "adref": "eyJhbGciOiJIUzI1NiJ9.eyJzIjoiSUZUQVRJLUQ4UkdUeU5PZ3l6LTVJUSIsImkiOiI0OTI2Nzk3NjAzIn0.xeniMP8YXG2od9MGy_nCnORuxAr-uj43rwW1JLl9GmQ",
+            "__CLASS__": "Adzuna::API::Response::Job",
+            "redirect_url": "https://www.adzuna.in/details/4926797603?utm_medium=api&utm_source=269ef136",
+            "description": "DevOps Engineer - remote, Full time Coincrowd is an innovative Fintech company. We offer a crypto platform for seamless payments, Crypto Vouchers, crypto trading, portfolio management, real time market data, breaking news and powerful analytics. Please visit https://coincrowd.com/ for more information. Domain : Finance, Blockchain, Crypto Job Description: We're seeking a detail-oriented and proactive DevOps Engineer who has a strong background in Google Cloud Platform (GCP) environments. The id…",
+            "company": {
+              "display_name": "CoinCROWD",
+              "__CLASS__": "Adzuna::API::Response::Company"
+            },
+            "salary_max": 3000000,
+            "contract_time": "full_time",
+            "salary_is_predicted": "0",
+            "created": "2024-11-05T12:41:21Z",
+            "location": {
+              "display_name": "India",
+              "area": [
+                "India"
+              ],
+              "__CLASS__": "Adzuna::API::Response::Location"
+            }
+          },
+          {
+            "category": {
+              "tag": "it-jobs",
+              "label": "IT Jobs",
+              "__CLASS__": "Adzuna::API::Response::Category"
+            },
+            "contract_type": "permanent",
+            "latitude": 21.18955,
+            "id": "5783689568",
+            "title": "DevOps Engineer - Remote Work | REF296553",
+            "adref": "eyJhbGciOiJIUzI1NiJ9.eyJzIjoiSUZUQVRJLUQ4UkdUeU5PZ3l6LTVJUSIsImkiOiI1NzgzNjg5NTY4In0.eF9Zp87fz2QgEkY3bcO934b4-ex7f1omOFCVPCEMywg",
+            "__CLASS__": "Adzuna::API::Response::Job",
+            "description": "At BairesDev, we've been leading the way in technology projects for over 15 years. We deliver cutting-edge solutions to giants like Google and the most innovative startups in Silicon Valley. Our diverse 4,000 team, composed of the world's Top 1% of tech talent, works remotely on roles that drive significant impact worldwide. When you apply for this position, you're taking the first step in a process that goes beyond the ordinary. We aim to align your passions and skills with our vacancies, sett…",
+            "redirect_url": "https://www.adzuna.in/details/5783689568?utm_medium=api&utm_source=269ef136",
+            "company": {
+              "__CLASS__": "Adzuna::API::Response::Company",
+              "display_name": "BairesDev"
+            },
+            "contract_time": "full_time",
+            "created": "2026-07-01T18:17:39Z",
+            "salary_is_predicted": "0",
+            "longitude": 72.8318,
+            "location": {
+              "area": [
+                "India",
+                "Gujarat",
+                "Surat"
+              ],
+              "__CLASS__": "Adzuna::API::Response::Location",
+              "display_name": "Surat, Gujarat"
+            }
+          },
+          {
+            "title": "DevOps Engineer - Remote Work | REF296539",
+            "__CLASS__": "Adzuna::API::Response::Job",
+            "adref": "eyJhbGciOiJIUzI1NiJ9.eyJpIjoiNTc4MzY4OTYwNiIsInMiOiJJRlRBVEktRDhSR1R5Tk9neXotNUlRIn0.J1cVZLmb0vhGeHNPnG3rYnnXamAXd2vizIK8r5ibrQY",
+            "latitude": 19.62413,
+            "contract_type": "permanent",
+            "category": {
+              "tag": "it-jobs",
+              "label": "IT Jobs",
+              "__CLASS__": "Adzuna::API::Response::Category"
+            },
+            "id": "5783689606",
+            "location": {
+              "display_name": "Aurangabad, Maharashtra",
+              "area": [
+                "India",
+                "Maharashtra",
+                "Aurangabad"
+              ],
+              "__CLASS__": "Adzuna::API::Response::Location"
+            },
+            "contract_time": "full_time",
+            "description": "At BairesDev, we've been leading the way in technology projects for over 15 years. We deliver cutting-edge solutions to giants like Google and the most innovative startups in Silicon Valley. Our diverse 4,000 team, composed of the world's Top 1% of tech talent, works remotely on roles that drive significant impact worldwide. When you apply for this position, you're taking the first step in a process that goes beyond the ordinary. We aim to align your passions and skills with our vacancies, sett…",
+            "company": {
+              "display_name": "BairesDev",
+              "__CLASS__": "Adzuna::API::Response::Company"
+            },
+            "redirect_url": "https://www.adzuna.in/details/5783689606?utm_medium=api&utm_source=269ef136",
+            "longitude": 76.46121,
+            "created": "2026-07-01T18:17:39Z",
+            "salary_is_predicted": "0"
+          },
+          {
+            "location": {
+              "display_name": "Madurai, Tamil Nadu",
+              "__CLASS__": "Adzuna::API::Response::Location",
+              "area": [
+                "India",
+                "Tamil Nadu",
+                "Madurai"
+              ]
+            },
+            "created": "2026-07-02T14:59:58Z",
+            "salary_is_predicted": "0",
+            "longitude": 78.1158,
+            "description": "At BairesDev, we've been leading the way in technology projects for over 15 years. We deliver cutting-edge solutions to giants like Google and the most innovative startups in Silicon Valley. Our diverse 4,000 team, composed of the world's Top 1% of tech talent, works remotely on roles that drive significant impact worldwide. When you apply for this position, you're taking the first step in a process that goes beyond the ordinary. We aim to align your passions and skills with our vacancies, sett…",
+            "redirect_url": "https://www.adzuna.in/details/5785245136?utm_medium=api&utm_source=269ef136",
+            "company": {
+              "display_name": "BairesDev",
+              "__CLASS__": "Adzuna::API::Response::Company"
+            },
+            "contract_time": "full_time",
+            "__CLASS__": "Adzuna::API::Response::Job",
+            "adref": "eyJhbGciOiJIUzI1NiJ9.eyJzIjoiSUZUQVRJLUQ4UkdUeU5PZ3l6LTVJUSIsImkiOiI1Nzg1MjQ1MTM2In0.OhN6SJvKBrSktW7RxCjHdzx2MfHWXD18gL_DoQtuP0s",
+            "title": "DevOps Engineer - Remote Work | REF296550",
+            "id": "5785245136",
+            "category": {
+              "__CLASS__": "Adzuna::API::Response::Category",
+              "label": "IT Jobs",
+              "tag": "it-jobs"
+            },
+            "latitude": 9.91051
+          },
+          {
+            "created": "2026-07-09T21:03:16Z",
+            "salary_is_predicted": "0",
+            "longitude": 79.90535,
+            "description": "At BairesDev, we've been leading the way in technology projects for over 15 years. We deliver cutting-edge solutions to giants like Google and the most innovative startups in Silicon Valley. Our diverse 4,000 team, composed of the world's Top 1% of tech talent, works remotely on roles that drive significant impact worldwide. When you apply for this position, you're taking the first step in a process that goes beyond the ordinary. We aim to align your passions and skills with our vacancies, sett…",
+            "redirect_url": "https://www.adzuna.in/details/5794247664?utm_medium=api&utm_source=269ef136",
+            "company": {
+              "display_name": "BairesDev",
+              "__CLASS__": "Adzuna::API::Response::Company"
+            },
+            "contract_time": "full_time",
+            "location": {
+              "area": [
+                "India",
+                "Madhya Pradesh",
+                "Jabalpur"
+              ],
+              "__CLASS__": "Adzuna::API::Response::Location",
+              "display_name": "Jabalpur, Madhya Pradesh"
+            },
+            "id": "5794247664",
+            "category": {
+              "__CLASS__": "Adzuna::API::Response::Category",
+              "label": "IT Jobs",
+              "tag": "it-jobs"
+            },
+            "contract_type": "permanent",
+            "latitude": 23.1308,
+            "adref": "eyJhbGciOiJIUzI1NiJ9.eyJzIjoiSUZUQVRJLUQ4UkdUeU5PZ3l6LTVJUSIsImkiOiI1Nzk0MjQ3NjY0In0.nlNa4A1-dRuowZTnZ9T_jpAProS0dGHjjY1NcV9bx9A",
+            "__CLASS__": "Adzuna::API::Response::Job",
+            "title": "DevOps Engineer - Remote Work | REF296971"
+          },
+          {
+            "id": "5795414564",
+            "category": {
+              "tag": "it-jobs",
+              "label": "IT Jobs",
+              "__CLASS__": "Adzuna::API::Response::Category"
+            },
+            "latitude": 23.042,
+            "__CLASS__": "Adzuna::API::Response::Job",
+            "adref": "eyJhbGciOiJIUzI1NiJ9.eyJpIjoiNTc5NTQxNDU2NCIsInMiOiJJRlRBVEktRDhSR1R5Tk9neXotNUlRIn0.Q16aZOko0VkaNCCaIsXAvKEVl2DlT-BX5JeGzBoY3ww",
+            "title": "DevOps Engineer - Remote Work | REF296967",
+            "salary_is_predicted": "0",
+            "created": "2026-07-10T15:09:52Z",
+            "longitude": 72.59465,
+            "description": "At BairesDev, we've been leading the way in technology projects for over 15 years. We deliver cutting-edge solutions to giants like Google and the most innovative startups in Silicon Valley. Our diverse 4,000 team, composed of the world's Top 1% of tech talent, works remotely on roles that drive significant impact worldwide. When you apply for this position, you're taking the first step in a process that goes beyond the ordinary. We aim to align your passions and skills with our vacancies, sett…",
+            "company": {
+              "__CLASS__": "Adzuna::API::Response::Company",
+              "display_name": "BairesDev"
+            },
+            "redirect_url": "https://www.adzuna.in/details/5795414564?utm_medium=api&utm_source=269ef136",
+            "contract_time": "full_time",
+            "location": {
+              "display_name": "Ahmedabad, Gujarat",
+              "area": [
+                "India",
+                "Gujarat",
+                "Ahmedabad"
+              ],
+              "__CLASS__": "Adzuna::API::Response::Location"
+            }
+          }
+        ],
+        "mean": 1873684.21,
+        "count": 59,
+        "__CLASS__": "Adzuna::API::Response::JobSearchResults"
+      }
+    }
+  ]
+}
