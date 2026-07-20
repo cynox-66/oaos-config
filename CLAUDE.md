@@ -98,7 +98,73 @@
   caller passes explicitly (no implicit fallback), so the Wave 1
   preferences.json swap is a one-line call-site change. NO LIVE CALLER
   YET — wiring into `oaos discover` happens when Stage 3 sources land.
-- Test count: 476 passing (36 test files) — `vitest run`
+- Discovery scope complete (Phase 1 Wave 1, decision D15):
+  src/discovery/scope/ + `oaos setup-scope [--show]`. Generates a proposed
+  discovery field map from the operator's real artifacts, the operator
+  confirms/unticks/adds interactively, result persists to preferences.json
+  (repo root, gitignored — operator-specific state). This file is the single
+  source of truth for what automated discovery searches for.
+  - Public surface: deriveScope / computeBacking / normalizeTerm (pure
+    derivation), loadPreferences / writePreferences / parsePreferences /
+    ScopeValidationError (strict I/O), reduceScope / parseScopeCommand /
+    initialState / buildPreferences (pure reducer), SCOPE_VOCABULARY /
+    PREFERENCES_VERSION / DEFAULT_PREFERENCES_PATH / PROPOSED_WORK_TYPES.
+  - UNFORGEABILITY PATTERN (remember this by name — it is the mechanism that
+    makes D15 structural rather than conventional): an unconfirmed scope is
+    NOT REPRESENTABLE as the persisted `Preferences` type. deriveScope returns
+    a `ScopeProposal`, never a Preferences. `buildPreferences` THROWS unless
+    state.status === "confirmed" and is the SOLE stamper of `confirmed_at`.
+    ⇒ The confirmed interactive path (`oaos setup-scope` → operator types
+    `done`) is the ONLY legitimate producer of preferences.json. No future
+    session may write that file directly — not by hand, not by script, not
+    "for convenience," not to unblock a test. Wave 5 query builders and
+    Wave 6 orchestration are CONSUMERS ONLY. If you find yourself generating
+    a preferences.json without the operator confirming it, stop.
+  - Three-layer lock enforcement for the two locked literals
+    (`remote_only: true`, `work_types.freelance: false`): (1) literal types,
+    (2) reducer refuses the toggle so the lock is unreachable through the UI,
+    (3) validator rejects a hand-edited file, naming the path. Also enforced:
+    aspirational === (operator_added && !evidence_backed), and
+    evidence_backed === (supporting_evidence_ids.length > 0). Validation is
+    strict on READ and WRITE and NEVER coerces — reject loudly with the
+    offending path (cli/resume.ts philosophy). Silently fixing a scope file
+    would be silently inferring scope, which D15 forbids.
+  - Matching is exact normalized equality (lowercase, trim, collapse
+    [-_\s]+, preserve "/"). NO fuzzy matching: "network" ≠ "Networking",
+    "eBPF/LSM concepts" ≠ "eBPF". Under-proposing is the correct failure
+    mode — a missed field costs one keystroke; substring matching would
+    silently widen discovery scope. On the operator's real artifacts this
+    leaves eBPF/Observability/AI-ML unticked (10 of 13 evidence-backed).
+  - Re-run semantics: an existing preferences.json becomes the baseline;
+    the operator's ticks ALWAYS WIN over a fresh proposal (an unticked field
+    stays unticked even after it becomes evidence-backed); evidence backing
+    is always recomputed so `aspirational` never goes stale; newly-backed
+    fields surface as `newly_backed` / `<NEW EVIDENCE>` — PRESENTATION ONLY,
+    never persisted. Operator-added custom terms are preserved, in order,
+    after the vocabulary.
+  - Vocabulary: DELIBERATE DEEP IMPORT of `DOMAIN_KEYWORDS` from
+    src/engines/normalization/config.ts (not via that engine's index.ts,
+    which does not re-export it). Chosen so no frozen engine file is
+    modified; "Other" is excluded by construction (the Record is keyed by
+    Exclude<Domain,"Other">). Never duplicate this list — discovery scope
+    and scoring stay aligned on ONE vocabulary.
+  - Reducer pattern: the interactive loop is a pure, total, non-mutating
+    state machine; the CLI is a thin shell (read line → parseScopeCommand →
+    resolve evidence for `add` → reduceScope → render). An inapplicable
+    action returns state unchanged with an explanatory `notice`. This is why
+    the whole decision surface is unit-testable without a TTY.
+  - Purity: ZERO Gemini, ZERO network, ZERO Airtable. The only I/O is
+    reading/writing preferences.json and the readline shell. Inputs come
+    from the EXISTING strict loaders — loadBaseResume/loadOperatorProfile
+    (cli/resume.ts) and loadInventory (evidence-matching engine); never
+    reimplement them.
+  - NOT WIRED YET: preferences.json has no consumer. Wave 5/6 feeds it to
+    per-source query builders and to the prerank gate's `vocabulary` input.
+    Per-source query-STRING construction is Wave 5, deliberately not here.
+  - 77 new tests. Live-verified against the real repo artifacts (derivation
+    + full interactive loop incl. aspirational add, duplicate refusal,
+    freelance-lock refusal, abort-writes-nothing).
+- Test count: 553 passing (40 test files) — `vitest run`
 - No tsconfig.json by design — tsx direct execution throughout
 - Test framework: vitest (`npm test` = `vitest run`)
 
@@ -165,10 +231,17 @@
 - Stage 2 discovery: COMPLETE. Parsing layer (6 parsers) merged to
   main; transport `oaos discover` on feat/discover-command
   (watched-folder → pipeline → persist → move), pending merge.
-- Prerank gate (Phase 1 Wave 0): COMPLETE, uncommitted on main
-  (src/discovery/prerank/ — new files only, zero diff elsewhere).
-  Built + tested + exported; not yet wired (Stage 3 has no sources).
-  38 new tests; full suite 476 green.
+- Prerank gate (Phase 1 Wave 0): COMPLETE, merged to main
+  (src/discovery/prerank/). Built + tested + exported; not yet wired
+  (Stage 3 has no sources). 38 tests.
+- Discovery scope setup (Phase 1 Wave 1, D15): COMPLETE, merged to main
+  (feat/discovery-scope-setup). src/discovery/scope/ + `oaos setup-scope`.
+  77 new tests; full suite 553 green. Zero diff to the 12 engines, the
+  pipeline, persistence, and prerank. NOTE: preferences.json is NOT in the
+  repo — the operator must run `oaos setup-scope` in a real TTY and confirm
+  to create it. Do not create it for them (see the unforgeability pattern
+  above).
 - NEXT UP (hold for direction): Stage 3 (automated per-source feeds:
   RSS / official APIs) — first Stage-3 source is also the prerank
-  gate's first live caller — or operator-chosen priority.
+  gate's first live caller — or Wave 5 query builders (first consumer of
+  preferences.json) — or operator-chosen priority.
