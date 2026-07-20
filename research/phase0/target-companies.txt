@@ -1,0 +1,34 @@
+# OAOS target-companies.txt — Phase 0 ATS probe input
+# Compiled 2026-07-19 from Gemini deep-research report
+# (Remote_Infra_Target_Companies.md). Tier/confidence in comments for
+# triage only — not read by the probe script.
+# NOTE: Tier 1 "Heka"/kubestellar claims are UNVERIFIED — see flag above.
+
+# ---- TIER 1: Direct OSS overlap (highest priority) ----
+AccuKnox, https://accuknox.com/careers                     # High — confirmed remote-India trainee roles; validated in real OAOS runs already
+Red Hat, https://redhat.com/en/jobs                         # Medium — Workday, rigid enterprise pipeline
+DSR Corporation, https://en.dsr-corporation.com/careers     # High IF Heka PRs confirmed — remote-friendly, India presence
+Amazon Web Services                                          # Low — internal ATS, EKS team only, hard to reach without referral
+MarketAxess, https://marketaxess.com/careers                # Low — hybrid NY/London, not remote-India
+IBM                                                           # Low — weak hook (3 UI PRs, if kubestellar claim holds), huge org
+
+# ---- TIER 2: Strong domain fit, confirmed remote-India hiring ----
+SigNoz, https://signoz.io/careers                            # High — Ashby, actively recruits India
+Last9, https://last9.io/careers                              # High — SRE/infra focus, chaos-engineering overlap
+Civo, https://civo.com/careers                               # High — has India sovereign cloud region
+Grafana Labs, https://grafana.com/careers                    # Medium — Greenhouse, competitive entry-level
+ClickHouse, https://clickhouse.com/company/careers           # Medium — Greenhouse, distributed-systems heavy
+One2N, https://one2n.io                                      # High — India-based consultancy
+Appsmith, https://appsmith.com/careers                       # Medium — Bengaluru-based, intern history
+
+# ---- TIER 3: Good tech fit, region-locked or unverified (deprioritize; outreach/networking candidates, not auto-apply) ----
+Chainguard, https://chainguard.dev/careers                   # Explicitly NO India in hiring regions
+Loft Labs, https://loft.sh/careers                            # Targets US/CA/DE/AU only
+Teleport, https://goteleport.com/careers                      # US/UK leaning, unclear
+Tailscale, https://tailscale.com/careers                      # Region-locked US/CA/UK/SG
+Solo.io, https://www.solo.io/company/careers                  # US/EMEA leaning, unclear
+Sysdig, https://www.sysdig.com/careers                        # US/Italy/Serbia/Japan, unclear
+LocalStack, https://localstack.cloud/careers                  # EU/US/UK/CA leaning, unclear
+Swirlds Labs, https://swirldslabs.com/careers                 # Historical India hires; now senior-only roles
+
+# ---- Personally-noticed additions — fill in companies you've seen posting remote-India roles ----

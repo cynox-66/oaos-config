@@ -1,0 +1,146 @@
+{
+  "redHat": {
+    "totalAll": 228,
+    "totalRemoteIndia": 19,
+    "note": ""
+  },
+  "ashbyOutcomes": [
+    {
+      "companyLabel": "SigNoz",
+      "triedNames": [
+        "signoz"
+      ],
+      "hitName": "signoz",
+      "liveCount": 12,
+      "remoteCount": 7,
+      "note": ""
+    },
+    {
+      "companyLabel": "Chainguard",
+      "triedNames": [
+        "chainguard"
+      ],
+      "liveCount": 0,
+      "remoteCount": 0,
+      "note": "no hit on Ashby for any of: chainguard"
+    },
+    {
+      "companyLabel": "Loft Labs",
+      "triedNames": [
+        "loftlabs",
+        "loft-labs",
+        "loft"
+      ],
+      "hitName": "loft",
+      "liveCount": 0,
+      "remoteCount": 0,
+      "note": ""
+    },
+    {
+      "companyLabel": "Swirlds Labs",
+      "triedNames": [
+        "swirldslabs",
+        "swirlds-labs",
+        "hashgraph"
+      ],
+      "hitName": "hashgraph",
+      "liveCount": 2,
+      "remoteCount": 2,
+      "note": ""
+    },
+    {
+      "companyLabel": "Teleport",
+      "triedNames": [
+        "teleport"
+      ],
+      "liveCount": 0,
+      "remoteCount": 0,
+      "note": "no hit on Ashby for any of: teleport"
+    }
+  ],
+  "teleportSanity": {
+    "leverCount": 0,
+    "ashbyLiveCount": 0,
+    "verdict": "Neither Lever nor Ashby show live postings for Teleport right now — both checked, both empty."
+  },
+  "variantOutcomes": [
+    {
+      "companyLabel": "AccuKnox",
+      "triedVariants": [
+        "accuknox"
+      ],
+      "platform": "none",
+      "liveCount": 0,
+      "remoteCount": 0,
+      "note": "no hit on Greenhouse or Lever for any of: accuknox"
+    },
+    {
+      "companyLabel": "Last9",
+      "triedVariants": [
+        "last9",
+        "last9io"
+      ],
+      "platform": "none",
+      "liveCount": 0,
+      "remoteCount": 0,
+      "note": "no hit on Greenhouse or Lever for any of: last9, last9io"
+    },
+    {
+      "companyLabel": "Civo",
+      "triedVariants": [
+        "civo",
+        "civocloud"
+      ],
+      "platform": "none",
+      "liveCount": 0,
+      "remoteCount": 0,
+      "note": "no hit on Greenhouse or Lever for any of: civo, civocloud"
+    },
+    {
+      "companyLabel": "One2N",
+      "triedVariants": [
+        "one2n",
+        "one2ninc"
+      ],
+      "platform": "none",
+      "liveCount": 0,
+      "remoteCount": 0,
+      "note": "no hit on Greenhouse or Lever for any of: one2n, one2ninc"
+    },
+    {
+      "companyLabel": "Appsmith",
+      "triedVariants": [
+        "appsmith",
+        "appsmithinc"
+      ],
+      "platform": "none",
+      "liveCount": 0,
+      "remoteCount": 0,
+      "note": "no hit on Greenhouse or Lever for any of: appsmith, appsmithinc"
+    },
+    {
+      "companyLabel": "Solo.io",
+      "triedVariants": [
+        "soloio",
+        "solo"
+      ],
+      "platform": "none",
+      "liveCount": 0,
+      "remoteCount": 0,
+      "note": "no hit on Greenhouse or Lever for any of: soloio, solo"
+    },
+    {
+      "companyLabel": "LocalStack",
+      "triedVariants": [
+        "localstack",
+        "localstackcloud"
+      ],
+      "platform": "none",
+      "liveCount": 0,
+      "remoteCount": 0,
+      "note": "no hit on Greenhouse or Lever for any of: localstack, localstackcloud"
+    }
+  ],
+  "requestCount": 38,
+  "budgetExhausted": false
+}
