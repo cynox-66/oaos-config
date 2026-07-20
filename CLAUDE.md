@@ -80,7 +80,25 @@
   (write + move to processed). NOTE: real run hit Gemini 429s — engines
   degraded gracefully (opportunity still written with fallback scores,
   file still moved), consistent with the daily free-tier cap.
-- Test count: 341 passing (29 test files) — `vitest run`
+- Prerank gate complete (Phase 1 Wave 0): src/discovery/prerank/ —
+  pure lexical pre-filter that selects top-K from a Stage-3 batch so
+  only survivors spend Gemini budget (~4 calls/item; free tier 500/day).
+  `prerank({items, vocabulary, config?}, {now?})` → {passed, gated,
+  stats}. Gates in order: insufficient_text (<40 chars) → negative_term
+  → location (remoteOnly default true; hybrid counts as onsite;
+  conservative — ambiguous passes) → below_floor → beyond_k. Score =
+  IDF-weighted vocab overlap, IDF over the current run's full batch
+  (idf = ln((N+1)/(df+1)), so a term in every item weighs 0). Homogeneous
+  batches (denominator 0 but matches exist, e.g. one company's board)
+  fall back to plain overlap so a 100%-relevant batch isn't gated out
+  wholesale; all-zero path reserved for genuine no-match. Invariant
+  enforced in-module (throws): passed+gated === items — nothing dropped
+  without a reason. 100% pure: zero LLM, zero network, zero I/O.
+  `vocabulary` is required — DEFAULT_VOCABULARY is exported data the
+  caller passes explicitly (no implicit fallback), so the Wave 1
+  preferences.json swap is a one-line call-site change. NO LIVE CALLER
+  YET — wiring into `oaos discover` happens when Stage 3 sources land.
+- Test count: 476 passing (36 test files) — `vitest run`
 - No tsconfig.json by design — tsx direct execution throughout
 - Test framework: vitest (`npm test` = `vitest run`)
 
@@ -147,5 +165,10 @@
 - Stage 2 discovery: COMPLETE. Parsing layer (6 parsers) merged to
   main; transport `oaos discover` on feat/discover-command
   (watched-folder → pipeline → persist → move), pending merge.
+- Prerank gate (Phase 1 Wave 0): COMPLETE, uncommitted on main
+  (src/discovery/prerank/ — new files only, zero diff elsewhere).
+  Built + tested + exported; not yet wired (Stage 3 has no sources).
+  38 new tests; full suite 476 green.
 - NEXT UP (hold for direction): Stage 3 (automated per-source feeds:
-  RSS / official APIs), or operator-chosen priority.
+  RSS / official APIs) — first Stage-3 source is also the prerank
+  gate's first live caller — or operator-chosen priority.
