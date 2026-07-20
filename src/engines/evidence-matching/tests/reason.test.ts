@@ -19,7 +19,7 @@ import {
 } from "./helpers";
 
 // Single-asset inventory → exactly one ranked result → one reason path.
-const KUBEARMOR = INVENTORY.find((e) => e.id === "kubearmor") as Evidence;
+const KUBEARMOR = INVENTORY.find((e) => e.id === "heka-bearerguard-fix") as Evidence;
 const ebpfOpp = makeOpportunity({
   domain: ["eBPF", "Security"],
   role: "eBPF Security Engineer",

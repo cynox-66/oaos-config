@@ -93,17 +93,23 @@ function isBot(username: string, type: string): boolean {
   return BOT_KEYWORDS.some((kw) => username.toLowerCase().includes(kw));
 }
 
-function calculateReachability(user: {
-  email: string | null;
-  blog: string | null;
-  twitter_username: string | null;
-  public_repos: number;
-  followers: number;
-}): number {
+// Spec (engine-specs.md §5): 1 base +2 email +1 twitter/blog +1 followers>100,
+// capped 5. A direct channel (GitHub/Slack where they're active) counts as
+// email-equivalent, so `activeDirectChannel` earns the same +2 as a public
+// email. twitter/blog is a single +1 signal category (not +1 each).
+export function calculateReachability(
+  user: {
+    email: string | null;
+    blog: string | null;
+    twitter_username: string | null;
+    public_repos: number;
+    followers: number;
+  },
+  activeDirectChannel = false
+): number {
   let score = 1;
-  if (user.email) score += 2;
-  if (user.twitter_username) score += 1;
-  if (user.blog) score += 1;
+  if (user.email || activeDirectChannel) score += 2;
+  if (user.twitter_username || user.blog) score += 1;
   if (user.followers > 100) score += 1;
   return Math.min(score, 5);
 }
@@ -207,7 +213,9 @@ async function scanRepo(
         username: username!,
       });
 
-      const reachability = calculateReachability(user);
+      // Every scanned user is an active contributor on this repo, so GitHub is
+      // an active direct channel (email-equivalent per spec §5).
+      const reachability = calculateReachability(user, true);
       const ossOverlap = inferOssOverlap(
         `${owner}/${repo}`,
         user.bio || "",
@@ -366,7 +374,10 @@ async function main() {
   });
 }
 
-main().catch((error) => {
-  console.error("Fatal error:", error);
-  process.exit(1);
-});
+// Only run as a CLI when executed directly (not when imported, e.g. by tests).
+if (process.argv[1] && import.meta.url === `file://${process.argv[1]}`) {
+  main().catch((error) => {
+    console.error("Fatal error:", error);
+    process.exit(1);
+  });
+}

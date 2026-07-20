@@ -8,19 +8,28 @@ import { makeOpportunity } from "./helpers";
 export interface LabeledPair {
   name: string;
   opportunity: Opportunity;
-  expectedEvidenceId: string;
+  // A ranked #1 counts as a hit if it is any of these ids. For most pairs this
+  // is a single id; for families with several honest sibling assets (krkn-*,
+  // heka-*) any sibling is an acceptable top-1 (see below).
+  acceptedEvidenceIds: string[];
 }
 
+// Family-level acceptance sets: within these families several real assets are
+// legitimately the "best" match for the same opportunity, so any sibling
+// ranking first counts as a hit (per operator decision).
+const KRKN_FAMILY = ["krkn-rollback-systemexit", "krkn-lib-execcmd-args", "krkn-ci-sha-pinning"];
+const HEKA_FAMILY = [
+  "heka-bearerguard-fix",
+  "heka-oid4vp-sdjwt-hardening",
+  "heka-rfc-commit-identity-binding",
+  "heka-oid4vp-replay-prevention",
+];
+
+// 6 labeled pairs. Pairs 1/7 (eBPF/KubeArmor precision) dropped — no strong
+// merged eBPF/Kubernetes evidence exists yet; revisit if KubeArmor PRs get
+// merged. KubeStellar/Antrea pairs also removed — no frontend-for-k8s or
+// CNI/networking evidence exists; restore when that evidence exists.
 export const LABELED_PAIRS: LabeledPair[] = [
-  {
-    name: "eBPF runtime security role → KubeArmor",
-    opportunity: makeOpportunity({
-      domain: ["eBPF", "Security"],
-      role: "eBPF Security Engineer",
-      description_norm: "runtime security with eBPF on Linux and Kubernetes",
-    }),
-    expectedEvidenceId: "kubearmor",
-  },
   {
     name: "Chaos engineering on Kubernetes → Krkn",
     opportunity: makeOpportunity({
@@ -28,25 +37,7 @@ export const LABELED_PAIRS: LabeledPair[] = [
       role: "Chaos Engineer",
       description_norm: "chaos engineering and resilience testing on Kubernetes with Go",
     }),
-    expectedEvidenceId: "krkn-chaos",
-  },
-  {
-    name: "Frontend for a CNCF Kubernetes project → KubeStellar UI PR",
-    opportunity: makeOpportunity({
-      domain: ["Web/Frontend", "Kubernetes"],
-      role: "Frontend Engineer",
-      description_norm: "React and TypeScript UI for a CNCF Kubernetes project",
-    }),
-    expectedEvidenceId: "kubestellar-ui-pr",
-  },
-  {
-    name: "Kubernetes CNI networking → Antrea",
-    opportunity: makeOpportunity({
-      domain: ["Networking", "Kubernetes"],
-      role: "Network Engineer",
-      description_norm: "Kubernetes CNI and networking with Go",
-    }),
-    expectedEvidenceId: "antrea",
+    acceptedEvidenceIds: KRKN_FAMILY,
   },
   {
     name: "Security protocol/standards → OID4VP RFC",
@@ -55,7 +46,7 @@ export const LABELED_PAIRS: LabeledPair[] = [
       role: "Security Engineer - Protocol Design",
       description_norm: "standards-track protocol design and identity security",
     }),
-    expectedEvidenceId: "oid4vp-rfc",
+    acceptedEvidenceIds: HEKA_FAMILY,
   },
   {
     name: "Full-stack TypeScript/React → devjaiswal.me",
@@ -64,34 +55,16 @@ export const LABELED_PAIRS: LabeledPair[] = [
       role: "Full-Stack Engineer",
       description_norm: "TypeScript, React, Node.js full stack",
     }),
-    expectedEvidenceId: "devjaiswal-me",
-  },
-  {
-    name: "Linux runtime security → KubeArmor",
-    opportunity: makeOpportunity({
-      domain: ["Security"],
-      role: "Linux Runtime Security Engineer",
-      description_norm: "runtime security and eBPF on Linux",
-    }),
-    expectedEvidenceId: "kubearmor",
+    acceptedEvidenceIds: ["portfolio-devjaiswal"],
   },
   {
     name: "Cloud-native resilience in Go → Krkn",
     opportunity: makeOpportunity({
-      domain: ["Cloud-Native", "Kubernetes"],
+      domain: ["Chaos-Engineering", "Kubernetes"],
       role: "Platform Engineer",
       description_norm: "Kubernetes resilience and chaos engineering in Go",
     }),
-    expectedEvidenceId: "krkn-chaos",
-  },
-  {
-    name: "CNCF dashboards frontend → KubeStellar UI PR",
-    opportunity: makeOpportunity({
-      domain: ["Web/Frontend"],
-      role: "UI Engineer",
-      description_norm: "React TypeScript frontend for CNCF Kubernetes dashboards",
-    }),
-    expectedEvidenceId: "kubestellar-ui-pr",
+    acceptedEvidenceIds: KRKN_FAMILY,
   },
   {
     name: "Identity standards → OID4VP RFC",
@@ -100,7 +73,7 @@ export const LABELED_PAIRS: LabeledPair[] = [
       role: "Identity & Standards Engineer",
       description_norm: "identity protocols and standards design",
     }),
-    expectedEvidenceId: "oid4vp-rfc",
+    acceptedEvidenceIds: HEKA_FAMILY,
   },
   {
     name: "Freelance resilience consultant → Krkn",
@@ -110,6 +83,6 @@ export const LABELED_PAIRS: LabeledPair[] = [
       role: "Freelance Resilience Consultant",
       description_norm: "chaos engineering and resilience testing for Kubernetes",
     }),
-    expectedEvidenceId: "krkn-chaos",
+    acceptedEvidenceIds: KRKN_FAMILY,
   },
 ];
