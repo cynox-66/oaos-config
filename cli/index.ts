@@ -24,6 +24,11 @@ Usage:
   oaos contacts --repo owner/repo [--min-contributions N]
                                                Scan a repo and import contributors
   oaos discover [--dir <path>] [--dry-run]     Parse alert emails in discovery-inbox/ → pipeline
+  oaos discover --stage3 --all-enabled [--dry-run]
+                                               Run every enabled Stage-3 source → pipeline
+  oaos discover --stage3 --source <name> [--dry-run]
+                                               Run one Stage-3 source (bypasses its table toggle)
+  oaos discover --stage3 --reenable <name>     Clear an auto-disabled source's health history
   oaos setup-scope [--show]                    Confirm the discovery scope → preferences.json
   oaos report                                  Weekly snapshot from the live base
 

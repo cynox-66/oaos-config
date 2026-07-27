@@ -3,6 +3,12 @@
 // Purpose: Pure output formatting for the OAOS CLI. Every function takes plain
 //          data and returns a string — no I/O, no engine imports — so the whole
 //          module is trivially unit-testable (F6).
+//
+// The one import below is TYPE-ONLY (erased at runtime), so this module stays
+// dependency-free while the Stage-3 run summary it renders cannot silently
+// drift from the orchestrator's own shape.
+
+import type { Stage3RunSummary } from "../src/discovery/orchestrator/types";
 
 // ============================================================
 // intake
@@ -167,6 +173,19 @@ export interface ReportRow {
   source: string;
 }
 
+/** One Stage-3 source's persisted health, as surfaced in the weekly report. */
+export interface SourceHealthRow {
+  name: string;
+  status: "healthy" | "probation" | "auto_disabled";
+  consecutiveFailures: number;
+  /** The last check's detail, carried VERBATIM from the source. */
+  detail: string;
+  /** ISO-8601 of the last check, or null when never checked. */
+  checkedAt: string | null;
+  /** Recovered from auto_disabled and awaiting an explicit `--reenable`. */
+  recovered: boolean;
+}
+
 export interface Report {
   discoveredThisWeek: number;
   sentThisWeek: number;
@@ -174,6 +193,11 @@ export interface Report {
   responsesAllTime: number;
   followUpsDueToday: number;
   topUnactioned: ReportRow[];
+  /**
+   * Stage-3 source health from discovery/health.json. Omitted (not empty)
+   * when no health file exists yet — a Stage-3 run has never happened.
+   */
+  sourceHealth?: SourceHealthRow[];
 }
 
 /** Render the weekly report (F5 definitions). */
@@ -199,6 +223,44 @@ export function formatReport(r: Report): string {
       );
     });
   }
+
+  if (r.sourceHealth !== undefined) {
+    lines.push("", "  Stage-3 source health:");
+    if (r.sourceHealth.length === 0) {
+      lines.push("    (no source has been checked yet)");
+    } else {
+      const disabled = r.sourceHealth.filter((s) => s.status === "auto_disabled");
+      const recovered = r.sourceHealth.filter((s) => s.recovered);
+
+      for (const s of r.sourceHealth) {
+        const mark =
+          s.status === "healthy" ? "✓" : s.status === "probation" ? "!" : "✗";
+        const fails = s.consecutiveFailures > 0 ? ` (${s.consecutiveFailures} consecutive)` : "";
+        lines.push(`    ${mark} ${s.name.padEnd(14)} ${s.status}${fails}`);
+        lines.push(`        ${s.detail}`);
+      }
+
+      if (disabled.length > 0) {
+        lines.push(
+          "",
+          `  ⚠ AUTO-DISABLED (${disabled.length}): ${disabled.map((s) => s.name).join(", ")}`,
+          "    These sources are skipped by discovery. Fall back to Stage-1 manual",
+          "    intake for them, then re-enable with:",
+          "      oaos discover --stage3 --reenable <name>"
+        );
+      }
+      if (recovered.length > 0) {
+        lines.push(
+          "",
+          `  ↻ RECOVERED (${recovered.length}): ${recovered.map((s) => s.name).join(", ")}`,
+          "    A clean check succeeded, but recovery never resumes a source by",
+          "    itself. Re-enable explicitly with:",
+          "      oaos discover --stage3 --reenable <name>"
+        );
+      }
+    }
+  }
+
   lines.push("────────────────────────────────────────────────");
   return lines.join("\n");
 }
@@ -267,5 +329,120 @@ export function formatDiscoverSummary(s: DiscoverSummary): string {
     `Totals: ${s.files.length} files · ${recognized} recognized · ${listings} listings · ` +
       `${written} written · ${unrecognized} unrecognized · ${errored} errors`
   );
+  return lines.join("\n");
+}
+
+// ============================================================
+// discover --stage3 (Wave 6 orchestration)
+// ============================================================
+
+/**
+ * Render one Stage-3 run summary. This is the operator-facing artifact of the
+ * whole wave — it must answer, at a glance: what ran, what it cost, what got
+ * through the gate, what broke, and what needs a decision.
+ */
+export function formatStage3Summary(s: Stage3RunSummary): string {
+  const header = s.dryRun
+    ? `oaos discover --stage3 (dry-run — nothing persisted) — ${s.runTimestamp}`
+    : `oaos discover --stage3 — ${s.runTimestamp}`;
+  const lines = ["", header, ""];
+
+  const ran = s.sources.filter((x) => x.status === "ran");
+  const skipped = s.sources.filter((x) => x.status !== "ran");
+
+  if (ran.length === 0) {
+    lines.push("  (no source ran)");
+  } else {
+    lines.push(
+      "  source          fetched  cal  dedup  passed  gated  written  health",
+      "  ─────────────────────────────────────────────────────────────────────"
+    );
+    for (const x of ran) {
+      const health = x.health
+        ? x.health.status === "healthy"
+          ? "✓ healthy"
+          : x.health.status === "probation"
+            ? `! probation (${x.health.consecutiveFailures})`
+            : "✗ auto-disabled"
+        : "—";
+      lines.push(
+        `  ${x.name.padEnd(14)} ${String(x.fetched).padStart(7)}  ${String(x.calendarRouted).padStart(3)}  ` +
+          `${String(x.deduped).padStart(5)}  ${String(x.prerankPassed).padStart(6)}  ` +
+          `${String(x.prerankGated).padStart(5)}  ${String(x.written).padStart(7)}  ${health}`
+      );
+    }
+  }
+
+  for (const x of skipped) {
+    const why =
+      x.status === "skipped_disabled"
+        ? "skipped — disabled in the source table"
+        : x.status === "skipped_auto_disabled"
+          ? `skipped — AUTO-DISABLED${x.health?.recovered ? " (recovered this run — needs --reenable)" : ""}`
+          : "skipped — build error";
+    lines.push(`  ${x.name.padEnd(14)} ${why}`);
+  }
+
+  if (s.prerank !== null) {
+    const reasons = Object.entries(s.prerank.gatedByReason)
+      .filter(([, n]) => n > 0)
+      .map(([r, n]) => `${r} ${n}`)
+      .join(", ");
+    lines.push(
+      "",
+      `  Prerank: ${s.prerank.total} in → ${s.prerank.passed} passed, ${s.prerank.gated} gated` +
+        (reasons === "" ? "" : ` (${reasons})`)
+    );
+  }
+
+  if (s.calendar !== null) {
+    const refused = s.calendar.refused.length;
+    lines.push(
+      `  Calendar (D18): ${s.calendar.written} entries written` +
+        (refused === 0 ? "" : ` · ${refused} refused (no url and no title)`)
+    );
+  }
+
+  const errored = s.sources.filter((x) => x.errors.length > 0);
+  if (errored.length > 0) {
+    lines.push("", "  Errors:");
+    for (const x of errored) {
+      for (const e of x.errors) lines.push(`    [${x.name}] ${e}`);
+    }
+  }
+
+  if (s.autoDisabled.length > 0) {
+    lines.push(
+      "",
+      `  ⚠ AUTO-DISABLED: ${s.autoDisabled.join(", ")}`,
+      "    Two consecutive failed health checks. Discovery will skip these until",
+      "    you run: oaos discover --stage3 --reenable <name>",
+      "    Until then, fall back to Stage-1 manual intake for them."
+    );
+  }
+  if (s.recovered.length > 0) {
+    lines.push(
+      "",
+      `  ↻ RECOVERED: ${s.recovered.join(", ")}`,
+      "    A clean check succeeded. Recovery never resumes a source by itself —",
+      "    re-enable explicitly: oaos discover --stage3 --reenable <name>"
+    );
+  }
+
+  const totals = ran.reduce(
+    (acc, x) => ({
+      fetched: acc.fetched + x.fetched,
+      calendar: acc.calendar + x.calendarRouted,
+      written: acc.written + x.written,
+    }),
+    { fetched: 0, calendar: 0, written: 0 }
+  );
+  lines.push(
+    "",
+    `Totals: ${ran.length} source${ran.length === 1 ? "" : "s"} ran · ${skipped.length} skipped · ` +
+      `${totals.fetched} fetched · ${totals.calendar} calendar · ${totals.written} written`
+  );
+  if (s.dryRun) lines.push("Dry run: nothing was persisted (no pipeline, no calendar, no health write).");
+
   return lines.join("\n");
 }
