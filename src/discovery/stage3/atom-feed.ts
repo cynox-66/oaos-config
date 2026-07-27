@@ -115,7 +115,7 @@ async function fetchFeed(
     };
   }
 
-  const items: RawItem[] = entries.map((e) => pipelineAdapter.toRawItem(e, config));
+  const items: RawItem[] = entries.map((e) => pipelineAdapter.toRawItem(e, config, deps));
   return { items, errors };
 }
 

@@ -1,0 +1,30 @@
+{
+  "jobs": [
+    {
+      "id": "8f3b1c2a-0001-0001-0001-000000000001",
+      "title": "DevOps Engineer",
+      "department": "Engineering",
+      "team": "Platform",
+      "location": "Remote",
+      "isRemote": true,
+      "isListed": true,
+      "employmentType": "FullTime",
+      "publishedAt": "2026-05-01T00:00:00.000Z",
+      "jobUrl": "https://jobs.ashbyhq.com/signoz/8f3b1c2a-0001-0001-0001-000000000001",
+      "applyUrl": "https://jobs.ashbyhq.com/signoz/8f3b1c2a-0001-0001-0001-000000000001/application"
+    },
+    {
+      "id": "8f3b1c2a-0002-0002-0002-000000000002",
+      "title": "Founding Backend Engineer",
+      "department": "Engineering",
+      "team": "Core",
+      "location": "Remote",
+      "isRemote": true,
+      "isListed": true,
+      "employmentType": "FullTime",
+      "publishedAt": "2026-04-15T00:00:00.000Z",
+      "jobUrl": "https://jobs.ashbyhq.com/signoz/8f3b1c2a-0002-0002-0002-000000000002",
+      "applyUrl": "https://jobs.ashbyhq.com/signoz/8f3b1c2a-0002-0002-0002-000000000002/application"
+    }
+  ]
+}

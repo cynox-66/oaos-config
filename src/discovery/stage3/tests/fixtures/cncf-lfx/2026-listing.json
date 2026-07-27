@@ -1,0 +1,23 @@
+[
+  {
+    "name": "01-Mar-May",
+    "path": "programs/lfx-mentorship/2026/01-Mar-May",
+    "type": "dir",
+    "sha": "aaa111aaa111aaa111aaa111aaa111aaa111aaa1",
+    "download_url": null
+  },
+  {
+    "name": "02-Jun-Aug",
+    "path": "programs/lfx-mentorship/2026/02-Jun-Aug",
+    "type": "dir",
+    "sha": "bbb222bbb222bbb222bbb222bbb222bbb222bbb2",
+    "download_url": null
+  },
+  {
+    "name": "03-Sep-Nov",
+    "path": "programs/lfx-mentorship/2026/03-Sep-Nov",
+    "type": "dir",
+    "sha": "ccc333ccc333ccc333ccc333ccc333ccc333ccc3",
+    "download_url": null
+  }
+]

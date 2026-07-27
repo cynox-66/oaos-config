@@ -14,6 +14,10 @@ discovery-inbox/processed/*
 # `oaos setup-scope`. Local only.
 preferences.json
 
+# Wave 4 D18 calendar sink — operator-local state, written by
+# src/discovery/stage3/calendar-writer.ts. Read by humans, not the pipeline.
+discovery/calendar.json
+
 research/phase0/adzuna-keys.txt
 research/phase0c/adzuna-keys.txt
 .DS_Store

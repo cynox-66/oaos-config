@@ -103,7 +103,7 @@ async function fetchRepo(
     return { items: [], errors: [parsed.error] };
   }
 
-  const items: RawItem[] = adapter.interpretEntries(parsed.entries, config);
+  const items: RawItem[] = adapter.interpretEntries(parsed.entries, config, deps);
   return { items, errors: [] };
 }
 
