@@ -225,7 +225,121 @@
     admission). NOT WIRED anywhere — Wave 3 builds concrete company_board
     platform adapters; Wave 4 builds concrete github_repo/atom_feed sources
     + the calendar writer; Wave 6 wires the orchestrator.
-- Test count: 600 passing (45 test files) — `vitest run`
+- Concrete company_board adapters complete (Phase 1 Wave 3):
+  src/discovery/stage3/adapters/{greenhouse,lever,workday,ashby}.ts + locked
+  registry src/discovery/stage3/registry.ts (exactly 8 entries — no
+  additions without an explicit operator decision). Frame (Wave 2) untouched;
+  adapters are the first live callers of `CompanyBoardAdapter`.
+  - Greenhouse: `GET boards-api.greenhouse.io/v1/boards/{token}/jobs?content=true`,
+    falls back to the plain listing on non-200 and returns those items
+    SILENTLY (no SourceError) — `fetchOne` has no channel to return items
+    AND a non-fatal warning at once, and description-less fallback items
+    still carry `url`, so Engine 1 flags them `needs_enrichment` and the
+    existing research/enrichment step fills the description from the
+    posting URL. Self-corrects downstream; do not add an error side-channel
+    for this without revisiting the frame.
+  - Lever: `GET api.lever.co/v0/postings/{token}?mode=json`, raw array,
+    `hostedUrl` → url.
+  - Workday CXS: `POST {base}/wday/cxs/{tenant}/{site}/jobs`, paginated
+    (limit 20) to `total`, hard safety ceiling 500 (ceiling hit before
+    `total` collected → throws `kind:"shape"`, no partial items returned).
+    Missing `site` on a registry entry throws before any request.
+    CONFIRMED URL CONSTRUCTION (live-verified, 2026-07-20):
+    `${base}/${site}${externalPath}` → 200/no redirect against a real Red
+    Hat posting; the site-less form `${base}${externalPath}` 404s. An
+    initial implementation silently dropped the `/${site}/` segment
+    (wrong assumption that `externalPath` carried the full path) — caught
+    during Step 2 review via a bounded 2-request live check, fixed before
+    merge. If a future session touches `workday.ts`'s url line, do not
+    drop the site segment.
+  - Ashby: `GET api.ashbyhq.com/posting-api/job-board/{token}` — CONFIRMED
+    URL FORM (the public `jobs.ashbyhq.com/{token}` board page is a
+    client-rendered SPA with no statically-visible data URL; this is
+    Ashby's documented no-auth public Job Board API, live-verified against
+    `signoz` + `hashgraph`). `jobUrl` (fallback `applyUrl`) → url.
+  - `src/discovery/stage3/scripts/live-verify.ts` — bounded one-request-
+    per-platform live check, run manually (`npx tsx
+    src/discovery/stage3/scripts/live-verify.ts`). EXCLUSION MECHANISM
+    (standing invariant): excluded from `vitest run` purely because its
+    filename doesn't match vitest's default test glob
+    (`**/*.{test,spec}.*`) — there is no vitest.config.ts to special-case.
+    If a vitest.config.ts is ever added, or the glob widened, this
+    exclusion must be preserved explicitly; the default suite must stay
+    network-free forever.
+  - 31 new tests (5 files). Full suite 631 green (50 files). Zero diff to
+    the 12 engines, pipeline, persistence, prerank, scope, or the Wave 2
+    frame files. NOT WIRED anywhere — adapters/registry aren't referenced
+    from `index.ts` or the CLI; Wave 6 wires the orchestrator.
+- Concrete github_repo/atom_feed sources + calendar writer complete
+  (Phase 1 Wave 4): src/discovery/stage3/sources/{esoc,cncf-lfx,lfdt,nlnet,
+  outreachy,ghsl,meta}.ts + src/discovery/stage3/calendar-writer.ts (D18).
+  - ESoC: real `RepoAdapter` over european-summer-of-code/esoc2026's
+    `cards/` dir — one `.md` file per project, `*batches*.md` excluded by
+    filename. Repo name is config (next cohort's rename = one-line change).
+  - NLnet: real `FeedPipelineAdapter`, `https://nlnet.nl/feed.atom`,
+    pipeline sink. Content-agnostic — every entry becomes a RawItem, no
+    classification; prerank/pipeline sort relevance downstream.
+  - GHSL (GitHub Security Lab): real `FeedPipelineAdapter`,
+    `https://securitylab.github.com/feed.xml`, pipeline sink — built on an
+    explicit OPERATOR OVERRIDE of my initial "reject" recommendation. Feed
+    verified valid/well-formed but currently 0 entries — a verified-
+    mechanism/dormant-content source, not broken. `est_volume_per_week: 0`
+    is honest current-state accounting (see `sources/meta.ts`), not a bug.
+    If a future session sees GHSL still at 0 items, that's expected until
+    GitHub Security Lab publishes.
+  - CNCF LFX Mentorship + LFDT: BOTH calendar-tracked, NOT parsed into
+    RawItems — D18 boundary, `items` is always `[]`. Original Wave 4 plan
+    assumed both fit the `RepoAdapter` pattern; live reality diverged for
+    each:
+    - CNCF: `programs/lfx-mentorship/{year}/{term}/project_ideas.md` is
+      verified empty for BOTH the concluded and active 2026 terms — real
+      project data lives on the external mentorship.lfx.linuxfoundation.org
+      platform, out of scope. Calendar entry per term instead.
+    - LFDT: `docs/projects/{year}.md` has a real 29-project table, but the
+      github_repo frame only ever fetches directory-listing METADATA, never
+      file content — structurally can't reach it without a frame change.
+      Operator ruled calendar-track over extending the frame again.
+    - Both: `year` is config, not hardcoded (2026→2027 rollover = one-line
+      change). Both reuse `FetchResult.calendarEntries` for a github_repo-
+      family source (originally documented as atom_feed-only) — deliberate,
+      non-breaking, no frame file touched to allow it.
+  - Outreachy: `FeedPipelineAdapter` NOT used — calendar sink only by
+    original design (D18), same boundary as CNCF/LFDT.
+  - GSoC: DOCUMENTED REJECT (not built). Target repo/org does not exist
+    under any live-verified URL variant tried within the bounded Step-1
+    budget — see src/discovery/stage3/README.md "Documented rejects".
+  - FRAME EXTENSION (operator-approved, additive, non-breaking):
+    `RepoAdapter.interpretEntries` and `FeedPipelineAdapter.toRawItem` each
+    gained a third `deps: SourceDeps` param — neither hook had ever been
+    called by a concrete source before Wave 4, so the inability to read
+    `deps.now()` for a real fetch timestamp was a latent Wave 2 gap.
+    `RawItem.fetched_at` is NOT decorative — it feeds `normalize.ts`'s
+    fingerprint-id + `date_found` directly. Verified backward-compatible by
+    re-running `github-repo.test.ts`/`atom-feed.test.ts` unmodified (both
+    still pass). If a future session adds a new `RepoAdapter`/
+    `FeedPipelineAdapter`, its signature must include `deps`.
+  - Calendar writer (D18): `writeCalendarEntries(entries, path?)` →
+    `discovery/calendar.json` (gitignored, operator-local, path is the
+    `CALENDAR_PATH` default). Upsert keyed by `url`, falling back to
+    `title`; BOTH missing → refused (recorded, never written), never an
+    invented key. STANDING INVARIANT: this file is read by humans only —
+    nothing written here is ever fed into `runPipeline`. If a future
+    session is tempted to wire `discovery/calendar.json` into the pipeline,
+    that crosses D18; stop and ask.
+  - 47 new tests (8 files: esoc, cncf-lfx, lfdt, nlnet, outreachy, ghsl,
+    calendar-writer, wave4-admission). Full suite 662 green (58 files).
+    Zero diff to the 12
+    engines, pipeline, persistence, prerank, scope, Wave 2 frame (besides
+    the two additive param extensions), or Wave 3 adapters/registry.
+    Live-verified per the bounded network policy: all 6 sources' real
+    `.fetch(deps)` matched Step 1 findings exactly, including GHSL's 0/0
+    (dormant-not-broken confirmed). NOT WIRED anywhere — none of the six
+    sources are constructed with real config outside the two manual
+    verification scripts (`scripts/verify-wave4.ts`,
+    `scripts/live-verify-wave4.ts`, both excluded from `vitest run` by
+    filename, same convention as Wave 3's `live-verify.ts`); Wave 6 wires
+    the orchestrator.
+- Test count: 662 passing (58 test files) — `vitest run`
 - No tsconfig.json by design — tsx direct execution throughout
 - Test framework: vitest (`npm test` = `vitest run`)
 
@@ -309,8 +423,30 @@
   47 new tests; full suite 600 green (45 files). Zero diff to the 12
   engines, pipeline, persistence, prerank, scope. Interfaces/scaffolding
   only — no concrete source, no live network call, no CLI wiring.
-- NEXT UP (hold for direction): Wave 3 (concrete company_board platform
-  adapters: Greenhouse, Lever, Workday, Ashby — first live caller of both
-  Stage3Source and the prerank gate) — or Wave 4 (github_repo + atom_feed
-  concrete sources + calendar writer) — or Wave 5 query builders (first
-  consumer of preferences.json) — or operator-chosen priority.
+- Concrete company_board adapters (Phase 1 Wave 3): COMPLETE, pending
+  operator go-ahead to branch/commit/merge. src/discovery/stage3/adapters/
+  {greenhouse,lever,workday,ashby}.ts + src/discovery/stage3/registry.ts
+  (locked 8-entry registry). 31 new tests; full suite 631 green (50 files).
+  Zero diff to the 12 engines, pipeline, persistence, prerank, scope, or the
+  Wave 2 frame. Live-verified per the bounded network policy: 4 platform
+  requests (Greenhouse 114/research 114, Lever 5/5, Workday 40/research 228 —
+  expected board-content drift, Ashby 14/research 12) all clean on first
+  attempt, zero retries; plus 2 bounded requests that caught and fixed a
+  Workday URL-construction bug (site segment was being dropped) before
+  merge — see the Wave 3 entry above for the confirmed
+  `${base}/${site}${externalPath}` form. Not wired anywhere (Wave 6).
+- Concrete github_repo/atom_feed sources + calendar writer (Phase 1
+  Wave 4): COMPLETE, pending operator go-ahead to branch/commit/merge.
+  src/discovery/stage3/sources/{esoc,cncf-lfx,lfdt,nlnet,outreachy,ghsl,
+  meta}.ts + src/discovery/stage3/calendar-writer.ts (D18) — see the Wave 4
+  entry above for the full per-source breakdown (two calendar-tracked
+  pivots, one operator-overridden build, one documented reject, two
+  frame-interface extensions). 47 new tests; full suite 662 green (58
+  files). Zero diff to the 12 engines, pipeline, persistence, prerank,
+  scope, or Wave 3. Live-verified per the bounded network policy: all 6
+  sources' `.fetch(deps)` output matched Step 1 findings exactly. Not
+  wired anywhere (Wave 6).
+- NEXT UP (hold for direction): Wave 5 query builders (first consumer of
+  preferences.json) — or Wave 6 orchestrator wiring (real SourceDeps, the
+  health-state loop, calendar writer's real call site, weekly-report
+  auto_disabled surfacing) — or operator-chosen priority.

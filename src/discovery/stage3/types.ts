@@ -134,7 +134,7 @@ export interface ContentsApiEntry {
 
 /** Turns a directory listing into RawItems. Per-program interpretation is Wave 4. */
 export interface RepoAdapter {
-  interpretEntries(entries: ContentsApiEntry[], config: RepoSourceConfig): RawItem[];
+  interpretEntries(entries: ContentsApiEntry[], config: RepoSourceConfig, deps: SourceDeps): RawItem[];
 }
 
 // ============================================================
@@ -166,7 +166,7 @@ export interface CalendarEntry {
 }
 
 export interface FeedPipelineAdapter {
-  toRawItem(entry: FeedEntry, config: FeedSourceConfig): RawItem;
+  toRawItem(entry: FeedEntry, config: FeedSourceConfig, deps: SourceDeps): RawItem;
 }
 
 // ============================================================

@@ -1,0 +1,24 @@
+{
+  "jobs": [
+    {
+      "id": 6012345,
+      "title": "Senior Software Engineer, Backend",
+      "location": { "name": "Remote - US" },
+      "absolute_url": "https://boards.greenhouse.io/grafanalabs/jobs/6012345",
+      "content": "<p>We are looking for a Senior Software Engineer to join our backend team.</p>",
+      "updated_at": "2026-06-01T12:00:00-05:00",
+      "departments": [{ "id": 1, "name": "Engineering" }],
+      "offices": [{ "id": 9, "name": "Remote" }]
+    },
+    {
+      "id": 6012399,
+      "title": "Developer Advocate",
+      "location": { "name": "Remote - EMEA" },
+      "absolute_url": "https://boards.greenhouse.io/grafanalabs/jobs/6012399",
+      "content": "<p>Help grow our OSS community.</p>",
+      "updated_at": "2026-05-15T09:30:00-05:00",
+      "departments": [{ "id": 2, "name": "Developer Relations" }],
+      "offices": [{ "id": 9, "name": "Remote" }]
+    }
+  ]
+}
