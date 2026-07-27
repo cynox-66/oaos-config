@@ -339,7 +339,105 @@
     `scripts/live-verify-wave4.ts`, both excluded from `vitest run` by
     filename, same convention as Wave 3's `live-verify.ts`); Wave 6 wires
     the orchestrator.
-- Test count: 662 passing (58 test files) — `vitest run`
+- Stage 3 orchestration complete (Phase 1 Wave 6): src/discovery/orchestrator/
+  + cli/commands/stage3.ts. The first wave that WIRES anything — prerank gets
+  its first live caller, health checks execute and persist, `oaos discover`
+  grows a Stage-3 path. Nothing is admitted or activated (that is Wave 8).
+  - `runStage3(deps)` — the coordinator. All side effects injected
+    (`Stage3RunDeps`), so every test uses fake SourceDeps + a memory health
+    store + a fake calendar sink + a fake processItem. Zero network, Airtable,
+    Gemini, or disk in the suite.
+  - `orchestrator/http.ts` `createSourceDeps()` is THE ONLY PLACE IN THE
+    CODEBASE THAT CONSTRUCTS REAL HTTP for Stage 3. Source modules still take
+    SourceDeps injected and import no HTTP client (Wave 2 standing rule). If a
+    source needs a capability SourceDeps lacks, extend the frame interface and
+    wire it here — never `import fetch` in a source module.
+  - SOURCE TABLE (D14): `orchestrator/sources.ts`, 10 rows —
+    greenhouse/lever/workday/ashby (company_board→pipeline),
+    esoc/nlnet/ghsl (→pipeline), cncf-lfx/lfdt/outreachy (→CALENDAR).
+    THIS IS THE FILE THE OPERATOR EDITS TO ACTIVATE A SOURCE. Every row ships
+    `enabled: false` — locked operator decision 2026-07-28; Wave 6 builds the
+    ability to run, Wave 8 decides what runs. `sources.test.ts` GUARDS that
+    default: if "ships every row disabled" fails, someone activated a source.
+    Two toggle levels: family-level here, per-company in stage3/registry.ts.
+  - `boardEntry` MUST slice COMPANY_REGISTRY by `adapter.platform`.
+    `createCompanyBoardSource` hands every entry it is given to
+    `adapter.fetchOne` WITHOUT checking `entry.platform`, so an unsliced
+    registry makes each adapter fetch every other platform's company against
+    its own API. Live-caught 2026-07-28: the Ashby row fetched all six
+    non-Ashby tokens → five spurious 404 SourceErrors, enough to drive a
+    healthy family to auto_disabled in two runs. Regression test drives every
+    board row with a recording fake. DO NOT DROP THE FILTER.
+  - THE THREE WAVE-6 RULINGS (operator, 2026-07-28):
+    - Q1 — Stage 3 runs the FULL pipeline in one invocation (fetch → normalize
+      → prerank → runPipeline → persist), matching Stage 2 exactly. Prerank's
+      maxPerRun 25 × ~4 Gemini calls = 100/run vs the 500/day cap ≈ 5 runs/day.
+      `--dry-run` is the inspect-before-spending path. Rejected alternative:
+      persist survivors un-analyzed — no bulk-score command exists, so that
+      loop is incomplete.
+    - Q2 — NO preferences.json ⇒ NO Stage 3. Deliberately no DEFAULT_VOCABULARY
+      fallback: D15 makes preferences.json the sole source of truth for what
+      discovery searches for, so a fallback would search a scope the operator
+      never approved. The refusal applies to `--dry-run` too. The ORCHESTRATOR
+      still takes `vocabulary` as injected data (prerank's no-file-reads rule
+      + disk-free tests); the CLI does the loading and the refusing.
+      `vocabulary.ts` maps Preferences → PrerankVocabulary asymmetrically:
+      domainTerms ← ENABLED preferences fields; roleTerms/negativeTerms ←
+      DEFAULT_VOCABULARY (preferences.json has neither, and extending its
+      schema is a scope-module change not taken this wave).
+      THIS WAVE NEVER WRITES preferences.json — read-only, and optional.
+    - Q3 — health persists to `discovery/health.json` (gitignored,
+      operator-local, sibling of calendar.json). AUTO-DISABLED SOURCES ARE
+      PROBED WITH healthCheck() ONLY, NEVER fetch() — that is what makes
+      `recoveredFromDisabled` live code instead of dead code. A clean probe
+      REPORTS recovery but never resumes the source.
+      `oaos discover --stage3 --reenable <name>` is the SOLE exit from
+      auto_disabled; no hand-editing of state files.
+  - Health file posture: a corrupt/malformed health.json THROWS naming the
+    path and the offending key — NEVER a silent reset, which would re-enable
+    every auto-disabled source without the operator learning a source had been
+    failing. A MISSING file is not corruption (starts empty, created on flush).
+    `oaos report` deliberately does not swallow that throw either.
+  - D18 ENFORCED, not assumed: a `sink: "calendar"` row's RawItems are DROPPED
+    and reported, so a format change can't silently push calendar content into
+    the pipeline. `sink` governs ITEMS ONLY — `calendarEntries` are routed to
+    the writer from any source, since that direction can't cross D18.
+  - Prerank runs ONCE over the whole run's combined batch, not per source
+    (IDF is defined over the run's full batch; maxPerRun is the run's Gemini
+    budget, not a per-source quota). Passed/gated are attributed back per
+    source by RawItem identity. Within-run duplicate fingerprints are collapsed
+    BEFORE preranking — loses nothing (writeOpportunity dedupes on the same
+    fingerprint anyway), just stops duplicates from spending Gemini budget.
+  - CLI: `oaos discover --stage3` + exactly one of `--all-enabled` /
+    `--source <name>` / `--reenable <name>`, plus `--dry-run`. A bare
+    `--stage3` is REFUSED rather than defaulting to a full run.
+    `--source <name>` DELIBERATELY BYPASSES the family toggle — naming a source
+    is the operator's activation gesture for that one invocation; the toggle
+    answers "what runs when I ask for everything". Per-company registry
+    toggles still apply either way.
+  - `oaos report` grows a Stage-3 health section: per-source status, last
+    check detail VERBATIM, auto-disabled + recovered alerts carrying the exact
+    re-enable command. Omitted entirely (not shown empty) when no Stage-3 run
+    has ever happened.
+  - 85 new tests (5 files: orchestrator, health-store, sources, vocabulary,
+    cli/stage3). Full suite 747 green (63 files). Zero diff to the 12 engines,
+    pipeline, persistence, prerank, scope, or any Stage-3 frame/source/adapter
+    file. Live-verified per the bounded network policy: ashby+nlnet flipped on
+    temporarily, ONE `--dry-run`, both reverted — ashby 17→13 passed/4 gated,
+    nlnet 342→179 deduped→12 passed/151 gated, prerank 180 in→25 passed, zero
+    errors, `discovery/` never created, preferences.json untouched. Mixed
+    two-family batch confirmed IDF works as designed (ashby = 9% of the batch
+    but took 13 of 25 passed slots; homogeneous fallback correctly did not
+    trigger).
+  - FINDINGS NOT ACTED ON (out of Wave 6 scope, relevant to Wave 7/8):
+    (1) ClickHouse appears to run an Ashby board (~171 postings) despite being
+    registered as `greenhouse` — surfaced by the buggy first run, registry.ts
+    untouched. (2) NLnet dedupes ~52% of its feed (342 items → 163
+    fingerprints) because every item shares the nlnet.nl host and Engine 1
+    extracts few distinct company/role pairs — an Engine 1 / Wave 4 question,
+    costs nothing today. Also: 342 items is a full-site feed, so at
+    maxPerRun 25 NLnet alone would dominate a run's budget.
+- Test count: 747 passing (63 test files) — `vitest run`
 - No tsconfig.json by design — tsx direct execution throughout
 - Test framework: vitest (`npm test` = `vitest run`)
 
@@ -446,7 +544,20 @@
   scope, or Wave 3. Live-verified per the bounded network policy: all 6
   sources' `.fetch(deps)` output matched Step 1 findings exactly. Not
   wired anywhere (Wave 6).
+- Stage 3 orchestration (Phase 1 Wave 6): COMPLETE, pending operator go-ahead
+  to branch/commit/merge. src/discovery/orchestrator/ + cli/commands/stage3.ts
+  — see the Wave 6 entry above for the three rulings, the source table and how
+  to toggle it, the health file posture, and the one live-caught bug (unsliced
+  company registry). 85 new tests; full suite 747 green (63 files). Zero diff
+  to the 12 engines, pipeline, persistence, prerank, scope, or any Stage-3
+  frame/source/adapter file. Modified only: .gitignore, cli/index.ts (help),
+  cli/commands/discover.ts (+8, a --stage3 branch; the Stage-2 path is
+  unchanged), cli/commands/report.ts (health section), cli/format.ts.
+  NOTE: preferences.json NOW EXISTS on the operator's machine (created
+  2026-07-27 via a confirmed `oaos setup-scope`, all 13 fields enabled) — that
+  is why the live dry-run was possible. Still never write it from a session.
 - NEXT UP (hold for direction): Wave 5 query builders (first consumer of
-  preferences.json) — or Wave 6 orchestrator wiring (real SourceDeps, the
-  health-state loop, calendar writer's real call site, weekly-report
-  auto_disabled surfacing) — or operator-chosen priority.
+  preferences.json for query-STRING construction) — or Wave 7 registry
+  expansion — or Wave 8 source activation (operator-paced: flip rows in
+  src/discovery/orchestrator/sources.ts, run `--source <name> --dry-run`
+  first) — or operator-chosen priority.

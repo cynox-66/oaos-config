@@ -23,6 +23,7 @@ import { detectSource, parseAlertEmail } from "../../src/discovery/stage2";
 import type { AlertSource } from "../../src/discovery/stage2";
 import { getFlag, hasFlag } from "../args";
 import { formatDiscoverSummary, type DiscoverFileResult } from "../format";
+import { runStage3Command } from "./stage3";
 
 /** Default watched folder (repo root). */
 export const DEFAULT_DIR = "discovery-inbox";
@@ -191,6 +192,13 @@ function makeProcessItem(): ProcessItem {
  * Airtable or moving files (and needs no Gemini/Airtable credentials).
  */
 export async function runDiscoverCommand(args: string[]): Promise<void> {
+  // Wave 6: `--stage3` switches to the Stage-3 orchestrator path. The Stage-2
+  // email-alert path below is unchanged.
+  if (hasFlag(args, "--stage3")) {
+    await runStage3Command(args);
+    return;
+  }
+
   const dir = resolve(process.cwd(), getFlag(args, "--dir") ?? DEFAULT_DIR);
   const dryRun = hasFlag(args, "--dry-run");
 

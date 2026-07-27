@@ -18,6 +18,11 @@ preferences.json
 # src/discovery/stage3/calendar-writer.ts. Read by humans, not the pipeline.
 discovery/calendar.json
 
+# Wave 6 Stage-3 source health — operator-local state, written by
+# src/discovery/orchestrator/health-store.ts. Reset only via
+# `oaos discover --stage3 --reenable <name>`.
+discovery/health.json
+
 research/phase0/adzuna-keys.txt
 research/phase0c/adzuna-keys.txt
 .DS_Store

@@ -5,9 +5,11 @@
 //          list reads (Opportunities + Outreach); date math uses ISO date-only
 //          strings to stay timezone-stable.
 
+import { existsSync } from "node:fs";
 import { createAirtableClient, FIELD_NAMES, TABLE_NAMES } from "../../src/persistence";
 import type { AirtableRecord } from "../../src/persistence";
-import { formatReport, type ReportRow } from "../format";
+import { createHealthStore, HEALTH_PATH } from "../../src/discovery/orchestrator";
+import { formatReport, type ReportRow, type SourceHealthRow } from "../format";
 
 const FO = FIELD_NAMES.opportunities;
 const FU = FIELD_NAMES.outreach;
@@ -48,6 +50,27 @@ function addDays(isoDate: string, days: number): string {
   const d = new Date(`${isoDate}T00:00:00Z`);
   d.setUTCDate(d.getUTCDate() + days);
   return d.toISOString().slice(0, 10);
+}
+
+/**
+ * Read persisted Stage-3 source health for the report, or undefined when no
+ * Stage-3 run has ever happened. A CORRUPTED file is not swallowed here — the
+ * store throws naming the path, and the report fails loudly rather than
+ * reporting "all healthy" from a file it could not read.
+ */
+function readSourceHealth(): SourceHealthRow[] | undefined {
+  if (!existsSync(HEALTH_PATH)) return undefined;
+  return createHealthStore(HEALTH_PATH)
+    .all()
+    .map((s) => ({
+      name: s.source,
+      status: s.status,
+      consecutiveFailures: s.consecutiveFailures,
+      detail: s.lastResult?.detail ?? "(never checked)",
+      checkedAt: s.lastResult?.checkedAt ?? null,
+      recovered: s.recoveredFromDisabled,
+    }))
+    .sort((a, b) => a.name.localeCompare(b.name));
 }
 
 /** Run the `oaos report` command. */
@@ -111,6 +134,7 @@ export async function runReport(): Promise<void> {
       responsesAllTime,
       followUpsDueToday,
       topUnactioned,
+      sourceHealth: readSourceHealth(),
     })
   );
 }
