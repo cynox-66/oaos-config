@@ -16,6 +16,7 @@ import { createPersistence } from "../../src/persistence";
 import { loadInventory } from "../../src/engines/evidence-matching/inventory";
 import { createGeminiClient } from "../../src/engines/scoring/gemini";
 import { loadPreferences, DEFAULT_PREFERENCES_PATH } from "../../src/discovery/scope";
+import type { Preferences } from "../../src/discovery/scope/types";
 import { writeCalendarEntries } from "../../src/discovery/stage3/calendar-writer";
 import {
   createHealthStore,
@@ -121,17 +122,23 @@ export function selectEntries(args: Stage3Args, table: SourceTableEntry[]): Sour
 // ============================================================
 
 /**
- * Load the confirmed discovery scope and map it to a prerank vocabulary.
+ * Load the confirmed discovery scope ONCE, and return both consumers' views of
+ * it: the prerank vocabulary and the Preferences object itself.
  *
- * Q2 ruling: with no preferences.json, Stage 3 REFUSES rather than falling
- * back to DEFAULT_VOCABULARY. Running against an unconfirmed scope would be
- * discovery against a field map the operator never approved — exactly what
- * D15 exists to prevent. This applies to `--dry-run` too: a preview computed
- * from the wrong vocabulary is a misleading preview.
+ * Q2 ruling (Wave 6): with no preferences.json, Stage 3 REFUSES rather than
+ * falling back to DEFAULT_VOCABULARY. Running against an unconfirmed scope
+ * would be discovery against a field map the operator never approved — exactly
+ * what D15 exists to prevent. This applies to `--dry-run` too: a preview
+ * computed from the wrong vocabulary is a misleading preview.
+ *
+ * Q2 ruling (Wave 5): the same loaded object is handed to query_net sources
+ * through SourceBuildContext. ONE loader, one read, no source touches disk.
+ * This path remains strictly READ-ONLY — no session ever writes preferences.json.
  */
-function loadVocabulary(path: string) {
+function loadScope(path: string): { vocabulary: ReturnType<typeof preferencesToVocabulary>; preferences: Preferences } {
   try {
-    return preferencesToVocabulary(loadPreferences(path));
+    const preferences = loadPreferences(path);
+    return { vocabulary: preferencesToVocabulary(preferences), preferences };
   } catch (err) {
     throw new Error(
       `Stage-3 discovery needs your confirmed discovery scope, and ${path} could not be loaded.\n` +
@@ -203,7 +210,7 @@ export async function runStage3Command(args: string[]): Promise<void> {
     return;
   }
 
-  const vocabulary = loadVocabulary(resolve(process.cwd(), DEFAULT_PREFERENCES_PATH));
+  const { vocabulary, preferences } = loadScope(resolve(process.cwd(), DEFAULT_PREFERENCES_PATH));
 
   const summary: Stage3RunSummary = await runStage3({
     entries,
@@ -214,7 +221,12 @@ export async function runStage3Command(args: string[]): Promise<void> {
     // In a dry run the processor is never invoked; skip building real clients
     // so a preview needs no Gemini/Airtable credentials.
     processItem: parsed.dryRun ? async () => ({ ok: false, errors: [] }) : makeProcessItem(),
-    buildContext: { githubToken: process.env.GITHUB_TOKEN },
+    buildContext: {
+      githubToken: process.env.GITHUB_TOKEN,
+      preferences,
+      adzunaAppId: process.env.ADZUNA_APP_ID,
+      adzunaAppKey: process.env.ADZUNA_APP_KEY,
+    },
     dryRun: parsed.dryRun,
   });
 

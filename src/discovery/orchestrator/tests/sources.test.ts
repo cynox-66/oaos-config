@@ -8,7 +8,20 @@
 import { describe, it, expect } from "vitest";
 import { STAGE3_SOURCES, findSourceEntry, sourceNames } from "../sources";
 import { COMPANY_REGISTRY } from "../../stage3/registry";
+import { preferencesFixture } from "../../stage3/tests/query-helpers";
 import type { SourceDeps } from "../../stage3/types";
+import type { SourceBuildContext } from "../types";
+
+/**
+ * The build context a real run supplies. Wave 5's query_net rows REQUIRE
+ * `preferences` and throw without it, so every "build every row" guard below
+ * uses this rather than `{}`.
+ */
+const ctx: SourceBuildContext = {
+  preferences: preferencesFixture(["Kubernetes", "Security"]),
+  adzunaAppId: "test-id",
+  adzunaAppKey: "test-key",
+};
 
 const noNetwork: SourceDeps = {
   httpGet: async () => {
@@ -21,7 +34,7 @@ const noNetwork: SourceDeps = {
 };
 
 describe("the Stage-3 source table", () => {
-  it("declares every source built in Waves 3 and 4", () => {
+  it("declares every source built in Waves 3, 4 and 5", () => {
     expect(sourceNames()).toEqual([
       "greenhouse",
       "lever",
@@ -33,6 +46,11 @@ describe("the Stage-3 source table", () => {
       "cncf-lfx",
       "lfdt",
       "outreachy",
+      "himalayas",
+      "freehire",
+      "adzuna",
+      "remotive",
+      "hn-hiring",
     ]);
   });
 
@@ -57,7 +75,7 @@ describe("the Stage-3 source table", () => {
 
   it("builds every row without touching the network, with a matching family", () => {
     for (const entry of STAGE3_SOURCES) {
-      const source = entry.build({});
+      const source = entry.build(ctx);
       expect(source.family).toBe(entry.family);
       expect(typeof source.fetch).toBe("function");
       expect(typeof source.healthCheck).toBe("function");
@@ -78,7 +96,7 @@ describe("the Stage-3 source table", () => {
     // would push a healthy family toward auto_disabled.
     for (const row of STAGE3_SOURCES.filter((e) => e.family === "company_board")) {
       const requested: string[] = [];
-      const source = row.build({});
+      const source = row.build(ctx);
       await source.fetch({
         httpGet: async (url) => {
           requested.push(url);
@@ -101,6 +119,39 @@ describe("the Stage-3 source table", () => {
     }
   });
 
+  it("routes every Wave 5 query_net row to the pipeline sink", () => {
+    expect(STAGE3_SOURCES.filter((e) => e.family === "query_net").map((e) => e.name)).toEqual([
+      "himalayas",
+      "freehire",
+      "adzuna",
+      "remotive",
+      "hn-hiring",
+    ]);
+    for (const row of STAGE3_SOURCES.filter((e) => e.family === "query_net")) {
+      expect(row.sink).toBe("pipeline");
+    }
+  });
+
+  it("query_net rows refuse to build without the operator's confirmed scope", () => {
+    // A missing preferences.json must surface as a reported build_error, never
+    // as a source quietly searching a scope nobody approved (D15).
+    for (const row of STAGE3_SOURCES.filter((e) => e.family === "query_net" && e.name !== "remotive")) {
+      expect(() => row.build({})).toThrow(/preferences\.json/);
+    }
+  });
+
+  it("remotive builds without scope — it is scope-independent by necessity", () => {
+    expect(() => findSourceEntry("remotive")?.build({})).not.toThrow();
+  });
+
+  it("adzuna builds without credentials and reports the gap at fetch time", async () => {
+    const source = findSourceEntry("adzuna")?.build({ preferences: ctx.preferences });
+    expect(source).toBeDefined();
+    const result = await source!.fetch(noNetwork);
+    expect(result.items).toEqual([]);
+    expect(result.errors[0].detail).toContain("ADZUNA_APP_ID");
+  });
+
   it("passes the GitHub token through to the github_repo family", () => {
     // Constructing with a token must not throw; the token is read lazily.
     const esoc = findSourceEntry("esoc");
@@ -116,7 +167,7 @@ describe("the Stage-3 source table", () => {
   it("never performs I/O at module load or build time", async () => {
     // Every row builds, and nothing calls the deps until fetch/healthCheck.
     for (const entry of STAGE3_SOURCES) {
-      const source = entry.build({});
+      const source = entry.build(ctx);
       expect(source.name.length).toBeGreaterThan(0);
     }
     // Sanity: the no-network deps really would throw if a build had used them.

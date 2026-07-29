@@ -36,6 +36,12 @@ import { createGhslSource } from "../stage3/sources/ghsl";
 import { createCncfLfxSource } from "../stage3/sources/cncf-lfx";
 import { createLfdtSource } from "../stage3/sources/lfdt";
 import { createOutreachySource } from "../stage3/sources/outreachy";
+import { createHimalayasSource } from "../stage3/sources/himalayas";
+import { createFreehireSource } from "../stage3/sources/freehire";
+import { createAdzunaSource } from "../stage3/sources/adzuna";
+import { createRemotiveSource } from "../stage3/sources/remotive";
+import { createHnHiringSource } from "../stage3/sources/hn-hiring";
+import { createRemotiveStore } from "../stage3/query/remotive-state";
 import type { CompanyBoardAdapter } from "../stage3/types";
 import type { SourceTableEntry } from "./types";
 
@@ -116,6 +122,63 @@ export const STAGE3_SOURCES: SourceTableEntry[] = [
     sink: "calendar",
     family: "atom_feed",
     build: () => createOutreachySource(),
+  },
+
+  // ── query_net → pipeline (Wave 5) ─────────────────────────────────────────
+  // These build their requests from the operator's CONFIRMED scope, handed in
+  // via `ctx.preferences`. Each throws at build time without it, which the
+  // orchestrator reports as `build_error` without aborting the run.
+  //
+  // Request cost per run, at the operator's 13 enabled fields:
+  //   himalayas 13 + 1 probe, freehire 13 + 1, adzuna 13 + 1,
+  //   remotive 1 (hard-capped, 0 on a second same-day run) + 0,
+  //   hn-hiring 2 + 1  →  47 requests with every row enabled.
+  {
+    name: "himalayas",
+    enabled: false,
+    sink: "pipeline",
+    family: "query_net",
+    build: (ctx) => createHimalayasSource(undefined, ctx.preferences),
+  },
+  {
+    name: "freehire",
+    enabled: false,
+    sink: "pipeline",
+    family: "query_net",
+    build: (ctx) => createFreehireSource(undefined, ctx.preferences),
+  },
+  {
+    // Credentials are optional at build time on purpose: without them the
+    // source reports a clear error rather than failing to build, so a missing
+    // env var does not read like a broken source.
+    name: "adzuna",
+    enabled: false,
+    sink: "pipeline",
+    family: "query_net",
+    build: (ctx) =>
+      createAdzunaSource(
+        undefined,
+        ctx.preferences,
+        ctx.adzunaAppId && ctx.adzunaAppKey
+          ? { appId: ctx.adzunaAppId, appKey: ctx.adzunaAppKey }
+          : undefined
+      ),
+  },
+  {
+    // Scope-independent by necessity — the API has no free-text query. Hard-
+    // capped at 1 call per UTC day against discovery/remotive.json.
+    name: "remotive",
+    enabled: false,
+    sink: "pipeline",
+    family: "query_net",
+    build: () => createRemotiveSource(undefined, createRemotiveStore()),
+  },
+  {
+    name: "hn-hiring",
+    enabled: false,
+    sink: "pipeline",
+    family: "query_net",
+    build: (ctx) => createHnHiringSource(undefined, ctx.preferences),
   },
 ];
 

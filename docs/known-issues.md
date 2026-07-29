@@ -279,3 +279,38 @@ payoff. Needs a supervised session (candidate directions: fuzzy/
 normalized anchoring, sentence-index anchoring, or a retry-with-
 verbatim-reminder — all touch the D8 protocol and must not be done
 opportunistically). Do NOT fix outside a dedicated session.
+
+## 14. Engine 1's completeness formula ignores description presence — content-less items pass as complete (LOG ONLY)
+
+`computeCompleteness` (src/engines/normalization/normalize.ts) scores
+`present_core_fields / 6` over `{company, role, category, domain≥1, url,
+comp_basis≠unknown}`. **The description is not one of the six.** So an item
+with a company, a role, a url and a category — but NO description text at
+all — scores 4/6 = 0.67, far above the 0.4 `ENRICHMENT_THRESHOLD`, and comes
+out `needs_enrichment: false`. An empty description only costs a point
+indirectly, when it happens to starve `deriveDomains` of matches.
+
+Consequence: `needs_enrichment` cannot be used as a "this item has no usable
+content" signal, and a source CANNOT mark its items as content-poor — `RawItem`
+has five fields and none of them is a flag, and `needs_enrichment` is computed,
+not settable.
+
+Discovered during Wave 5 (2026-07-28) while looking for the mechanism to mark
+Adzuna's 500-char-truncated descriptions. It affects more than Adzuna:
+
+- **The Greenhouse fallback rationale was wrong.** Wave 3's `greenhouse.ts`
+  falls back to the plain listing on non-200 and returns description-less items
+  silently, documented as safe because "Engine 1 flags them `needs_enrichment`
+  and the existing research/enrichment step fills the description." It does
+  not — those items score 4/6 and pass as complete. The CLAUDE.md line stating
+  otherwise was corrected 2026-07-28; the code is unchanged and still fails
+  safe (the items carry `url`), but the stated mechanism does not exist.
+- Wave 5 worked around it rather than changing Engine 1 (frozen): the content
+  quarantine (`query/truncation.ts`) makes truncated text structurally
+  unreachable as a description instead of relying on a flag.
+
+Candidate fix for a dedicated session: add description presence to the
+completeness formula. NOT safe to do opportunistically — `completeness` feeds
+`needs_enrichment`, which gates the research/enrichment path, and changing the
+denominator or the field set shifts every existing record's score. Do NOT fix
+outside a supervised session.

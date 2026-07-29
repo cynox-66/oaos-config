@@ -283,19 +283,56 @@ value — Atom-family sources use `"rss"`.
 | `sources/outreachy.ts` | `createOutreachySource`, `OUTREACHY_CONFIG` (calendar sink only, D18) |
 | `sources/ghsl.ts` | `ghslAdapter`, `GHSL_CONFIG`, `createGhslSource` |
 | `sources/meta.ts` | `WAVE4_SOURCE_META` |
+| `sources/himalayas.ts` | `createHimalayasSource`, `HIMALAYAS_CONFIG` |
+| `sources/freehire.ts` | `createFreehireSource`, `FREEHIRE_CONFIG` (quarantined) |
+| `sources/adzuna.ts` | `createAdzunaSource`, `ADZUNA_CONFIG` (quarantined, auth) |
+| `sources/remotive.ts` | `createRemotiveSource`, `REMOTIVE_CONFIG`, `remotiveUrl` |
+| `sources/hn-hiring.ts` | `createHnHiringSource`, `HN_CONFIG`, `threadSearchUrl` |
+| `sources/meta-wave5.ts` | `WAVE5_SOURCE_META` |
+| `query/scope-terms.ts` | `deriveQueryTerms`, `cappedTermsError`, `MAX_QUERY_TERMS` |
+| `query/truncation.ts` | `quarantineContent`, `ADAPTER_CONTENT_KEYS`, `QuarantineError` |
+| `query/hn-prefilter.ts` | `prefilterComments`, `liftCompany`, `decodeCommentText` |
+| `query/remotive-state.ts` | `createRemotiveStore`, `parseRemotiveState`, `utcDay` |
+| `query/http-json.ts` | `getJson`, `readArray`, `isRecord`, `str` |
 | `index.ts` | Public surface |
 | `tests/` | Fixture-based, fake `SourceDeps` — zero network |
 
+## The `query_net` family (Wave 5)
+
+Five sources that build their requests from the operator's CONFIRMED
+discovery scope (`preferences.json`, D15). They are single-config, so they
+take the strict `ok: errors.length === 0` healthCheck rule — not
+`company_board`'s partial-failure rule.
+
+**Per-source query strategy is deliberate, not an oversight.** These APIs
+differ enough that one uniform query builder would serve none of them well:
+
+| Source | Strategy | Requests/run at 13 fields |
+|---|---|---|
+| `himalayas` | one `?q=<term>` search per enabled field; no pagination exists | 13 + 1 probe |
+| `freehire` | one `?q=<term>&work_mode=remote&limit=20` per field | 13 + 1 probe |
+| `adzuna` | one `?what=<term> remote&sort_by=date&max_days_old=14` per field | 13 + 1 probe |
+| `remotive` | no query — the API has none. One call, hard-capped per UTC day | 1 + 0 |
+| `hn-hiring` | two fixed requests; scope drives the prefilter, not the request | 2 + 1 |
+
+**Caps (operator ruling):** `MAX_QUERY_TERMS = 15` with dropped terms
+REPORTED as a `SourceError`; one page per query, always; page size 20 so no
+single source dominates a mixed prerank batch.
+
+**`family` is descriptive, never load-bearing.** Nothing in this codebase
+switches or dispatches on it — it is carried into `SourceRunSummary` and
+printed in the weekly report. That is why adding `"query_net"` was a safe
+additive change. If dispatch keyed on `family` is ever introduced, this stops
+being true and every existing member needs auditing.
+
 ## Not wired yet
 
-No Stage3Source is constructed with real config anywhere in this repo except
-the two manual verification scripts. The Wave 3 `company_board` adapters +
-registry and the Wave 4 `github_repo`/`atom_feed` sources + calendar writer
-exist as importable modules only — nothing in `index.ts` or the CLI
-references them yet. Wave 5 builds per-source query builders (first consumer
-of `preferences.json`); Wave 6 wires the orchestrator (real `SourceDeps`,
-the health-state loop driving `advanceHealth`, the calendar writer's real
-call site, and the weekly-report surfacing of `auto_disabled` sources).
+The Wave 3 `company_board` adapters + registry and the Wave 4
+`github_repo`/`atom_feed` sources exist as importable modules only —
+`index.ts` does not re-export them. Wave 6 wired the ORCHESTRATOR, which
+constructs every source (including Wave 5's) from
+`src/discovery/orchestrator/sources.ts`. **Every row in that table ships
+`enabled: false`** — activating a source is Wave 8 and operator-paced.
 
 ## Live-verification script (`scripts/live-verify.ts`)
 

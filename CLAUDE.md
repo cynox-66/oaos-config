@@ -234,10 +234,16 @@
     falls back to the plain listing on non-200 and returns those items
     SILENTLY (no SourceError) — `fetchOne` has no channel to return items
     AND a non-fatal warning at once, and description-less fallback items
-    still carry `url`, so Engine 1 flags them `needs_enrichment` and the
-    existing research/enrichment step fills the description from the
-    posting URL. Self-corrects downstream; do not add an error side-channel
-    for this without revisiting the frame.
+    still carry `url`. CORRECTION (2026-07-28, Wave 5): this entry used to
+    claim those items get flagged `needs_enrichment` and backfilled by the
+    research step. THEY DO NOT. Engine 1's completeness formula does not
+    consider the description at all — company+role+category+url = 4/6 = 0.67,
+    well above the 0.4 threshold — so they pass as complete, and
+    `researchOpportunity` fetches a COMPANY profile, not the posting body.
+    The code is unchanged and still fails safe (the items carry `url`, so a
+    human can click through); only the stated mechanism was wrong. See
+    docs/known-issues.md #14. Do not add an error side-channel here without
+    revisiting the frame.
   - Lever: `GET api.lever.co/v0/postings/{token}?mode=json`, raw array,
     `hostedUrl` → url.
   - Workday CXS: `POST {base}/wday/cxs/{tenant}/{site}/jobs`, paginated
@@ -437,7 +443,142 @@
     extracts few distinct company/role pairs — an Engine 1 / Wave 4 question,
     costs nothing today. Also: 342 items is a full-site feed, so at
     maxPerRun 25 NLnet alone would dominate a run's budget.
-- Test count: 747 passing (63 test files) — `vitest run`
+- Query-first net sources complete (Phase 1 Wave 5 — LAST construction wave of
+  Phase 1): src/discovery/stage3/sources/{himalayas,freehire,adzuna,remotive,
+  hn-hiring}.ts + src/discovery/stage3/query/{scope-terms,truncation,
+  hn-prefilter,remotive-state,http-json}.ts + sources/meta-wave5.ts. The first
+  sources whose REQUESTS are built from the operator's confirmed scope.
+  - THE THREE WAVE-5 RULINGS (operator, 2026-07-28):
+    - Q1 — `StageSourceFamily` gains `"query_net"`. The wave's ONLY frame
+      touch, authorized as one line. Safe because NOTHING IN THE CODEBASE
+      SWITCHES OR DISPATCHES ON `family` — verified by grep; it is carried
+      into SourceRunSummary and printed in the weekly report. A comment on the
+      type records this. Labeling a REST search API `atom_feed` was rejected as
+      dishonest: the run summary would lie to the operator every week.
+    - Q2 — confirmed scope reaches sources via `SourceBuildContext.preferences`
+      (an ORCHESTRATOR type, not a frame type — already existed for
+      `githubToken`). The CLI's `loadScope` reads preferences.json ONCE and
+      returns both the prerank vocabulary and the Preferences object. NO second
+      loader, no source reads disk, orchestrator stays disk-free. Wave 6's "no
+      preferences.json ⇒ no Stage 3" is inherited for free. Adzuna credentials
+      ride the same channel (`ADZUNA_APP_ID`/`ADZUNA_APP_KEY`). STILL never
+      writes preferences.json.
+    - Q3 — caps: MAX_QUERY_TERMS 15 (excess terms DROPPED AND REPORTED as a
+      SourceError, never silent); ONE PAGE PER QUERY always; page size 20 (so
+      no source dominates a mixed prerank batch — the NLnet lesson); Remotive
+      1 call/UTC day; HN 2 unconditional requests. Full run at 13 enabled
+      fields = 47 requests (13+1, 13+1, 13+1, 1+0, 2+1).
+  - PER-SOURCE QUERY STRATEGY (approved as architecture — these APIs differ
+    enough that one uniform builder would serve none of them well):
+    - himalayas: `GET /jobs/api/search?q=<term>`, one per enabled field. Best
+      content of the five — full HTML descriptions (~5KB) + structured
+      locationRestrictions/timezoneRestrictions. SENDS NO limit/offset: BOTH
+      ARE IGNORED by the search endpoint (live-verified — limit=100&offset=20
+      echoed limit:20/offset:0 and returned the byte-identical first page).
+      There is no pagination; you get a fixed top ~20 of the match set. The
+      sibling firehose `/jobs/api` is REJECTED, not unused: no query support at
+      all (`query=` silently ignored), ~4,000 new postings/day, 20 jobs
+      spanning 7 minutes — it can never be a coverage mechanism.
+    - freehire: `GET /api/v1/jobs/search?q=&work_mode=remote&limit=20&offset=0`.
+      PLURAL `regions`/`countries` only — the singular forms filter NOTHING
+      (Phase 0 finding, re-confirmed: countries=in cut a total 5266→132 and all
+      100 rows carried "in"). NO country filter applied: scope is remote-only
+      worldwide and India is ~3.4% of the corpus.
+    - adzuna: `what=<term> remote&sort_by=date&max_days_old=14`, page 1 only.
+      The appended " remote" is load-bearing — a bare domain keyword returns
+      10k+ noisy India matches, the tightened form returns tens of genuine ones.
+      `what_all`+`what_or` (13 requests → 1) was TRIED and REJECTED BY THE API
+      with a 400; do not re-attempt without budget.
+    - remotive: NO query — the API has none. Its only lever is `category`, and
+      in the one permitted probe `category=software-dev` DID NOT FILTER (36
+      rows spanning Sales/Medical/Marketing, only 10 Software Development;
+      Phase 0c had recorded it working). Ruling: send it, don't rely on it,
+      don't spend a second call investigating. Its test asserts scope-
+      INDEPENDENCE — faking a scope dependency would misrepresent the API.
+    - hn-hiring: two fixed requests (`search_by_date` → current thread,
+      `items/{id}` → 513KB whole thread in one). Scope drives the PREFILTER,
+      not the request. MUST filter hits on /who is hiring/i — the same author
+      posts "Who WANTS TO BE HIRED?" at an identical timestamp every month, so
+      taking hits[0] would eventually ingest job SEEKERS as postings.
+  - THREE STRUCTURAL CONSTRAINTS — STANDING INVARIANTS, enforced in code:
+    (1) CONTENT QUARANTINE (query/truncation.ts). Engine 1 exposes NO settable
+        content marker: RawItem has 5 fields, none a flag, and
+        `needs_enrichment` is COMPUTED from a formula that ignores the
+        description entirely (see known-issues #14). What exists is an
+        ASYMMETRY: Engine 1's job_board adapter reads a description ONLY from
+        TOP-LEVEL keys [description, desc, body, details, summary], while
+        prerank's extractText harvests EVERY string leaf at any depth. So the
+        original record is nested UNTOUCHED under `source_record` and the text
+        surfaced under `description_truncated`. Net: the text SCORES for
+        relevance and is never lost, but description_raw comes out EMPTY.
+        Company/title/location ARE lifted to the top level — without them
+        fingerprints collapse. `quarantineContent` THROWS if a lifted field
+        would be readable as a description. TWO content_source values, keep
+        them distinct: `adzuna:search-api-500char` (hard 500-char cut, visible
+        "…", 11/11 sampled) and `freehire:search-api-1k-cap` (SILENT ~1000-char
+        cap — min 956/median 995/max 1002 across 100, NO marker; Phase 0 had
+        measured presence, never length). Tested against REAL normalize() and
+        REAL extractText(), plus a control proving a naive payload would leak.
+    (2) REMOTIVE 1 CALL/UTC DAY. State checked BEFORE a URL is built, so a
+        second same-day call is refused with zero bytes on the wire. A failed
+        call still spends the day. `healthCheck` performs NO I/O — it replays
+        the last recorded outcome; probing would burn two calls/run and make
+        the cap a lie. State: discovery/remotive.json, gitignored, same posture
+        as health.json (corrupt file THROWS, never a silent reset — a silent
+        reset would hand back a fresh budget every time).
+    (3) HN PREFILTER BEFORE PARSE. `prefilterComments` is the ONLY path from
+        thread children to RawItems. Non-matching comments never become items,
+        so they never reach prerank or the pipeline's ~4 Gemini calls/item.
+        Asserts `search_by_date`, asserts against plain `search` (which returns
+        stale 2020/2016 threads). The source spends ZERO LLM itself.
+  - HN COMPANY LIFT + RATIO GUARD (fix for a live-caught defect). First dry run
+    showed hn-hiring fetching 151 comments and deduping 150 — Engine 1's
+    fingerprint is sha1(company|role|url-host), and HN comments have no
+    structured company/role, so every comment produced company=""/role="" and
+    the shared host news.ycombinator.com → ONE fingerprint per thread.
+    `liftCompany` takes the first `|`-delimited segment as company, guarded
+    (delimiter present; ≤60 chars; ≤8 words; no internal sentence break).
+    WHY THIS IS FIELD MAPPING, NOT CLASSIFICATION (operator ruling): the line
+    is "judgment about what content MEANS" — deciding a role is security-
+    flavored, inferring seniority, scoring relevance. HN's thread PUBLISHES the
+    `Company | Role | Location` format in its own posting instructions, so
+    reading the first segment is the same operation as Greenhouse's
+    content→description or Workday's externalPath→url. The delimiter is a
+    schema, just a weak one. Only COMPANY is lifted — role/location genuinely
+    vary in order and count, and extracting those WOULD be judgment.
+    Must be lifted from the DECODED text, not prerank's `cleaned` (lowercased).
+    RATIO GUARD: when the lift succeeds on <half the prefiltered comments, emit
+    a SourceError naming the ratio, so a convention drift reads as a health
+    signal rather than a quiet yield drop. LOUD BUT NOT AUTO-DISABLING — it
+    goes in fetch errors while healthCheck stays green, because a format change
+    is not the source being broken. Live-confirmed after the fix: 151 fetched →
+    12 deduped (was 150) → 25 passed (was 0), guard silent.
+  - `SourceErrorKind` was NOT extended (only the family union was authorized).
+    Remotive's cap refusal therefore uses kind:"http" with a detail beginning
+    "refused locally, nothing was sent" — a known wart, recorded not smoothed.
+    Costs nothing: health comes from healthCheck, never from fetch errors, so a
+    refusal cannot drive a source toward auto_disabled.
+  - ADMISSION: himalayas 3 / freehire 3 / adzuna 2 / remotive 2 / hn-hiring 3
+    = 13. RUNNING GLOBAL TOTAL 32 of the 50 min/wk budget, 18 remaining
+    (Wave 3 = 8, Wave 4 = 11, Wave 5 = 13). auth_required is NOT an admission
+    check, so Adzuna's credentials don't block it.
+  - 143 new tests (8 files: himalayas, freehire, adzuna, remotive, hn-hiring,
+    scope-terms, truncation, wave5-admission; + sources.test.ts updated for 15
+    rows). Full suite 890 green (71 files). Zero diff to the 12 engines,
+    pipeline, persistence, prerank, scope, or any Wave 3/4 source/adapter.
+    Modified only: stage3/types.ts (one line), orchestrator/types.ts
+    (SourceBuildContext), orchestrator/sources.ts (+63, all additions),
+    cli/commands/stage3.ts (loadScope), .gitignore.
+  - Live-verified per the bounded policy: 13 Step-1 probes + two dry-runs
+    (himalayas+freehire+hn-hiring, then hn-hiring alone to confirm the fix).
+    himalayas 209 fetched/23 passed, freehire 257/2, zero errors from any
+    source. Prerank behaved as designed on a mixed batch: himalayas took 23 of
+    25 slots on 43% of the batch while freehire got 2 on 57% — IDF discounting
+    freehire's repetitive aggregated corpus. FOR WAVE 8 PACING: freehire's URLs
+    point at the same ATS postings Himalayas indexes, so running both may be
+    redundant in practice — evaluate once real runs accumulate, do not act now.
+  - Every new source table row ships `enabled: false`. Nothing activated.
+- Test count: 890 passing (71 test files) — `vitest run`
 - No tsconfig.json by design — tsx direct execution throughout
 - Test framework: vitest (`npm test` = `vitest run`)
 
@@ -556,8 +697,19 @@
   NOTE: preferences.json NOW EXISTS on the operator's machine (created
   2026-07-27 via a confirmed `oaos setup-scope`, all 13 fields enabled) — that
   is why the live dry-run was possible. Still never write it from a session.
-- NEXT UP (hold for direction): Wave 5 query builders (first consumer of
-  preferences.json for query-STRING construction) — or Wave 7 registry
-  expansion — or Wave 8 source activation (operator-paced: flip rows in
+- Query-first net sources (Phase 1 Wave 5): COMPLETE, pending operator go-ahead
+  to branch/commit/merge. src/discovery/stage3/sources/{himalayas,freehire,
+  adzuna,remotive,hn-hiring}.ts + src/discovery/stage3/query/* — see the Wave 5
+  entry above for the three rulings, the five query strategies and why they
+  differ, the three structural constraints, the HN lift + ratio guard, and the
+  admission total. 143 new tests; full suite 890 green (71 files). Zero diff to
+  the 12 engines, pipeline, persistence, prerank, scope, or Waves 3/4.
+  ACTION REQUIRED BY THE OPERATOR before Adzuna can run: copy `app_id`/`app_key`
+  from research/phase0c/adzuna-keys.txt into .env as ADZUNA_APP_ID /
+  ADZUNA_APP_KEY. Without them Adzuna builds fine and reports a clear error.
+- PHASE 1 CONSTRUCTION IS COMPLETE. Remaining: Wave 7 registry expansion (the
+  locked 8-entry COMPANY_REGISTRY; note the logged finding that ClickHouse
+  appears to run an Ashby board despite being registered as greenhouse) — or
+  Wave 8 source activation (operator-paced: flip rows in
   src/discovery/orchestrator/sources.ts, run `--source <name> --dry-run`
   first) — or operator-chosen priority.

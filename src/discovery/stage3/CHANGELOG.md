@@ -1,5 +1,141 @@
 # Changelog — Stage-3 Source Families
 
+## [0.4.0] — 2026-07-28
+
+Wave 5 of OAOS Phase 1 — the query-first net sources, and the last
+construction wave of Phase 1. Five sources whose requests are built from the
+operator's CONFIRMED discovery scope (`preferences.json`, D15), which makes
+query construction the wave's central design problem. Per the approved
+architectural decision, each source decides how to use the scope: these APIs
+genuinely differ, and one uniform query builder would have served none of them
+well.
+
+### Added
+
+- `src/discovery/stage3/sources/himalayas.ts` — `GET /jobs/api/search?q=<term>`,
+  one search per enabled scope field. Best content quality of the five: full
+  HTML descriptions (avg ~5 KB) plus structured `locationRestrictions` /
+  `timezoneRestrictions`. Sends NO `limit` or `offset`: both are IGNORED by the
+  search endpoint (live-verified — `limit=100&offset=20` echoed `limit:20,
+  offset:0` and returned the byte-identical first page). The sibling firehose
+  `/jobs/api` is deliberately NOT used: no query support at all, ~4,000 new
+  postings/day, 20 jobs spanning 7 minutes — measured and rejected.
+- `src/discovery/stage3/sources/freehire.ts` — `GET /api/v1/jobs/search`
+  with `q`, `work_mode=remote`, `limit=20`, `offset=0`. PLURAL `regions` /
+  `countries` params only (the singular forms filter nothing — Phase 0 finding,
+  re-confirmed). No country filter applied: the scope is remote-only worldwide
+  and India is ~3.4% of this corpus. CONTENT-QUARANTINED.
+- `src/discovery/stage3/sources/adzuna.ts` — `GET /v1/api/jobs/in/search/1`,
+  `what=<term> remote`, `sort_by=date`, `max_days_old=14`, page 1 only. The
+  appended " remote" is the tightener that makes domain terms usable: a bare
+  keyword returns 10k+ noisy India matches, the tightened form returns tens of
+  genuine ones. `what_all` + `what_or` (which would collapse 13 requests into
+  1) was tried and REJECTED BY THE API with a 400. CONTENT-QUARANTINED.
+- `src/discovery/stage3/sources/remotive.ts` — the only scope-INDEPENDENT
+  source: the API has no free-text query. HARD-CAPPED at 1 call per UTC day
+  against persisted state, checked before a request is built. Descriptions are
+  full text, so no quarantine.
+- `src/discovery/stage3/sources/hn-hiring.ts` — two fixed requests
+  (`search_by_date` to locate the current thread, `items/{id}` for its body);
+  scope drives the PREFILTER, not the request.
+- `src/discovery/stage3/query/scope-terms.ts` — `deriveQueryTerms` /
+  `cappedTermsError`. The single place a `Preferences` becomes search terms.
+  `MAX_QUERY_TERMS = 15`; terms beyond the cap are DROPPED AND REPORTED, never
+  silently truncated.
+- `src/discovery/stage3/query/truncation.ts` — the content quarantine.
+- `src/discovery/stage3/query/hn-prefilter.ts` — `prefilterComments`,
+  `liftCompany`, `decodeCommentText`.
+- `src/discovery/stage3/query/remotive-state.ts` — the daily-cap store.
+- `src/discovery/stage3/query/http-json.ts` — one GET-and-parse helper so all
+  five classify transport failures identically.
+- `src/discovery/stage3/sources/meta-wave5.ts` — `WAVE5_SOURCE_META`.
+- `src/discovery/stage3/scripts/live-verify-wave5.ts` — bounded live check.
+  Runs each source against a ONE-TERM view of the real scope (a query_net
+  source issues one request per term, so "one request per source" is not
+  available). Remotive EXCLUDED by default; `--with-remotive` to include it.
+- 143 new tests across 8 files. Full suite: 890 passing (71 files), up from a
+  747/63 baseline.
+
+### Changed
+
+- `src/discovery/stage3/types.ts` — `StageSourceFamily` gains `"query_net"`.
+  The wave's ONLY frame touch, operator-authorized. Additive and safe because
+  NOTHING IN THIS CODEBASE SWITCHES OR DISPATCHES ON `family` — it is carried
+  into `SourceRunSummary` and printed. A comment on the type records this, so a
+  future session adding dispatch knows it was never load-bearing.
+- `RepoAdapter`/`FeedPipelineAdapter` untouched; no other frame file changed.
+
+### The three structural constraints
+
+These are enforced in code and pinned by tests, not left to convention.
+
+1. **Adzuna and freehire truncated text can never present as content.** Engine
+   1 exposes NO settable marker: `RawItem` has five fields and none is a flag,
+   and `needs_enrichment` is COMPUTED (`completeness < 0.4`) from a formula
+   that does not consider the description at all. What exists instead is an
+   asymmetry — Engine 1's `job_board` adapter reads a description only from
+   TOP-LEVEL keys (`description`, `desc`, `body`, `details`, `summary`), while
+   prerank's `extractText` harvests EVERY string leaf at any depth. The
+   quarantine nests the original record untouched under `source_record` and
+   surfaces the text under `description_truncated`. Net effect: the text SCORES
+   for relevance and is never lost, but `description_raw` comes out empty.
+   `quarantineContent` THROWS if a lifted field would be readable as a
+   description. Two distinct `content_source` values keep the sources
+   distinguishable: `adzuna:search-api-500char` (hard 500-char cut, visible
+   "…") and `freehire:search-api-1k-cap` (silent ~1000-char cap, min 956 /
+   median 995 / max 1002 across 100 sampled, NO marker — arguably the more
+   dangerous of the two). Tested against real `normalize()` and real
+   `extractText()`, with a control case proving a naive payload WOULD leak.
+2. **Remotive never exceeds 1 call per UTC day.** The state check happens
+   before a URL is constructed, so a second same-day call is refused with zero
+   bytes on the wire. `healthCheck` performs NO I/O — it replays the outcome
+   recorded by the last fetch; probing instead would burn two calls per run and
+   make the cap a lie. A failed call still spends the day's budget.
+3. **HN spends nothing on unfiltered comments.** `prefilterComments` is the
+   ONLY path from thread children to RawItems — non-matching comments are never
+   built into items, so they never reach prerank or the pipeline's ~4 Gemini
+   calls per item. `search_by_date` is asserted, plain `search` is asserted
+   against (relevance-sorted search returns stale 2020/2016 threads).
+
+### Fixed
+
+- **HN one-fingerprint-per-thread collapse** (live-caught, first Wave 5 dry
+  run: 150 of 151 prefiltered comments deduped away). Engine 1's fingerprint is
+  `sha1(company|role|url-host)`; HN comments carry no structured company or
+  role, so every comment produced `company=""`, `role=""` and the shared host
+  `news.ycombinator.com` — one identical fingerprint for the whole thread.
+  Fixed by `liftCompany`: the first `|`-delimited segment becomes `company`,
+  guarded (a delimiter must be present; ≤60 chars; ≤8 words; no internal
+  sentence break). Reading a documented delimiter is FIELD MAPPING, not
+  classification — HN's thread publishes the `Company | Role | Location`
+  format in its own posting instructions, so this is the same operation as
+  Greenhouse's `content` → description. Only the company is lifted; role and
+  location genuinely vary in order and count and extracting those WOULD be
+  judgment. A RATIO GUARD reports a `SourceError` when the lift succeeds on
+  fewer than half the prefiltered comments, so a convention drift reads as a
+  health signal rather than a quiet drop in yield — loud, but not
+  auto-disabling, since a format change is not the source being broken.
+  Live-confirmed: 151 fetched → 12 deduped (was 150) → 25 passed (was 0), with
+  the ratio guard silent.
+
+### Notes
+
+- Zero LLM calls anywhere in this tree. Every test injects a fake `SourceDeps`;
+  the default suite remains network-free.
+- Sources never read files. Confirmed scope arrives through
+  `SourceBuildContext.preferences`, loaded ONCE by the CLI for both the prerank
+  vocabulary and the sources. No second loader for `preferences.json`, and this
+  path is strictly read-only — no session ever writes that file.
+- Adzuna credentials arrive the same way (`ADZUNA_APP_ID` / `ADZUNA_APP_KEY`
+  via `SourceBuildContext`), never read from disk by a source module.
+- `SourceErrorKind` was NOT extended (the one authorized frame touch was the
+  family union). Remotive's daily-cap refusal therefore uses `kind: "http"`
+  with a detail beginning "refused locally, nothing was sent" — a known wart,
+  recorded rather than smoothed over. It costs nothing operationally: health
+  comes from `healthCheck`, never from fetch errors, so a refusal cannot push
+  the source toward `auto_disabled`.
+- Every new source table row ships `enabled: false`. Nothing was activated.
+
 ## [0.3.0] — 2026-07-21
 
 Wave 4 of OAOS Phase 1 — the two remaining `github_repo`/`atom_feed` concrete

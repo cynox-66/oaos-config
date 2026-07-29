@@ -12,7 +12,21 @@ import type { IngestionType } from "../../engines/source-admission/types";
 // Common source contract
 // ============================================================
 
-export type StageSourceFamily = "company_board" | "github_repo" | "atom_feed";
+/**
+ * Which shape of source this is.
+ *
+ * `query_net` (Wave 5) covers the query-first net sources — REST search APIs
+ * that take input derived from the operator's confirmed discovery scope. They
+ * are single-config, so they take the strict `ok: errors.length === 0`
+ * healthCheck rule, not `company_board`'s partial-failure rule.
+ *
+ * NOTE FOR FUTURE SESSIONS: nothing in this codebase switches or dispatches on
+ * `family`. It is carried into SourceRunSummary and printed in the weekly
+ * report — descriptive metadata, never load-bearing. That is why adding a
+ * member here is additive and safe today; if you ever add dispatch logic keyed
+ * on it, this note stops being true and every existing member needs auditing.
+ */
+export type StageSourceFamily = "company_board" | "github_repo" | "atom_feed" | "query_net";
 
 export interface HttpResponse {
   status: number;

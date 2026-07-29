@@ -23,6 +23,11 @@ discovery/calendar.json
 # `oaos discover --stage3 --reenable <name>`.
 discovery/health.json
 
+# Wave 5 Remotive daily-call cap — operator-local state, written by
+# src/discovery/stage3/query/remotive-state.ts. Enforces 1 API call per UTC
+# day; a corrupt file throws rather than silently handing back a fresh budget.
+discovery/remotive.json
+
 research/phase0/adzuna-keys.txt
 research/phase0c/adzuna-keys.txt
 .DS_Store

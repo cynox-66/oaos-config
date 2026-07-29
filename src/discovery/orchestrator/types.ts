@@ -7,6 +7,7 @@
 
 import type { RawItem } from "../../engines/normalization/types";
 import type { PrerankConfig, PrerankVocabulary } from "../prerank/types";
+import type { Preferences } from "../scope/types";
 import type {
   CalendarEntry,
   SourceDeps,
@@ -22,11 +23,27 @@ import type {
 
 /**
  * Everything a source needs at construction time that is not baked into its
- * own config module. Currently just the optional GitHub token used by the
- * github_repo family to lift the unauthenticated Contents-API rate limit.
+ * own config module.
+ *
+ * THIS IS HOW CONFIRMED SCOPE REACHES A SOURCE (Wave 5 Q2 ruling). Sources
+ * never read files — the CLI loads preferences.json exactly once, for both the
+ * prerank vocabulary and this field, and passes the loaded object through. No
+ * second loader, no disk access in a source or in the orchestrator, and the
+ * Wave 6 rule "no preferences.json ⇒ no Stage 3" is inherited for free.
+ *
+ * Every field is optional so the 10 pre-Wave-5 rows keep building unchanged;
+ * a source that REQUIRES one throws at build time, and the orchestrator
+ * reports that as `build_error` without aborting the run.
  */
 export interface SourceBuildContext {
+  /** Lifts the github_repo family's unauthenticated Contents-API rate limit. */
   githubToken?: string;
+  /** The operator's confirmed discovery scope (D15). Drives query_net sources. */
+  preferences?: Preferences;
+  /** From ADZUNA_APP_ID — never read from disk by a source module. */
+  adzunaAppId?: string;
+  /** From ADZUNA_APP_KEY. */
+  adzunaAppKey?: string;
 }
 
 /**
