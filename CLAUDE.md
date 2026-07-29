@@ -656,6 +656,15 @@
   - NOT FIXED: no request timeout — docs/known-issues.md #15. Pre-existing; the
     throttle makes it slightly more consequential because a hung call now holds
     the shared paced queue instead of stalling one opportunity.
+- STAGE-3 ACTIVATION ALLOW-LIST (2026-07-29): `sources.test.ts` no longer
+  asserts "no row is ever enabled" — that was correct through Wave 6 and went
+  red the moment Greenhouse was deliberately activated. It now checks
+  set-equality against a named `ACTIVATED_SOURCES` constant in BOTH directions:
+  enabled-but-unlisted catches a casual flip, listed-but-disabled catches a
+  stale entry after a deactivation. **PROTOCOL FOR EVERY FUTURE ACTIVATION: add
+  the name to `ACTIVATED_SOURCES` AND flip `enabled: true` in sources.ts IN THE
+  SAME COMMIT** (deactivation removes both, together). That pairing is the whole
+  mechanism. Currently activated: `greenhouse`.
 - Test count: 924 passing (74 test files) — `vitest run`
 - No tsconfig.json by design — tsx direct execution throughout
 - Test framework: vitest (`npm test` = `vitest run`)
@@ -685,6 +694,15 @@
 - Small reviewable commits. Feature branches: feat/<name>. Merge to
   main only after full suite passes and scope is verified clean
   (zero diff to untouched engines).
+- BEFORE REPORTING A SESSION AS PUSHED, VERIFY IT: run
+  `git rev-parse main origin/main` and confirm the two SHAs MATCH.
+  Waves 3, 4 and 6 were each reported "merged and pushed" and none of
+  them were — the merges happened locally, the push did not, and
+  origin/main sat at Wave 2 (e022d7a) for three sessions while
+  everything since existed only on the operator's laptop, unbacked.
+  Discovered 2026-07-29 during the working-tree cleanup. The claim gets
+  CHECKED, never asserted from having run the command earlier in the
+  session or from intending to.
 - When a spec is ambiguous, STOP and ask — do not resolve
   ambiguities with your own design judgment. This has been the
   standing rule for every engine built so far and does not change.
@@ -775,8 +793,9 @@
   NOTE: preferences.json NOW EXISTS on the operator's machine (created
   2026-07-27 via a confirmed `oaos setup-scope`, all 13 fields enabled) — that
   is why the live dry-run was possible. Still never write it from a session.
-- Query-first net sources (Phase 1 Wave 5): COMPLETE, pending operator go-ahead
-  to branch/commit/merge. src/discovery/stage3/sources/{himalayas,freehire,
+- Query-first net sources (Phase 1 Wave 5): COMPLETE, committed 2026-07-29
+  (straight to main, no feat/ branch — see the working-tree cleanup note
+  below). src/discovery/stage3/sources/{himalayas,freehire,
   adzuna,remotive,hn-hiring}.ts + src/discovery/stage3/query/* — see the Wave 5
   entry above for the three rulings, the five query strategies and why they
   differ, the three structural constraints, the HN lift + ratio guard, and the
@@ -791,3 +810,35 @@
   Wave 8 source activation (operator-paced: flip rows in
   src/discovery/orchestrator/sources.ts, run `--source <name> --dry-run`
   first) — or operator-chosen priority.
+- Wave 8 BEGAN: greenhouse activated 2026-07-28. Its first real run (415 fetched
+  → 25 preranked → 25 written) exposed the Gemini rate-limit defect fixed in
+  src/llm (see that entry above) and left main red on the old activation guard
+  (now an allow-list). Both fixed 2026-07-29; suite 924 green.
+- WORKING-TREE CLEANUP (2026-07-29) — why the history looks the way it does.
+  Wave 5 was reported complete but never committed: its files sat untracked for
+  a session, and its `sources.ts` block got swept into the Greenhouse activation
+  commit, which therefore imported six modules that existed NOWHERE IN GIT. That
+  commit did not build from a clean clone — a bisect trap and a clone trap. It
+  was unpushed (origin/main was still at Wave 2), so it was replaced rather than
+  patched over: `git reset` to the Wave 6 merge, then three honest commits —
+  Wave 5, the rate-limit fix, and the activation (flip + guard allow-list
+  TOGETHER, since the protocol makes any split of those two produce a red
+  commit). Straight to main, no reconstructed feat/ branch: a fabricated merge
+  would have been the one dishonest thing in a history being cleaned up for
+  misrepresenting what happened. Each commit was verified green in a CLEAN GIT
+  WORKTREE, not in the working tree — untracked files there would have been
+  discovered by vitest and tested against the wrong commit's code.
+- LLM throttle fix: COMPLETE, committed 2026-07-29.
+  src/llm/ + src/engines/scoring/gemini.ts (the only engine file touched) +
+  cli/format.ts (`formatGeminiStats`) + cli/commands/stage3.ts (reset before the
+  run, print after) + sources.test.ts (activation allow-list) +
+  docs/known-issues.md #15 (no request timeout — logged, not fixed).
+  Full suite 924 green (74 files), up from 890/71. Zero diff to the 12 engines
+  (besides gemini.ts), pipeline, persistence, prerank, scope, orchestrator
+  logic, or any Stage-3 source. No live Gemini call was made this session.
+- NEXT: the clean Greenhouse re-run. It is what finally separates 429 damage
+  from real defects — specifically whether the EMPTY EVIDENCE ASSETS and the
+  `Remote: unknown` values in the audited records were rate-limit fallout or
+  independent bugs. Expect it to take ~10 minutes at the default 12 RPM, and
+  read the Gemini block at the end: if `failed` is 0, whatever remains wrong in
+  those records is a real defect, not throttling.

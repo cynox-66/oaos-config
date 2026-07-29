@@ -1,5 +1,39 @@
 # Changelog — Stage-3 Orchestrator
 
+## [0.1.1] — 2026-07-29
+
+Follow-up to the first real activated run (Greenhouse). No orchestrator logic
+changed; the source table's guard and the run's reporting did.
+
+### Changed
+
+- **The activation guard became an allow-list.** `sources.test.ts` asserted
+  that NO row is ever enabled — correct through Wave 6, wrong the moment
+  Greenhouse was deliberately activated, which left `main` red. It now checks set-equality against a named `ACTIVATED_SOURCES`
+  constant, **in both directions**: every enabled row must be on the list
+  (catches an unrecorded or casual flip) and every listed name must actually
+  be enabled (catches a stale entry left behind after a deactivation).
+
+  **ACTIVATION PROTOCOL — this is the part that must not be lost:** a name goes
+  into `ACTIVATED_SOURCES` *and* its row flips to `enabled: true` in
+  `sources.ts`, **in the same commit**. Deactivation removes both, likewise
+  together. Every future Wave-8 activation updates this list; that pairing is
+  the entire mechanism. Currently: `["greenhouse"]`.
+
+- `cli/commands/stage3.ts` zeroes the Gemini call tally before the run and
+  prints it under the run summary (real runs only — in a dry run no pipeline
+  runs). The tally is zeroed per run so it always describes the run the
+  operator just watched, rather than accumulating across runs in one process.
+
+### Context
+
+The same run exposed a rate-limit defect in the Gemini client: ~123 calls
+issued as fast as the pipeline could emit them, 429s on a large fraction, 14 of
+25 opportunities written with defaulted scores. Fixed in `src/llm` — see that
+module's CHANGELOG. Nothing in the orchestrator caused it and nothing in the
+orchestrator was changed to fix it; a Stage-3 run is simply the first thing
+that ever fed the pipeline fast enough to hit a per-minute ceiling.
+
 ## [0.1.0] — 2026-07-28
 
 Initial implementation. Wave 6 of OAOS Phase 1 — the first wave that wires

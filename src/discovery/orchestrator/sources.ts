@@ -71,7 +71,7 @@ function boardEntry(adapter: CompanyBoardAdapter, enabled: boolean): SourceTable
 
 export const STAGE3_SOURCES: SourceTableEntry[] = [
   // ── company_board (Wave 3) ────────────────────────────────────────────────
-  boardEntry(greenhouseAdapter, false),
+  boardEntry(greenhouseAdapter, true),
   boardEntry(leverAdapter, false),
   boardEntry(workdayAdapter, false),
   boardEntry(ashbyAdapter, false),

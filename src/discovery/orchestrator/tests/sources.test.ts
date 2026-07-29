@@ -1,9 +1,9 @@
 // sources.test.ts
 // File: src/discovery/orchestrator/tests/sources.test.ts
 // Purpose: Guards on the Stage-3 source table — that it declares every built
-//          source, that its rows build without network, and that the SHIPPED
-//          DEFAULT stays `enabled: false` for every row (Wave 6 builds the
-//          ability to run; activating a source is Wave 8 and operator-paced).
+//          source, that its rows build without network, and that the set of
+//          ACTIVATED rows matches the recorded allow-list below (Wave 6 built
+//          the ability to run; activating a source is Wave 8 and operator-paced).
 
 import { describe, it, expect } from "vitest";
 import { STAGE3_SOURCES, findSourceEntry, sourceNames } from "../sources";
@@ -54,11 +54,31 @@ describe("the Stage-3 source table", () => {
     ]);
   });
 
-  it("ships every row disabled — activation is an explicit operator decision", () => {
-    // If this fails, someone activated a source in the repo. That is a Wave 8
-    // decision the operator makes by editing sources.ts, not a code change to
-    // be merged casually.
-    expect(STAGE3_SOURCES.filter((e) => e.enabled)).toEqual([]);
+  it("enables exactly the sources on the recorded activation allow-list", () => {
+    // If this fails, someone activated (or deactivated) a source in the repo.
+    // That is a Wave 8 decision the operator makes by editing sources.ts, not a
+    // code change to be merged casually.
+    //
+    // ACTIVATION PROTOCOL: a name goes in ACTIVATED_SOURCES *and* its row flips
+    // to `enabled: true` in sources.ts, in the SAME commit. The two must always
+    // be changed together — that pairing is the whole point of this guard.
+    // Removing an activation means removing both, likewise together.
+    //
+    //   greenhouse — activated 2026-07-28, the first live Stage-3 source.
+    //
+    // The assertion runs in both directions on purpose: name-not-in-list
+    // catches an unrecorded flip, list-name-not-enabled catches an allow-list
+    // entry left stale after a deactivation.
+    const ACTIVATED_SOURCES = ["greenhouse"];
+
+    const enabled = STAGE3_SOURCES.filter((e) => e.enabled).map((e) => e.name);
+
+    expect(enabled.slice().sort()).toEqual(ACTIVATED_SOURCES.slice().sort());
+    for (const name of ACTIVATED_SOURCES) {
+      expect(findSourceEntry(name)?.enabled, `${name} is on the allow-list but not enabled`).toBe(
+        true
+      );
+    }
   });
 
   it("has unique names — the name is both the --source argument and the health key", () => {
