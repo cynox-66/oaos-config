@@ -578,7 +578,85 @@
     point at the same ATS postings Himalayas indexes, so running both may be
     redundant in practice — evaluate once real runs accumulate, do not act now.
   - Every new source table row ships `enabled: false`. Nothing activated.
-- Test count: 890 passing (71 test files) — `vitest run`
+- LLM call throttle complete (2026-07-29, defect fix — NOT a construction wave):
+  src/llm/. Fixes the rate-limit defect the first real activated Stage-3 run
+  (Greenhouse) exposed. Read src/llm/README.md before touching Gemini call
+  behavior; src/llm/CHANGELOG.md has the measured evidence.
+  - ROOT CAUSE: the free tier limits requests per MINUTE, not just per day.
+    Prerank protects the daily budget (500 RPD); NOTHING protected the
+    per-minute rate. 25 opportunities × ~5 calls ≈ 123 requests fired as fast as
+    the pipeline could emit them → 429 on a large fraction → 14 of 25 records
+    written with DEFAULTED scores (six 3/0/3, eight 3/5/8) and ZERO
+    opportunity-specific evidence reasoning, while the run reported success.
+    Graceful degradation worked exactly as designed and that was the problem:
+    it made unusable output look like a clean run. The regime never occurred
+    before because manual Stage-1 intake feeds ONE opportunity at a time —
+    Stage-3 activation created it, no engine changed.
+  - SCOPE OF THE FIX: `src/engines/scoring/gemini.ts` is the ONLY engine file
+    touched. Every engine already routes through `createGeminiClient` (verified:
+    scoring, evidence-matching, application-package, outreach-package,
+    follow-up, research all use `options.client ?? createGeminiClient()`), so
+    one wrapper covers all twelve without an engine change. The fetch body is
+    unchanged; it is wrapped in `throttle(...)` and the `!res.ok` throw became
+    `HttpStatusError`.
+  - THE LIMITER IS PROCESS-WIDE, NOT PER-CLIENT — this is load-bearing, do not
+    "simplify" it to an instance field. The RPM ceiling belongs to the API KEY,
+    not to a client object, and `score.ts:321` / `match.ts:308` each
+    default-construct their OWN client when none is injected. A per-instance
+    limiter would let N clients each pace to the full ceiling and multiply the
+    real rate by N — reproducing the exact defect being fixed.
+  - FAILURE SHAPE IS UNCHANGED BY DESIGN. After exhausted retries the ORIGINAL
+    error is rethrown. `HttpStatusError` is an Error whose message is
+    byte-identical to the pre-throttle one (`Gemini request failed: HTTP 429`);
+    `status` is additive and read only inside src/llm. A test drives a real
+    `computeScore` through an all-429 client and asserts the degradation path
+    still fires (rule-pass only, confidence ≤ 0.4). If a future session changes
+    what callers see thrown, every engine's degradation path is in play.
+  - ENV VARS (all optional): `GEMINI_MAX_RPM` (default 12), `GEMINI_MAX_ATTEMPTS`
+    (4 = 1 try + 3 retries), `GEMINI_RETRY_BUDGET_MS` (60000, a HARD ceiling on
+    one call's backoff checked independently of attempts remaining — that, not
+    the attempt count, is what stops a pathological all-429 sequence),
+    `GEMINI_BACKOFF_BASE_MS` (2000, doubling, equal jitter),
+    `GEMINI_BACKOFF_MAX_MS` (30000, also clamps `Retry-After`). 429 is the ONLY
+    retried status. A malformed env value WARNS and uses the default rather than
+    throwing — a throw there lands in an engine's catch and is re-reported as
+    "the LLM failed", the exact invisible-failure class this removes.
+  - RPM 12 PROVENANCE: the recorded ceiling is 15 RPM / 500 RPD (operator's
+    reading of the AI Studio dashboard, see the Gemini model entry above), NOT
+    re-verified 2026-07-29. 12 leaves ~20% headroom because the server's minute
+    is a sliding window our fixed spacing cannot align with. If 429s reappear at
+    a paced rate, check the dashboard before assuming a code defect.
+  - MEASURED RUN COST (`npx tsx src/llm/scripts/simulate-run.ts` — real throttle,
+    fake clock, NO live call; excluded from `vitest run` by filename, same
+    convention as the Wave 3/4 live-verify scripts): ~4.9 Gemini calls per
+    opportunity (spread 3–6: research 1 + scoring 1–2 + evidence 1–6), so a
+    25-item run is 123 calls and takes **~10 minutes** at 12 RPM. API latency
+    (~1.5s) is fully ABSORBED by the 5s pacing interval. OPERATING ENVELOPE:
+    ~101 opportunities/day against 500 RPD ≈ 4 full runs of 25. A ~10-minute run
+    is now the NORMAL shape of real discovery — fire it and walk away.
+  - THE FINDING THAT FORECLOSES "just retry harder instead of throttling": the
+    un-throttled regime is STRICTLY WORSE ON BOTH AXES, not a tradeoff.
+    Simulated at 60 RPM / 60% 429: **13m 23s AND 14 calls lost permanently**.
+    At 12 RPM / 0%: **10m 12s and none lost**. Throttling is faster *and*
+    correct. Do not reopen this — it has been measured. (Also measured: a 5%
+    residual 429 rate costs 5 SECONDS, not minutes.)
+  - OBSERVABILITY: `oaos discover --stage3` prints a Gemini block under the run
+    summary (total / rate-limited / recovered-on-retry / failed-permanently /
+    time waiting), and names the remediation when calls fail permanently. The
+    tally is ZEROED PER RUN in `cli/commands/stage3.ts` so it always describes
+    the run just watched. Stage-3 ONLY — single-opportunity paths (`oaos intake`,
+    Stage-2 discover) cannot hit a per-minute ceiling, and the same block there
+    would be noise on every run.
+  - TESTS NEVER SLEEP: time is an injected clock. The fake advances virtual time
+    on zero-delay macrotasks, resolving the EARLIEST pending deadline first — a
+    naive "advance t by ms on every sleep" clock lets parallel waiters all wake
+    at the last one's deadline and HIDES the pacing bug (it did, on the first
+    run of these tests). 34 new tests (throttle, gemini-client, config) + 4 in
+    cli/tests/format.test.ts.
+  - NOT FIXED: no request timeout — docs/known-issues.md #15. Pre-existing; the
+    throttle makes it slightly more consequential because a hung call now holds
+    the shared paced queue instead of stalling one opportunity.
+- Test count: 924 passing (74 test files) — `vitest run`
 - No tsconfig.json by design — tsx direct execution throughout
 - Test framework: vitest (`npm test` = `vitest run`)
 

@@ -314,3 +314,33 @@ completeness formula. NOT safe to do opportunistically — `completeness` feeds
 `needs_enrichment`, which gates the research/enrichment path, and changing the
 denominator or the field set shifts every existing record's score. Do NOT fix
 outside a supervised session.
+
+---
+
+## 15. Gemini client has no request timeout — a hung socket can stall a run (LOG ONLY)
+
+`createGeminiClient` (src/engines/scoring/gemini.ts) calls `fetch` with no
+`AbortSignal` and no deadline. The Wave-9 throttle added a retry budget
+(`GEMINI_RETRY_BUDGET_MS`), but that bounds **backoff sleep**, not a connection
+that accepts and then never answers. A stalled socket hangs the call, and with
+it the run, indefinitely.
+
+Pre-existing — the client never had a timeout. Recorded here because the
+throttle makes it slightly more consequential than it was:
+
+- **Before:** the pipeline fired calls without pacing, so a hung call stalled
+  only the one opportunity awaiting it; other calls were already in flight.
+- **After:** calls are serialized through one paced queue. A hung call holds
+  the queue, so everything behind it waits too. The blast radius grew from one
+  opportunity to the rest of the run.
+
+Not urgent — no hang has been observed against `generativelanguage.googleapis.com`
+in any run to date, and Node's default socket behavior eventually errors on a
+dead connection. But the interaction between "no timeout" and "one shared
+queue" is the part worth remembering.
+
+Candidate fix for a dedicated session: an `AbortSignal.timeout(ms)` on the
+fetch, surfaced as `GEMINI_REQUEST_TIMEOUT_MS`, throwing an error that the
+throttle treats as non-429 (no retry) so the existing degradation path handles
+it unchanged. Small and self-contained — but it changes what a caller can see
+thrown, so it wants its own verification pass rather than a drive-by.

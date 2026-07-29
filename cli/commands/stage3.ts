@@ -34,7 +34,8 @@ import type {
   Stage3RunSummary,
 } from "../../src/discovery/orchestrator";
 import { getFlag, hasFlag } from "../args";
-import { formatStage3Summary } from "../format";
+import { formatGeminiStats, formatStage3Summary } from "../format";
+import { getGeminiCallStats, resetGeminiCallStats } from "../../src/llm";
 
 // ============================================================
 // Argument parsing (pure)
@@ -212,6 +213,13 @@ export async function runStage3Command(args: string[]): Promise<void> {
 
   const { vocabulary, preferences } = loadScope(resolve(process.cwd(), DEFAULT_PREFERENCES_PATH));
 
+  // The Gemini tally describes THIS run, and it prints directly under this
+  // run's source table. Zeroing it here makes that true by construction rather
+  // than by "we only ever run once per process" — a tally that silently
+  // accumulated across runs would eventually report numbers that don't match
+  // what the operator just watched happen.
+  resetGeminiCallStats();
+
   const summary: Stage3RunSummary = await runStage3({
     entries,
     sourceDeps: createSourceDeps(),
@@ -231,4 +239,12 @@ export async function runStage3Command(args: string[]): Promise<void> {
   });
 
   console.log(formatStage3Summary(summary));
+
+  // Real runs only: in a dry run no pipeline runs, so the tally is all zeros
+  // and formatGeminiStats returns "" anyway — the guard just makes that intent
+  // explicit at the call site.
+  if (!parsed.dryRun) {
+    const geminiStats = formatGeminiStats(getGeminiCallStats());
+    if (geminiStats !== "") console.log(geminiStats);
+  }
 }

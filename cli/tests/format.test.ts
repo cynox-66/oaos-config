@@ -7,8 +7,10 @@ import {
   formatPackageFlags,
   formatScoreChange,
   formatContactsImport,
+  formatGeminiStats,
   formatReport,
 } from "../format";
+import { createStats } from "../../src/llm";
 
 describe("formatIntakeSummary", () => {
   it("shows the written record id on success", () => {
@@ -179,5 +181,46 @@ describe("formatPackageFlags (#12a)", () => {
   it("degradation alone (no flags) still renders — a failed AI check is never silent", () => {
     const out = formatPackageFlags({ hard: [], reviewOnly: [], semanticDegraded: true });
     expect(out).toContain("SEMANTIC AUDIT DEGRADED");
+  });
+});
+
+describe("formatGeminiStats", () => {
+  it("renders nothing when no LLM call was made (e.g. a dry run)", () => {
+    expect(formatGeminiStats(createStats())).toBe("");
+  });
+
+  it("reports the tally on a clean run", () => {
+    const out = formatGeminiStats({
+      ...createStats(),
+      total: 100,
+      throttleWaitMs: 495_000,
+    });
+    expect(out).toContain("100 calls");
+    expect(out).toContain("0 hit the rate limit");
+    expect(out).toContain("495s pacing");
+    expect(out).not.toContain("⚠");
+  });
+
+  it("distinguishes a recovered retry from a permanent failure", () => {
+    const out = formatGeminiStats({
+      ...createStats(),
+      total: 100,
+      rateLimited: 12,
+      succeededAfterRetry: 10,
+      failedPermanently: 2,
+      backoffWaitMs: 30_000,
+    });
+    expect(out).toContain("12 hit the rate limit");
+    expect(out).toContain("10 recovered on retry");
+    expect(out).toContain("2 failed");
+  });
+
+  it("warns with a remediation path when calls failed permanently", () => {
+    // The whole point: a run must never again report success while silently
+    // writing rule-only scores.
+    const out = formatGeminiStats({ ...createStats(), total: 10, failedPermanently: 3 });
+    expect(out).toContain("⚠ 3 calls failed after every retry");
+    expect(out).toContain("GEMINI_MAX_RPM");
+    expect(out).toContain("oaos score --company");
   });
 });

@@ -9,6 +9,7 @@
 // drift from the orchestrator's own shape.
 
 import type { Stage3RunSummary } from "../src/discovery/orchestrator/types";
+import type { LlmCallStats } from "../src/llm/types";
 
 // ============================================================
 // intake
@@ -443,6 +444,44 @@ export function formatStage3Summary(s: Stage3RunSummary): string {
       `${totals.fetched} fetched · ${totals.calendar} calendar · ${totals.written} written`
   );
   if (s.dryRun) lines.push("Dry run: nothing was persisted (no pipeline, no calendar, no health write).");
+
+  return lines.join("\n");
+}
+
+/**
+ * Render the run's Gemini call tally.
+ *
+ * This block exists because of a specific failure: the first real activated
+ * Stage-3 run reported success while 429ing on a large fraction of its LLM
+ * calls, and the damage — 14 of 25 opportunities scored from defaults, zero
+ * opportunity-specific evidence reasoning — was only discovered by auditing
+ * Airtable by hand. A retried-then-succeeded call and a permanently failed one
+ * were indistinguishable in the logs. Now the run says so itself.
+ *
+ * Printed for real runs only. Single-opportunity paths (`oaos intake`, Stage-2
+ * discover) cannot hit a per-minute ceiling, so the same block there would be
+ * noise on every run — and noise on every run is how a reader learns to skip it.
+ */
+export function formatGeminiStats(stats: LlmCallStats): string {
+  if (stats.total === 0) return "";
+
+  const waitSeconds = ((stats.throttleWaitMs + stats.backoffWaitMs) / 1000).toFixed(0);
+  const lines = [
+    "",
+    `  Gemini: ${stats.total} calls · ${stats.rateLimited} hit the rate limit · ` +
+      `${stats.succeededAfterRetry} recovered on retry · ${stats.failedPermanently} failed`,
+    `          ${waitSeconds}s spent waiting (${(stats.throttleWaitMs / 1000).toFixed(0)}s pacing, ` +
+      `${(stats.backoffWaitMs / 1000).toFixed(0)}s backoff)`,
+  ];
+
+  if (stats.failedPermanently > 0) {
+    lines.push(
+      `  ⚠ ${stats.failedPermanently} call${stats.failedPermanently === 1 ? "" : "s"} failed after ` +
+        "every retry. Those opportunities fell back to rule-only scores and",
+      "    generic evidence reasons. Lower GEMINI_MAX_RPM and re-score them with",
+      "    `oaos score --company <name>`."
+    );
+  }
 
   return lines.join("\n");
 }
