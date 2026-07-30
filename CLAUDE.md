@@ -665,7 +665,65 @@
   the name to `ACTIVATED_SOURCES` AND flip `enabled: true` in sources.ts IN THE
   SAME COMMIT** (deactivation removes both, together). That pairing is the whole
   mechanism. Currently activated: `greenhouse`.
+- WAVE 8 (SOURCE ACTIVATION) — IN PROGRESS. Dates, not SHAs: the activation
+  commits are described by date deliberately. An earlier session's
+  dangling-SHA references were cleaned up during the 2026-07-29 working-tree
+  cleanup and must not be reintroduced.
+  - ACTIVATED: `greenhouse` only, 2026-07-28. It covers FOUR company-board
+    entries — Grafana Labs, ClickHouse, Chainguard, Tailscale (per-company
+    toggles live in `src/discovery/stage3/registry.ts`). ALL 14 OTHER SOURCE
+    ROWS REMAIN `enabled: false` in `src/discovery/orchestrator/sources.ts`,
+    guarded by the activation allow-list protocol in the entry above.
+  - THE CLEAN RE-RUN (2026-07-30) — the run that separated 429 damage from
+    real defects. Verbatim result:
+      source        fetched  cal  dedup  passed  gated  written  health
+      greenhouse        419    0    127      25    267       25  ✓ healthy
+      Prerank: 292 in → 25 passed, 267 gated (below_floor 89, beyond_k 178)
+      Gemini: 120 calls · 0 rate-limited · 0 recovered on retry · 0 failed
+              353s waiting (353s pacing, 0s backoff)
+    ~6 minutes wall clock. ZERO rate limiting, ZERO backoff, ZERO failures —
+    the throttle PREVENTED the burst rather than recovering from it, so the
+    src/llm fix is confirmed working against a real activated source. MEASURED
+    COST OF A 25-ITEM GREENHOUSE RUN: 120 Gemini calls / ~6 min at 12 RPM
+    (the src/llm simulation's ~10 min estimate was conservative).
+    CONSEQUENCE FOR DIAGNOSIS: anything still wrong in these records has NO
+    rate-limit explanation available.
+  - `writeOpportunity` UPDATES IN PLACE ON FINGERPRINT MATCH — load-bearing
+    for how every future run is read. Of the 25 records written, only 6 were
+    NEW; 19 were in-place updates of the 2026-07-29 batch. So RE-RUNS ARE
+    SELF-HEALING (the July 29 defaulted-score records were repaired without
+    any manual step) and A NEW-RECORD COUNT IS NOT A COVERAGE MEASUREMENT —
+    a company whose roles were already ingested contributes updates that are
+    invisible in a new-record tally. Do not infer "source X fetched nothing"
+    from "source X produced no new records".
+  - RECORD STATE after the re-run: 42 records total — 25 from 2026-07-29
+    (repaired in place by the 2026-07-30 run), 6 new on 2026-07-30, 11 older.
+  - OPEN DEFECT 1 — EVIDENCE MATCHING PRODUCES NOTHING. `Evidence Assets` is
+    EMPTY on every record. Zero linked assets. Observed with ZERO FAILED
+    GEMINI CALLS, so there is no rate-limit explanation. The operator has 21
+    verified evidence assets (Krkn Chaos, KubeArmor, Hiero Heka,
+    kubestellar/ui PRs, plus personal projects) and the ingested roles include
+    Tailscale "Software Engineer, Networking (Edge)", several Grafana "Backend
+    Engineer - Platform - Stacks", and Chainguard security-adjacent roles —
+    none matched anything. NOT YET DIAGNOSED as of 2026-07-30.
+  - OPEN DEFECT 2 — `Remote: unknown` ON EVERY RECORD. These are Greenhouse
+    boards for remote-first companies and several role titles contain
+    "| Remote" literally. Normalization is not extracting the remote flag.
+    THIS PATH NEVER INVOLVED GEMINI AT ALL, so again no rate-limit
+    explanation. NOT YET DIAGNOSED as of 2026-07-30.
+  - CONSEQUENCE, NOT A THIRD DEFECT: match scores sit at 6–15 across the
+    board and every record lands Tier C. That is what zero evidence
+    contribution predicts, so TIERS ARE CURRENTLY MEANINGLESS RATHER THAN
+    WRONG. Fixing Defect 1 will likely re-tier the whole set — do not tune
+    the scoring rubric against these numbers.
+  - WATCH ITEM (NOT A DEFECT, not scoped for investigation): a Chainguard
+    "Senior Partner Sales Engineer - Brazil" role scored 39 on quality and
+    reached the top 25. Possibly prerank vocabulary breadth — the operator's
+    confirmed scope has 13 enabled fields, several broad. Logged to watch as
+    runs accumulate; no action.
 - Test count: 924 passing (74 test files) — `vitest run`
+  (re-verified 2026-07-30; `git rev-parse main origin/main` also verified
+  equal at e02170b that day — main WAS genuinely pushed.)
 - No tsconfig.json by design — tsx direct execution throughout
 - Test framework: vitest (`npm test` = `vitest run`)
 
@@ -814,6 +872,12 @@
   → 25 preranked → 25 written) exposed the Gemini rate-limit defect fixed in
   src/llm (see that entry above) and left main red on the old activation guard
   (now an allow-list). Both fixed 2026-07-29; suite 924 green.
+  THE CLEAN RE-RUN HAPPENED 2026-07-30 and confirmed the throttle fix (0
+  rate-limited / 0 failed of 120 calls) while isolating TWO REAL DEFECTS —
+  empty Evidence Assets and `Remote: unknown`. Full numbers, the
+  fingerprint-update semantics, the record state, and both defects are recorded
+  in the "WAVE 8 (SOURCE ACTIVATION)" entry in Project state above. Read that
+  before interpreting any later run.
 - WORKING-TREE CLEANUP (2026-07-29) — why the history looks the way it does.
   Wave 5 was reported complete but never committed: its files sat untracked for
   a session, and its `sources.ts` block got swept into the Greenhouse activation
@@ -836,9 +900,41 @@
   Full suite 924 green (74 files), up from 890/71. Zero diff to the 12 engines
   (besides gemini.ts), pipeline, persistence, prerank, scope, orchestrator
   logic, or any Stage-3 source. No live Gemini call was made this session.
-- NEXT: the clean Greenhouse re-run. It is what finally separates 429 damage
-  from real defects — specifically whether the EMPTY EVIDENCE ASSETS and the
-  `Remote: unknown` values in the audited records were rate-limit fallout or
-  independent bugs. Expect it to take ~10 minutes at the default 12 RPM, and
-  read the Gemini block at the end: if `failed` is 0, whatever remains wrong in
-  those records is a real defect, not throttling.
+- The clean Greenhouse re-run: DONE 2026-07-30. Verdict: the throttle fix is
+  confirmed (120 calls, 0 rate-limited, 0 failed, 0 backoff, ~6 min) and BOTH
+  audited symptoms are REAL DEFECTS, not throttling fallout. Neither has a
+  rate-limit story available.
+- NEXT: diagnose the two open Wave-8 defects (evidence matching links nothing;
+  remote flag never extracted). INVESTIGATION FIRST — the fix is an operator
+  ruling, because every plausible fix site (Engine 1 normalization, Engine 3
+  evidence-matching, the Greenhouse adapter) is in frozen territory. Related
+  standing questions to weigh, NOT to assume: docs/known-issues.md #1
+  (`computeCoverageGap` tests `topTag` against asset `tech_tags[]` only while
+  `topTag` derives from `domain[]` words — a domains-vs-tech_tags asymmetry that
+  could plausibly share a root with Defect 1) and #14 (the Greenhouse
+  `content=true` → plain-listing fallback returns description-less items
+  silently, which would starve both domain derivation AND remote inference from
+  one upstream cause).
+  - THIRD OBSERVATION TO WEIGH, NOT ASSUME (operator, 2026-07-30) — the
+    2026-07-30 run DEDUPED 127 OF 419 items, ~30% collapsed inside a single
+    run. Engine 1's fingerprint is sha1(company|role|url-host) and all four
+    Greenhouse boards share `boards.greenhouse.io`, so a within-run collapse
+    needs company AND role to match. Two readings, both untested: (i)
+    multi-location postings — one role listed per region, collapsing to one
+    fingerprint, in which case whatever location/remote signal DISTINGUISHES
+    the variants is discarded upstream of normalization, and "| Remote" in some
+    titles but not their siblings is exactly the shape that produces — which
+    would put the collapse directly on Defect 2's path; (ii) THIN COMPANY
+    EXTRACTION — if Engine 1 derives an empty company for Greenhouse payloads
+    then the fingerprint degrades to (""|role|host) and collapses ACROSS
+    companies on identical role titles, which is the same failure mode as the
+    Wave 5 HN defect and the Wave 6 NLnet finding ("Engine 1 extracts few
+    distinct company/role pairs"). Reading (ii) would also bear on Defect 1,
+    since thin extraction starves the evidence candidate filter. The Defect 2
+    investigation must report WHAT the dedupe collapsed and whether the
+    surviving record's location/title differs from what it collapsed — the two
+    readings point at different fix sites.
+- ALSO STILL OPEN, unchanged: Wave 7 registry expansion (the locked 8-entry
+  COMPANY_REGISTRY, incl. the logged ClickHouse-runs-Ashby finding) and the
+  local web UI (D16), neither started. Freelance/gig discovery remains deferred
+  by locked decision.
