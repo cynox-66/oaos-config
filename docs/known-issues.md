@@ -344,3 +344,55 @@ fetch, surfaced as `GEMINI_REQUEST_TIMEOUT_MS`, throwing an error that the
 throttle treats as non-429 (no retry) so the existing degradation path handles
 it unchanged. Small and self-contained — but it changes what a caller can see
 thrown, so it wants its own verification pass rather than a drive-by.
+
+---
+
+## 16. company_board healthCheck re-fetches the whole registry — a run costs 2× its item count in HTTP (DOCUMENTED COST CHARACTERISTIC — not a defect)
+
+`createCompanyBoardSource`'s `healthCheck` calls `fetchRegistry(adapter, registry, deps)`
+a second time (src/discovery/stage3/company-board.ts:76-108, the same helper
+`fetch` uses at :36-53). The orchestrator calls both per source per run —
+`source.fetch(sourceDeps)` and then `safeHealthCheck(source, sourceDeps)` — so
+**every company_board run performs two complete fetches of every enabled
+registry entry.**
+
+**This is not a bug and is not filed for fixing.** The family-level healthCheck
+semantics are the delta-5 operator ruling (`ok:false` only when every enabled
+entry failed, partial failure named in `detail`), and an INDEPENDENT probe
+rather than a cached replay of the fetch result is arguably the point of it: a
+health signal derived from the same bytes as the fetch would not be a second
+observation. Recorded so the cost is known, not so it is removed.
+
+**Evidence it really is two fetches.** After the 2026-07-30 Greenhouse run,
+`discovery/health.json` recorded `"all 4 entries healthy, 419 items"` while the
+run summary reported `fetched 419`. Those are two independently-produced counts
+from two separate traversals that happened to agree — not one number copied
+twice.
+
+**The scaling rule:** a company_board run costs **2× the HTTP volume implied by
+its item count**, and that doubling scales with the number of enabled registry
+entries, not with items retrieved.
+
+**The cost is NOT uniform across platforms** — this is the part that matters
+later. It depends on requests-per-entry, which differs by adapter:
+
+- **Greenhouse** is one request per board (plus a second only if `content=true`
+  falls back). 4 enabled boards → 4 requests per traversal → **8 per run**.
+- **Workday CXS** paginates at `PAGE_LIMIT = 20` (src/discovery/stage3/adapters/workday.ts:9).
+  Red Hat's ~228 postings are `ceil(228/20)` = **12 requests** per traversal →
+  **~24 per run**, for a single registry entry.
+
+So one Workday entry can cost roughly three times what all four Greenhouse
+boards cost together, and the doubling multiplies whichever it is.
+
+**Why nothing currently catches this.** Engine 11's admission checks budget
+`maintenance_minutes_per_week` — human upkeep — not HTTP volume. There is no
+admission check that counts requests, so a source can pass admission cleanly
+while costing double what its `est_volume_per_week` suggests. The Stage-3 run
+summary likewise reports items, never requests.
+
+**When it stops being trivia:** Wave 7 registry expansion. At today's 8 entries
+(4 of them behind a single activated source) the absolute numbers are small.
+Adding paginating entries — Workday tenants especially — multiplies against the
+2× rather than adding to it, and no existing check would surface that before a
+run.
