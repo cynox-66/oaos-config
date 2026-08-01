@@ -396,3 +396,132 @@ summary likewise reports items, never requests.
 Adding paginating entries — Workday tenants especially — multiplies against the
 2× rather than adding to it, and no existing check would surface that before a
 run.
+
+---
+
+## 17. Evidence links are never persisted — deferred to C9 (LOG ONLY)
+
+`writePipelineResult` (src/persistence/write.ts:65-88) writes the Opportunity,
+then every ranked Contact, then the Outreach draft — no evidence-link write
+exists in that function, or anywhere else in `src/persistence/`. `evidenceFields`
+does not exist (no such symbol anywhere in `src/` or `cli/`).
+`FIELD_NAMES.opportunities.evidence_assets` (src/persistence/config.ts:35,
+`"Evidence Assets"`) and `TABLE_NAMES.evidence` (src/persistence/config.ts:11,
+same string) are declared and never referenced by any write or read function.
+
+This is the evidence-side instance of the #12b class: engine output correct in
+memory (Engine 3's `EvidenceMatch` reaches Engine 2 in full — see the
+`inputs_hash`/runPipeline ordering established during the 2026-07-30/31
+diagnosis), never persisted, never reaches a review surface. Same deferral
+ruling as #12b: deferred to C9.
+
+**Does not affect scores or tiers.** `computeScore` (src/engines/scoring/
+score.ts) reads `evidence_match` as an in-memory `ScoreRequest` field, passed
+directly from `runPipeline` (src/pipeline/intake.ts:63,71) — never from the
+Airtable link column. Persisting evidence links moves no score and no tier.
+
+The Airtable Evidence Assets table currently holds 7 of the inventory's 21
+assets, and no inventory-id → Airtable-record-id resolver exists yet — building
+one is part of what C9 would need to do.
+
+---
+
+## 18. `inputs_hash` is computed and stored but never consumed (DOCUMENTED DORMANCY — not a defect)
+
+`computeInputsHash` (src/engines/scoring/score.ts:79-90) feeds the
+skip-if-unchanged branch at score.ts:316 (`if (options.previous &&
+options.previous.inputs_hash === inputsHash) return options.previous;`). Both
+production call sites omit `options.previous` — `src/pipeline/intake.ts:66-74`
+and `cli/commands/score.ts:68-71` — confirmed by grep across `src/` and `cli/`
+for `previous:`, matching only an unrelated field on
+`src/discovery/orchestrator/orchestrator.ts`. So the branch never fires in
+production; every score is recomputed on every run, LLM call included.
+
+Not a defect — nothing is broken by this, and the upside is real: because the
+branch never fires, there is no stored-hash invalidation risk for any future
+change to what feeds `computeInputsHash`. A hash that's never compared against
+can never go stale in a way that silently returns a wrong cached score.
+
+---
+
+## 19. `also_seen_in` is not maintained on the Opportunities update path (LOG ONLY, related to #17/#18's class)
+
+Fixed this session (2026-07-31): `writeOpportunity`'s update-path PATCH no
+longer regenerates the whole `Notes` field from a lossy `merge`d object (see
+the CLAUDE.md "re-runs are self-healing" correction). The narrowed PATCH
+(`opportunityUpdateFields`, src/persistence/records.ts) sends only
+`Date Found` + `Quality Score` + `Match Score` — `also_seen_in` is deliberately
+NOT included, and this entry documents why, so a future session doesn't try to
+add it back in without reading this first.
+
+**Mechanism (a):** `also_seen_in` has no dedicated Airtable column —
+`FIELD_NAMES.opportunities` (src/persistence/config.ts:16-34) has no such key.
+It exists only as a line inside the single composite `Notes` text field,
+rendered by `opportunityNotes` (src/persistence/records.ts:24-36) alongside
+Description/Comp/Remote/Location/Completeness/Needs-enrichment. Airtable PATCHes
+a text field as a whole value — there is no partial-line update. So writing
+`also_seen_in` is structurally inseparable from rewriting every other
+Notes-embedded field, which is exactly the fabricated-blank overwrite this
+session's fix exists to stop.
+
+**Mechanism (b):** even if Notes could be surgically patched, the accumulation
+would still be broken at its root. `merge` (src/engines/normalization/
+normalize.ts:128-141) builds `alsoSeenIn` by appending onto
+`existing.also_seen_in` — and `existing` comes from `parseOpportunity`, which
+FABRICATES `also_seen_in: []` on every read regardless of what's actually
+stored (src/persistence/records.ts:70-97). So the accumulated list already
+resets to at most one entry on every run, independent of anything this session
+touched.
+
+**Why not fixed here:** a fix would mean either (i) reading raw Notes text back
+out and re-implementing `merge`'s accumulation logic as string manipulation in
+the persistence layer — a second mechanism for the same logic, invented to work
+around a lossy round-trip, or (ii) fixing `parseOpportunity`'s round-trip
+itself — both are design decisions for the eventual proper fix, not a defect
+patch. Operator ruling, 2026-07-31: log it, don't fold it into this session's
+narrower PATCH-scope fix.
+
+**Why it doesn't matter yet:** `also_seen_in` tracks multi-source sightings, and
+Greenhouse is currently the only enabled source (`ACTIVATED_SOURCES`,
+src/discovery/orchestrator/sources.ts). There is no second source for anything
+to be "also seen in" until Wave 8 activates one.
+
+---
+
+## 20. Prerank scoring is presence-based — a duplicated payload value cannot inflate a score (DOCUMENTED — not a defect, recorded for future source authors)
+
+Discovered while evaluating the Greenhouse `content`→`description` mapping
+(2-A, 2026-07-31): adding a `description` key holding the same text as the
+existing `content` key means that text appears twice in the same item's
+`raw_payload`. `collectStrings` (src/discovery/prerank/text.ts:23-38) does not
+dedupe — every string leaf it walks is pushed into the joined text regardless
+of whether an identical string was already pushed.
+
+**But this has no effect on the score, and the reason is structural, not
+coincidental.** `termPresent` (src/discovery/prerank/text.ts:74-78) is a single
+boolean `.test()` — whether a term occurs *at all* in a text, never how many
+times. `matchedTerms` (text.ts:82-92) calls `termPresent` once per distinct
+vocabulary term and dedupes the term list itself. In `prerank()`
+(src/discovery/prerank/prerank.ts): document frequency is `termPresent` once
+per *item* (a term occurring twice within one item's text still only
+increments df by at most 1), and per-item scoring sums IDF weight over
+`matchedTerms`, again presence not count. A term appearing once in an item's
+text and the same term appearing twice are indistinguishable to every stage of
+this pipeline.
+
+Empirically confirmed against the real Greenhouse fixture
+(src/discovery/stage3/tests/fixtures/greenhouse/jobs.json): prerank scores for
+both fixture jobs were measured byte-identical (0.8 and 0.2) with and without
+the `content`/`description` duplication, using a temporary, uncommitted
+measurement script (not part of the suite — the finding above is what earned a
+permanent place, not a numeric regression test, since the answer is now
+structural rather than fixture-specific).
+
+**For the next person adding a payload key:** you do not need to worry about
+double-counting a value that already exists elsewhere in the same item's
+`raw_payload` under a different key — prerank cannot see the difference between
+one occurrence and several. This does NOT extend to values that differ across
+items (e.g., inflating apparent *document frequency* by duplicating a term into
+an item that otherwise wouldn't contain it) — that changes what a term's
+presence means for that one item, which is a different question this entry
+does not answer.

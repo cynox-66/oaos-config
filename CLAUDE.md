@@ -690,12 +690,25 @@
     rate-limit explanation available.
   - `writeOpportunity` UPDATES IN PLACE ON FINGERPRINT MATCH — load-bearing
     for how every future run is read. Of the 25 records written, only 6 were
-    NEW; 19 were in-place updates of the 2026-07-29 batch. So RE-RUNS ARE
-    SELF-HEALING (the July 29 defaulted-score records were repaired without
-    any manual step) and A NEW-RECORD COUNT IS NOT A COVERAGE MEASUREMENT —
-    a company whose roles were already ingested contributes updates that are
-    invisible in a new-record tally. Do not infer "source X fetched nothing"
-    from "source X produced no new records".
+    NEW; 19 were in-place updates of the 2026-07-29 batch. CORRECTED
+    2026-07-30 (evening) diagnosis session: "RE-RUNS ARE SELF-HEALING" is
+    TRUE FOR SCORES ONLY, not the whole record. `writeOpportunity`
+    (src/persistence/write.ts) passes `score` into `opportunityFields`
+    separately from `merge`'s output, straight from the fresh pipeline run —
+    that's why the July 29 defaulted scores repaired correctly. But `merge`
+    (src/engines/normalization/normalize.ts) folds onto `existing =
+    parseOpportunity(record)`, and `parseOpportunity`
+    (src/persistence/records.ts) FABRICATES description_raw/description_norm/
+    comp_basis/remote/location/completeness/needs_enrichment/also_seen_in as
+    blank on every read, regardless of what's actually stored. So every
+    update-path write was ALSO PATCHing those fabricated blanks back over
+    Notes, actively erasing description/remote/location/completeness on each
+    re-run — the opposite of self-healing for everything except the two score
+    columns. Fixed this session — see the 2-C entry below. A NEW-RECORD COUNT
+    IS STILL NOT A COVERAGE MEASUREMENT — a company whose roles were already
+    ingested contributes updates that are invisible in a new-record tally. Do
+    not infer "source X fetched nothing" from "source X produced no new
+    records".
   - RECORD STATE after the re-run: 42 records total — 25 from 2026-07-29
     (repaired in place by the 2026-07-30 run), 6 new on 2026-07-30, 11 older.
   - OPEN DEFECT 1 — EVIDENCE MATCHING PRODUCES NOTHING. `Evidence Assets` is
@@ -714,8 +727,15 @@
   - CONSEQUENCE, NOT A THIRD DEFECT: match scores sit at 6–15 across the
     board and every record lands Tier C. That is what zero evidence
     contribution predicts, so TIERS ARE CURRENTLY MEANINGLESS RATHER THAN
-    WRONG. Fixing Defect 1 will likely re-tier the whole set — do not tune
-    the scoring rubric against these numbers.
+    WRONG. CORRECTED 2026-07-30 (evening): "Fixing Defect 1 will likely
+    re-tier the whole set" is KNOWN FALSE. `computeScore`
+    (src/engines/scoring/score.ts) reads `evidence_match` as an in-memory
+    argument passed straight from `runPipeline` (Engine 3's live output,
+    src/pipeline/intake.ts) — it never reads the Airtable Evidence Assets
+    link field. Persisting evidence links (deferred to C9, see
+    docs/known-issues.md #17) changes what's stored in the link column; it
+    moves no score and no tier. Do not tune the scoring rubric against these
+    numbers for an unrelated reason either.
   - WATCH ITEM (NOT A DEFECT, not scoped for investigation): a Chainguard
     "Senior Partner Sales Engineer - Brazil" role scored 39 on quality and
     reached the top 25. Possibly prerank vocabulary breadth — the operator's
