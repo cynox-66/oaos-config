@@ -38,6 +38,32 @@ describe("schema validation", () => {
   });
 });
 
+describe("remote detection from role/title", () => {
+  it("detects remote from a title-only signal ('... | Remote') with no other remote field", () => {
+    const opp = normalize(
+      rawItem({
+        raw_payload: {
+          title: "Senior Software Engineer, Backend | Spain | Remote",
+          description: "We build distributed systems.",
+        },
+      })
+    );
+    expect(opp.remote).toBe("remote");
+  });
+
+  it("a title with no remote/onsite/hybrid keyword leaves the result unchanged (unknown)", () => {
+    const opp = normalize(
+      rawItem({
+        raw_payload: {
+          title: "Senior Software Engineer, Backend",
+          description: "We build distributed systems.",
+        },
+      })
+    );
+    expect(opp.remote).toBe("unknown");
+  });
+});
+
 describe("determinism", () => {
   it("re-normalizing the same RawItem yields an identical fingerprint", () => {
     const raw = rawItem();

@@ -41,6 +41,7 @@ function extractFromObject(raw: RawItem, payload: PayloadObject): AdapterOutput 
     "work_arrangement",
   ]);
   const employmentType = readString(payload, ["employment_type", "job_type", "type"]);
+  const role = readString(payload, ["role", "title", "job_title", "position"]);
   return {
     company: readString(payload, [
       "company",
@@ -48,7 +49,7 @@ function extractFromObject(raw: RawItem, payload: PayloadObject): AdapterOutput 
       "organization",
       "employer",
     ]),
-    role: readString(payload, ["role", "title", "job_title", "position"]),
+    role,
     category: categoryFromSourceType(raw),
     description_raw: description,
     comp_raw: readString(payload, [
@@ -59,7 +60,12 @@ function extractFromObject(raw: RawItem, payload: PayloadObject): AdapterOutput 
       "pay",
       "rate",
     ]),
-    remote: detectRemote([remoteField, employmentType, description].filter(Boolean).join(" ")),
+    // `role`/`title` carries a remote signal on some boards (e.g. Greenhouse
+    // titles like "... | Remote") that never reaches `description` or the
+    // other fields already joined here.
+    remote: detectRemote(
+      [remoteField, employmentType, description, role].filter(Boolean).join(" ")
+    ),
     location: readString(payload, ["location", "city", "place", "region"]),
   };
 }
