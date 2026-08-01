@@ -525,3 +525,54 @@ items (e.g., inflating apparent *document frequency* by duplicating a term into
 an item that otherwise wouldn't contain it) — that changes what a term's
 presence means for that one item, which is a different question this entry
 does not answer.
+
+---
+
+## 21. The committed Greenhouse fixture is not entity-escaped — the real API is (RESOLVED 2026-07-31, standing caveat on every fixture-based test)
+
+Found by the bounded live probe for 2-A (2026-07-31), against the real
+Greenhouse API for two currently-activated companies (`grafanalabs`: 142/142
+postings; `chainguard`: 70/70 postings — zero literal, zero mixed, in both).
+Real Greenhouse `content` is HTML-**entity-escaped**
+(`&lt;div class=&quot;content-intro&quot;&gt;...`), never literal `<div>...`.
+`src/discovery/stage3/tests/fixtures/greenhouse/jobs.json` — the committed,
+previously live-verified fixture used by every Greenhouse test — uses plain
+**literal** HTML (`<p>...</p>`). This divergence is exactly why the seam test
+(`greenhouse-normalize-seam.test.ts`) passed against the fixture while the real
+fetch, run through the same code, did not: the fixture cannot exercise a code
+path the real API's encoding actually takes.
+
+**This was previously a latent defect, invisible before this session.** Before
+2-A, Greenhouse's `content` was never read as a description at all (it isn't
+one of Engine 1's recognized keys), so `stripHtml`'s entity-vs-tag ordering bug
+(see the `stripHtml` fix, `src/engines/normalization/text.ts`, same date) never
+ran on Greenhouse data in production. 2-A made `content` reachable for the
+first time, which is what surfaced it.
+
+**Blast radius beyond Greenhouse, checked not assumed:** every fixture file
+under `src/discovery/stage3/tests/fixtures/` (greenhouse, workday, lever, esoc,
+cncf-lfx, ashby, lfdt) was grepped for entity markers (`&lt;`, `&gt;`, `&quot;`,
+`&amp;`) — none contain any. Wave 5 sources keep their sample payloads inline in
+their `.test.ts` files rather than separate fixtures; the one with literal HTML
+in its sample (`himalayas.test.ts`) also uses plain `<div>...` tags, not
+escaped ones. So **no fixture or inline test sample anywhere in the repo
+currently exercises entity-escaped content** — this class of divergence between
+committed test data and live reality is not unique to Greenhouse, it is simply
+the first place it was checked.
+
+**Concretely, today:** only Greenhouse (activated) is affected in production.
+Himalayas is not activated (`ACTIVATED_SOURCES = ["greenhouse"]`,
+`src/discovery/orchestrator/tests/sources.test.ts`), but its description
+reaches `cleanDescription` directly (unlike Adzuna/freehire, whose content is
+quarantined under `description_truncated` — a key `job_board.ts`'s read list
+does not check, so quarantined content does not reach this path today). If
+Himalayas is ever activated, or the Wave 5 quarantine is ever lifted, whether
+this specific defect recurs depends on whether that source's real API also
+entity-escapes its HTML — not verified here, since neither is activated and
+checking would have gone beyond this session's bounded, one-real-GET
+verification scope.
+
+**Not fixed by editing the fixture.** Per operator ruling: the fixture stays
+pristine — a real captured snapshot that differs from current reality is itself
+information, not something to paper over by making the fixture agree with
+after-the-fact findings.
