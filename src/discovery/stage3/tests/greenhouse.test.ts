@@ -21,7 +21,7 @@ function depsWith(overrides: Partial<SourceDeps>): SourceDeps {
 }
 
 describe("greenhouseAdapter.fetchOne", () => {
-  it("maps jobs to RawItems with untouched payload and absolute_url", async () => {
+  it("maps jobs to RawItems, preserves the original payload untouched, and adds description/place", async () => {
     const deps = depsWith({
       httpGet: async (url) => {
         expect(url).toBe("https://boards-api.greenhouse.io/v1/boards/grafanalabs/jobs?content=true");
@@ -36,7 +36,21 @@ describe("greenhouseAdapter.fetchOne", () => {
     expect(items[0].source_name).toBe("greenhouse:grafanalabs");
     expect(items[0].url).toBe(jobsFixture.jobs[0].absolute_url);
     expect(items[0].fetched_at).toBe(now());
-    expect(items[0].raw_payload).toEqual(jobsFixture.jobs[0]);
+
+    // Preservation invariant (was an exact-equality check; now explicit since
+    // the payload is no longer identical to the fixture — it gains two keys).
+    // Every original fixture key must still be present with its original value.
+    const original = jobsFixture.jobs[0] as Record<string, unknown>;
+    const payload = items[0].raw_payload as Record<string, unknown>;
+    for (const key of Object.keys(original)) {
+      expect(payload[key]).toEqual(original[key]);
+    }
+    // The two added keys, mapped from content/location for Engine 1 to read.
+    expect(payload.description).toBe(original.content);
+    expect(payload.place).toBe((original.location as { name: string }).name);
+    // `content` and `location` themselves are untouched, not overwritten.
+    expect(payload.content).toBe(original.content);
+    expect(payload.location).toEqual(original.location);
   });
 
   it("returns an empty array for an empty board, no error thrown", async () => {
@@ -64,7 +78,11 @@ describe("greenhouseAdapter.fetchOne", () => {
 
     expect(call).toBe(2);
     expect(items).toHaveLength(2);
-    expect(items[0].raw_payload).toEqual(jobsFixture.jobs[0]);
+    const original = jobsFixture.jobs[0] as Record<string, unknown>;
+    const payload = items[0].raw_payload as Record<string, unknown>;
+    for (const key of Object.keys(original)) {
+      expect(payload[key]).toEqual(original[key]);
+    }
   });
 
   it("throws SourceFetchError kind http when both content=true and plain listing fail", async () => {

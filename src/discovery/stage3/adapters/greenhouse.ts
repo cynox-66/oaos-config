@@ -32,6 +32,16 @@ function parseJobs(body: string, token: string): Record<string, unknown>[] {
   return parsed.jobs;
 }
 
+/** Greenhouse's `location` is `{ name: string }`, not a string — extract the name. */
+function locationName(job: Record<string, unknown>): string | undefined {
+  const location = job.location;
+  if (location !== null && typeof location === "object") {
+    const name = (location as Record<string, unknown>).name;
+    if (typeof name === "string") return name;
+  }
+  return undefined;
+}
+
 export const greenhouseAdapter: CompanyBoardAdapter = {
   platform: "greenhouse",
 
@@ -62,7 +72,28 @@ export const greenhouseAdapter: CompanyBoardAdapter = {
       source_type: "job_board",
       source_name: `greenhouse:${entry.token}`,
       url: typeof job.absolute_url === "string" ? job.absolute_url : null,
-      raw_payload: job,
+      raw_payload: {
+        ...job,
+        // Greenhouse's own key is `content`; Engine 1's job_board adapter
+        // (extractFromObject, src/engines/normalization/adapters/job_board.ts)
+        // reads description from ["description","desc","body","details","summary"].
+        // `content` isn't one of them, so a plain spread leaves every Greenhouse
+        // posting's description unread. Add it under a key Engine 1 already
+        // checks; leave `content` in place (via the spread above) — additive
+        // only, nothing dropped or overwritten.
+        description: typeof job.content === "string" ? job.content : undefined,
+        // `place` (NOT `location`) is deliberate. extractFromObject's location
+        // key list is ["location","city","place","region"] — `location` is
+        // checked FIRST. Greenhouse's `location` holds an OBJECT ({ name }),
+        // which readString skips (string/number only), so writing the derived
+        // string to `location` here would either collide with or, worse,
+        // overwrite that object. `place` is read only after `location` and
+        // `city` both fail, so it's a safe, silent fallthrough — and the
+        // original `location` object survives untouched via the spread above.
+        // If job_board.ts's key list is ever reordered or `place` is pruned
+        // from it, this mapping breaks silently — re-check this comment first.
+        place: locationName(job),
+      },
       fetched_at: fetchedAt,
     }));
   },
