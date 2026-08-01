@@ -65,6 +65,32 @@ export function opportunityFields(o: Opportunity, score?: Score): Record<string,
   return fields;
 }
 
+/**
+ * Build the PATCH body for an EXISTING Opportunities record (fingerprint
+ * match). Deliberately narrow: `o` here is the output of Engine 1's `merge`,
+ * which is built on top of `parseOpportunity`'s read-back — and
+ * `parseOpportunity` fabricates description_raw/description_norm/comp_basis/
+ * remote/location/completeness/needs_enrichment/also_seen_in as blank on
+ * every read (see the type below). Reusing `opportunityFields` here would
+ * regenerate `Notes` from those fabricated blanks and PATCH real content back
+ * to empty on every re-run of an already-ingested source. Only date_found
+ * (Engine 1's duplicate-fingerprint rule) and the two writable score inputs
+ * are safe to send. `also_seen_in` is NOT included: it has no dedicated
+ * Airtable column (it only ever existed inside the same Notes text this
+ * function must not touch), and — separately — its accumulation is already
+ * moot with a single enabled source; see docs/known-issues.md #19.
+ */
+export function opportunityUpdateFields(o: Opportunity, score?: Score): Record<string, unknown> {
+  const fields: Record<string, unknown> = {
+    [FO.date_found]: o.date_found,
+  };
+  if (score) {
+    fields[FO.quality_score] = score.quality.total;
+    fields[FO.match_score] = score.match.total;
+  }
+  return fields;
+}
+
 /** Best-effort reconstruction of an Opportunity from a stored record (lossy:
  *  columns without a home — comp, remote, also_seen_in, … — default). Enough
  *  for the dedupe/merge path, which reads source_name + date_found. */

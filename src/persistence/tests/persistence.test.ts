@@ -165,6 +165,35 @@ describe("writeOpportunity", () => {
     expect(fields["Tier"]).toBeUndefined();
     expect(fields["Domain"]).toEqual(["eBPF", "Security"]); // array, not comma-joined
   });
+
+  it("create path (no existing record) still writes the full field set — narrowing only applies to update", async () => {
+    const { fetchImpl, calls } = mockFetch((call) =>
+      call.method === "GET" ? json({ records: [] }) : json({ id: "recNew" })
+    );
+    const p = createPersistence(client(fetchImpl));
+    await p.writeOpportunity(makeOpportunity(), makeScore());
+
+    expect(calls.some((c) => c.method === "PATCH")).toBe(false);
+    const post = calls.find((c) => c.method === "POST")!;
+    const fields = (post.body as { fields: Record<string, unknown> }).fields;
+    expect(Object.keys(fields).sort()).toEqual(
+      [
+        "Category",
+        "Company",
+        "Date Found",
+        "Domain",
+        "Fingerprint",
+        "Match Score",
+        "Notes",
+        "Opportunity ID",
+        "Quality Score",
+        "Role",
+        "Source",
+        "Source URL",
+        "Status",
+      ].sort()
+    );
+  });
 });
 
 describe("dedupe", () => {
@@ -182,6 +211,37 @@ describe("dedupe", () => {
     const patch = calls.find((c) => c.method === "PATCH")!;
     expect(patch.url).toBe("https://api.airtable.com/v0/base1/Opportunities/recExisting");
     expect(calls.some((c) => c.method === "POST")).toBe(false);
+  });
+
+  it("PATCH body on update contains exactly Date Found + Quality Score + Match Score — nothing Notes-shaped, nothing else", async () => {
+    const { fetchImpl, calls } = mockFetch((call) => {
+      if (call.method === "GET") {
+        return json({
+          records: [
+            {
+              id: "recExisting",
+              fields: { Fingerprint: "fp_abc", Source: "manual", "Date Found": "2026-06-01" },
+            },
+          ],
+        });
+      }
+      return json({ id: "recExisting" });
+    });
+    const p = createPersistence(client(fetchImpl));
+    await p.writeOpportunity(makeOpportunity(), makeScore());
+
+    const patch = calls.find((c) => c.method === "PATCH")!;
+    const fields = (patch.body as { fields: Record<string, unknown> }).fields;
+    expect(Object.keys(fields).sort()).toEqual(["Date Found", "Match Score", "Quality Score"]);
+    expect(fields["Company"]).toBeUndefined();
+    expect(fields["Role"]).toBeUndefined();
+    expect(fields["Category"]).toBeUndefined();
+    expect(fields["Domain"]).toBeUndefined();
+    expect(fields["Source"]).toBeUndefined();
+    expect(fields["Source URL"]).toBeUndefined();
+    expect(fields["Status"]).toBeUndefined();
+    expect(fields["Fingerprint"]).toBeUndefined();
+    expect(fields["Notes"]).toBeUndefined();
   });
 });
 

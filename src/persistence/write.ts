@@ -17,7 +17,7 @@ import type {
   WriteResult,
 } from "./types";
 import { TABLE_NAMES } from "./config";
-import { contactFields, opportunityFields, outreachFields } from "./records";
+import { contactFields, opportunityFields, opportunityUpdateFields, outreachFields } from "./records";
 import { createReader } from "./read";
 
 /** A writer bound to an {@link AirtableClient}. */
@@ -35,10 +35,12 @@ export function createWriter(client: AirtableClient) {
     const existing = await reader.findOpportunityRecord(opportunity.fingerprint);
     if (existing) {
       const merged = merge(existing.opportunity, opportunity);
+      // Narrow PATCH — see opportunityUpdateFields for why. This is the
+      // update-only path; create (below) still writes the full field set.
       return client.updateRecord(
         TABLE_NAMES.opportunities,
         existing.recordId,
-        opportunityFields(merged, score)
+        opportunityUpdateFields(merged, score)
       );
     }
     return client.createRecord(TABLE_NAMES.opportunities, opportunityFields(opportunity, score));
