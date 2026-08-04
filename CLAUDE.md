@@ -711,19 +711,33 @@
     records".
   - RECORD STATE after the re-run: 42 records total — 25 from 2026-07-29
     (repaired in place by the 2026-07-30 run), 6 new on 2026-07-30, 11 older.
-  - OPEN DEFECT 1 — EVIDENCE MATCHING PRODUCES NOTHING. `Evidence Assets` is
-    EMPTY on every record. Zero linked assets. Observed with ZERO FAILED
-    GEMINI CALLS, so there is no rate-limit explanation. The operator has 21
-    verified evidence assets (Krkn Chaos, KubeArmor, Hiero Heka,
-    kubestellar/ui PRs, plus personal projects) and the ingested roles include
-    Tailscale "Software Engineer, Networking (Edge)", several Grafana "Backend
-    Engineer - Platform - Stacks", and Chainguard security-adjacent roles —
-    none matched anything. NOT YET DIAGNOSED as of 2026-07-30.
-  - OPEN DEFECT 2 — `Remote: unknown` ON EVERY RECORD. These are Greenhouse
-    boards for remote-first companies and several role titles contain
-    "| Remote" literally. Normalization is not extracting the remote flag.
-    THIS PATH NEVER INVOLVED GEMINI AT ALL, so again no rate-limit
-    explanation. NOT YET DIAGNOSED as of 2026-07-30.
+  - OPEN DEFECT 1 — EVIDENCE MATCHING PRODUCES NOTHING — RESOLVED 2026-08-04.
+    `Evidence Assets` was EMPTY on every record as of 2026-07-30. Observed with
+    ZERO FAILED GEMINI CALLS, so there was no rate-limit explanation. Root
+    cause traced to the same upstream failure as Defect 2 below (empty
+    `description_norm` reaching every downstream consumer, including Engine 3's
+    evidence-matching candidate filter — nothing to match evidence against).
+    Fixed as a side effect of the 2026-08-01 Greenhouse field-mapping +
+    `stripHtml` fixes (see the dated entries below), not by any change to
+    Engine 3 itself. Evidence: the 2026-08-04 verification run's match scores
+    are materially higher and varied (5–21) versus the 2026-07-30 baseline's
+    flat 6–15, with several Chainguard roles scoring 16–21 — consistent with
+    evidence now contributing. NOTE: the Airtable `Evidence Assets` LINK COLUMN
+    is still empty on every record — that is UNCHANGED, EXPECTED behavior per
+    known-issues.md #17 (evidence links are never persisted, deferred to C9),
+    not a sign this defect is still open. The defect was Engine 3 finding
+    nothing to match, not Airtable failing to store what was found.
+  - OPEN DEFECT 2 — `Remote: unknown` ON EVERY RECORD — RESOLVED 2026-08-04.
+    These are Greenhouse boards for remote-first companies and several role
+    titles contain "| Remote" literally. Normalization was not extracting the
+    remote flag. THIS PATH NEVER INVOLVED GEMINI AT ALL, so there was no
+    rate-limit explanation. Fixed by the Greenhouse content/location field
+    mapping fix and the `detectRemote(role)` fix (both committed 2026-08-01,
+    see the dated entries below). Verified 2026-08-04: all 25 records in the
+    verification run carry `Remote: remote` (never `unknown`), including all
+    three Grafana Labs "Staff Software Engineer - Databases SRE" anchors
+    (Ireland → `Republic of Ireland (Remote)`, Spain → `Spain (Remote)`,
+    Sweden → `Sweden (Remote)`).
   - CONSEQUENCE, NOT A THIRD DEFECT: match scores sit at 6–15 across the
     board and every record lands Tier C. That is what zero evidence
     contribution predicts, so TIERS ARE CURRENTLY MEANINGLESS RATHER THAN
@@ -736,11 +750,17 @@
     docs/known-issues.md #17) changes what's stored in the link column; it
     moves no score and no tier. Do not tune the scoring rubric against these
     numbers for an unrelated reason either.
-  - WATCH ITEM (NOT A DEFECT, not scoped for investigation): a Chainguard
-    "Senior Partner Sales Engineer - Brazil" role scored 39 on quality and
-    reached the top 25. Possibly prerank vocabulary breadth — the operator's
-    confirmed scope has 13 enabled fields, several broad. Logged to watch as
-    runs accumulate; no action.
+  - WATCH ITEM — CLOSED 2026-08-04 (was: NOT A DEFECT, not scoped for
+    investigation). A Chainguard "Senior Partner Sales Engineer - Brazil" role
+    scored 39 on quality and reached the top 25 in the 2026-07-30 run;
+    suspected cause at the time was prerank vocabulary breadth (the operator's
+    confirmed scope has 13 enabled fields, several broad). RESOLVED, not
+    deferred: the role does not appear anywhere in the table after the
+    2026-08-04 verification run. Finding recorded plainly — this was never a
+    prerank vocabulary-breadth problem. It was the empty-`description_norm`
+    defect (Defect 2 above): with real descriptions in play, genuine
+    engineering roles outscore the sales role on content and it loses its
+    slot in the top-25 prerank cut. No prerank change was made or is needed.
 - Test count: 924 passing (74 test files) — `vitest run`
   (re-verified 2026-07-30; `git rev-parse main origin/main` also verified
   equal at e02170b that day — main WAS genuinely pushed.)
@@ -924,36 +944,66 @@
   confirmed (120 calls, 0 rate-limited, 0 failed, 0 backoff, ~6 min) and BOTH
   audited symptoms are REAL DEFECTS, not throttling fallout. Neither has a
   rate-limit story available.
-- NEXT: diagnose the two open Wave-8 defects (evidence matching links nothing;
-  remote flag never extracted). INVESTIGATION FIRST — the fix is an operator
-  ruling, because every plausible fix site (Engine 1 normalization, Engine 3
-  evidence-matching, the Greenhouse adapter) is in frozen territory. Related
-  standing questions to weigh, NOT to assume: docs/known-issues.md #1
-  (`computeCoverageGap` tests `topTag` against asset `tech_tags[]` only while
-  `topTag` derives from `domain[]` words — a domains-vs-tech_tags asymmetry that
-  could plausibly share a root with Defect 1) and #14 (the Greenhouse
-  `content=true` → plain-listing fallback returns description-less items
-  silently, which would starve both domain derivation AND remote inference from
-  one upstream cause).
-  - THIRD OBSERVATION TO WEIGH, NOT ASSUME (operator, 2026-07-30) — the
-    2026-07-30 run DEDUPED 127 OF 419 items, ~30% collapsed inside a single
-    run. Engine 1's fingerprint is sha1(company|role|url-host) and all four
-    Greenhouse boards share `boards.greenhouse.io`, so a within-run collapse
-    needs company AND role to match. Two readings, both untested: (i)
-    multi-location postings — one role listed per region, collapsing to one
-    fingerprint, in which case whatever location/remote signal DISTINGUISHES
-    the variants is discarded upstream of normalization, and "| Remote" in some
-    titles but not their siblings is exactly the shape that produces — which
-    would put the collapse directly on Defect 2's path; (ii) THIN COMPANY
-    EXTRACTION — if Engine 1 derives an empty company for Greenhouse payloads
-    then the fingerprint degrades to (""|role|host) and collapses ACROSS
-    companies on identical role titles, which is the same failure mode as the
-    Wave 5 HN defect and the Wave 6 NLnet finding ("Engine 1 extracts few
-    distinct company/role pairs"). Reading (ii) would also bear on Defect 1,
-    since thin extraction starves the evidence candidate filter. The Defect 2
-    investigation must report WHAT the dedupe collapsed and whether the
-    surviving record's location/title differs from what it collapsed — the two
-    readings point at different fix sites.
+- DIAGNOSIS (2026-08-01) AND FIX: root cause of both Wave-8 defects was the
+  Greenhouse adapter not mapping `content`/`location` into the keys Engine 1
+  reads, compounded by an entity-decode-ordering bug in `stripHtml` and
+  `detectRemote` never being fed `role`/title text. Four commits landed
+  2026-08-01: `fa1c5d7` (narrow `writeOpportunity`'s update PATCH to
+  `date_found` + scores), `53a2fe2` (map Greenhouse content/location into keys
+  Engine 1 reads), `c90f882` (feed role/title into `detectRemote`), `e7907e0`
+  (decode HTML entities before stripping tags). The dedupe/thin-company-
+  extraction question raised 2026-07-30 (see prior THIRD OBSERVATION, now
+  removed from this file) turned out not to require separate investigation —
+  fixing the field mapping resolved it as a side effect, confirmed by the
+  2026-08-04 verification run.
+- WAVE-8 VERIFICATION RUN — COMPLETE 2026-08-04. Confirms both Wave-8 defects
+  and the Chainguard watch item are RESOLVED (see the "OPEN DEFECT 1", "OPEN
+  DEFECT 2", and "WATCH ITEM" entries in the WAVE 8 section above for full
+  before/after detail). Run against a genuinely cleared Opportunities table
+  (11 control-group records only, 0 `greenhouse:*`, confirmed by a read-only
+  precheck before running):
+  ```
+  source          fetched  cal  dedup  passed  gated  written  health
+  greenhouse         432    0    124      25    283       25  ✓ healthy
+  Prerank: 308 in → 25 passed, 283 gated (below_floor 92, beyond_k 191)
+  Gemini: 193 calls · 0 rate-limited · 0 recovered on retry · 0 failed
+          561s waiting (561s pacing, 0s backoff)
+  ```
+  ~16m 48s wall clock (2026-08-04T13:41:12Z → 13:58:00Z). 36 records total
+  after the run: 11 control-group + 25 created today via the CREATE path
+  (confirmed by `createdTime`, not inferred). Source split: Grafana Labs 12,
+  ClickHouse 5, Chainguard 5, Tailscale 3. Tier distribution: 19 C / 6 B — the
+  first non-uniform tier spread since Wave 8 began (2026-07-30 baseline was
+  25/25 Tier C).
+  - COST ENVELOPE REVISED: a 25-item Greenhouse run now costs ~193 Gemini
+    calls / ~16 min, up from the ~120 calls / ~6 min measured 2026-07-30. The
+    increase is expected and caused by the fix itself — populated descriptions
+    mean more content per item to score, where the pre-fix runs were scoring
+    near-empty text. Revised daily envelope: **roughly 65 opportunities/day
+    against the 500 RPD free-tier cap**, down from the pre-fix ~101/day
+    estimate in the src/llm entry above. This is a real input to Wave 8
+    sequencing — activating a second source family compounds this, it does
+    not add on top of a stale lower estimate.
+  - FALSE-PREMISE INCIDENT (2026-08-02, cost ~386 Gemini calls across two
+    runs): a bulk cell-clear in the Airtable UI (select rows → Delete/Backspace
+    on cells) empties field VALUES but does not remove ROWS — record IDs and
+    fingerprints survive intact. Two verification attempts were run against a
+    table the operator believed was cleared (31 Greenhouse rows "deleted") but
+    which still held those 31 rows, now reduced to `Notes: "\n"`, `Tier: C`,
+    `Total Score: 0` with every other field blank. Both runs' writes correctly
+    took the UPDATE path (matching the surviving fingerprints) and correctly
+    patched only `date_found` + scores (the 2026-08-01 `fa1c5d7` fix working as
+    designed) — which is exactly why "25 written, 0 errors" reconciled with
+    "nothing new visible" in the table, and why the runs could not exercise the
+    create path or produce evidence for the other three fixes. OPERATIONAL
+    LESSON: counting total records (and checking none carry a `greenhouse:*`
+    source) before a verification run is the precheck that catches this — a
+    43-mostly-blank-row table and an 11-row table are not visually
+    distinguishable by row count alone in a quick glance, but are trivially
+    distinguishable by a read-only field-content query. The actual row-delete
+    fix is the Airtable row context menu → "Delete records", not cell
+    clearing. This has no code-level consequence — it is an operator-tooling
+    lesson, not a defect in any engine, adapter, or the persistence layer.
 - ALSO STILL OPEN, unchanged: Wave 7 registry expansion (the locked 8-entry
   COMPANY_REGISTRY, incl. the logged ClickHouse-runs-Ashby finding) and the
   local web UI (D16), neither started. Freelance/gig discovery remains deferred

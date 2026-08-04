@@ -576,3 +576,26 @@ verification scope.
 pristine — a real captured snapshot that differs from current reality is itself
 information, not something to paper over by making the fixture agree with
 after-the-fact findings.
+
+## 22. `description_norm` is capped at ~1000 characters in Notes rendering (DOCUMENTED COST/BEHAVIOUR CHARACTERISTIC — not a defect)
+
+Every one of the 25 records from the 2026-08-04 Greenhouse verification run
+(see the CLAUDE.md "WAVE 8" entry for that date) has a `description_norm` of
+999–1000 chars in the persisted `Notes` field — a truncation boundary, not a
+coincidence.
+
+**Located, read-only, not modified:** `opportunityNotes()` in
+`src/persistence/records.ts:27` —
+`o.description_norm ? \`Description: ${o.description_norm.slice(0, 1000)}\` : ""`.
+This is a **persistence-write-path** cap on what goes into the Airtable Notes
+field, distinct from Engine 1's own cap: `MAX_DESCRIPTION_CHARS = 5000` in
+`src/engines/normalization/text.ts:9`, applied to `description_raw` via
+`.slice(0, MAX_DESCRIPTION_CHARS)` (text.ts:61). The 5000-char cap is far
+above what any observed Greenhouse posting reaches, so it is not what's
+truncating these records — the 1000-char slice in `records.ts` is.
+
+Not changed. Current behaviour produces good scoring results (Engine 2 reads
+`description_norm` directly from the in-memory pipeline output, not from the
+truncated Notes field — the 1000-char cap only affects what a human sees in
+Airtable, not what gets scored). Recorded so nobody later wonders why longer
+postings don't visibly differ in Notes.
