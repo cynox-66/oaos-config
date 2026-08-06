@@ -19,6 +19,7 @@ import {
   reduceScope,
   writePreferences,
 } from "../../src/discovery/scope";
+import { SENIORITY_LEVELS } from "../../src/discovery/scope/seniority";
 import type { BaseResume, OperatorProfile, Preferences } from "../../src/discovery/scope/types";
 
 const dir = mkdtempSync(join(tmpdir(), "oaos-setup-scope-"));
@@ -30,7 +31,7 @@ afterEach(() => {
 
 function preferences(over: Partial<Preferences> = {}): Preferences {
   return {
-    version: 1,
+    version: 2,
     generated_at: "2026-07-20T12:00:00.000Z",
     confirmed_at: "2026-07-20T12:05:00.000Z",
     fields: [
@@ -61,6 +62,14 @@ function preferences(over: Partial<Preferences> = {}): Preferences {
     ],
     work_types: { job: true, internship: false, oss: true, freelance: false },
     remote_only: true,
+    seniority: {
+      levels: SENIORITY_LEVELS.map((level) => ({
+        level: level.id,
+        excluded: false,
+        terms: [...level.terms],
+      })),
+      entry_level_query_modifier: false,
+    },
     ...over,
   };
 }
@@ -102,6 +111,15 @@ describe("renderState (pure)", () => {
     newly_backed: ["Security"],
     work_types: { job: true, internship: true, oss: true, freelance: false },
     fields: preferences().fields,
+    seniority: {
+      levels: SENIORITY_LEVELS.map((level) => ({
+        level: level.id,
+        excluded: false,
+        terms: [...level.terms],
+        available: [],
+      })),
+      entry_level_query_modifier: false,
+    },
   });
   const text = renderState(state, ["Security"]);
 
@@ -259,5 +277,66 @@ describe("end-to-end over the pure chain", () => {
       enabled: true,
     });
     expect(rerun.work_types.internship).toBe(false);
+  });
+});
+
+describe("seniority rendering (pure)", () => {
+  const state = initialState({
+    generated_at: "2026-07-20T12:00:00.000Z",
+    newly_backed: [],
+    work_types: { job: true, internship: true, oss: true, freelance: false },
+    fields: preferences().fields,
+    seniority: {
+      levels: SENIORITY_LEVELS.map((level) => ({
+        level: level.id,
+        excluded: level.id === "senior",
+        terms: level.id === "staff" ? [level.terms[0]] : [...level.terms],
+        available: level.id === "staff" ? [level.terms[1]] : [],
+      })),
+      entry_level_query_modifier: false,
+    },
+  });
+  const text = renderState(state);
+
+  it("lists every level under its own s<n> namespace", () => {
+    expect(text).toContain("s1. [x] senior");
+    expect(text).toContain("s5. [ ] management");
+  });
+
+  it("shows the exact terms, so the operator confirms what they can see", () => {
+    expect(text).toContain("terms: senior, sr., sr engineer");
+  });
+
+  it("warns that matching is whole-text, at the moment of confirmation", () => {
+    expect(text).toContain("match anywhere in a posting's TEXT");
+  });
+
+  it("surfaces newly available terms with the command that adopts them", () => {
+    expect(text).toContain("<NEW TERMS>");
+    expect(text).toContain("available: staff software engineer");
+    expect(text).toContain("'adopt s2' to include");
+  });
+
+  it("renders the entry-level modifier as its own toggle", () => {
+    expect(text).toContain('entry  [ ] append "entry level"');
+  });
+});
+
+describe("renderPreferences — seniority", () => {
+  it("reports 'none' when nothing is excluded", () => {
+    const text = renderPreferences(preferences());
+    expect(text).toContain("Seniority exclusions (0)");
+    expect(text).toContain("no posting is gated on seniority");
+    expect(text).toContain("Entry-level query modifier: off");
+  });
+
+  it("names each excluded level and the terms it expands to", () => {
+    const p = preferences();
+    p.seniority.levels[0].excluded = true;
+    p.seniority.entry_level_query_modifier = true;
+    const text = renderPreferences(p);
+    expect(text).toContain("Seniority exclusions (1)");
+    expect(text).toContain("[x] senior  →  senior, sr., sr engineer");
+    expect(text).toContain("Entry-level query modifier: on");
   });
 });

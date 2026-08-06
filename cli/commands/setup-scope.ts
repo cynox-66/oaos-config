@@ -20,6 +20,7 @@ import {
   deriveScope,
   DEFAULT_PREFERENCES_PATH,
   initialState,
+  loadBaseline,
   loadPreferences,
   parseScopeCommand,
   reduceScope,
@@ -28,6 +29,7 @@ import {
 import type {
   Evidence,
   Preferences,
+  ScopeBaseline,
   ScopeProposal,
   ScopeState,
 } from "../../src/discovery/scope/types";
@@ -79,7 +81,42 @@ export function renderState(state: ScopeState, newlyBacked: string[] = []): stri
   out.push("\nWork types:");
   out.push(`  ${tick(state.work_types.job)} job    ${tick(state.work_types.internship)} internship    ${tick(state.work_types.oss)} oss    [ ] freelance (locked off in v1)`);
   out.push("  Remote-only: locked on in v1");
+  out.push(renderSeniority(state));
   return `${out.join("\n")}\n`;
+}
+
+/**
+ * Render the seniority section. Pure.
+ *
+ * The warning line is not decoration. The operator is confirming an
+ * unconditional gate that matches an item's WHOLE text — body included — so a
+ * posting that merely mentions a level is excluded too. That has to be said at
+ * the moment of confirmation, not buried in a doc.
+ */
+export function renderSeniority(state: ScopeState): string {
+  const out: string[] = [];
+  out.push("\nSeniority — exclude these levels (nothing excluded by default):");
+
+  state.seniority.levels.forEach((level, i) => {
+    const flag = level.available.length > 0 ? "  <NEW TERMS>" : "";
+    out.push(`  s${i + 1}. ${tick(level.excluded)} ${level.level}${flag}`);
+    out.push(`        terms: ${level.terms.join(", ")}`);
+    if (level.available.length > 0) {
+      out.push(`        available: ${level.available.join(", ")}   ('adopt s${i + 1}' to include)`);
+    }
+  });
+
+  out.push(
+    "  Note: these match anywhere in a posting's TEXT, including the body — a posting"
+  );
+  out.push("        that merely MENTIONS \"senior engineers\" is excluded too.");
+
+  out.push("\nEntry-level query modifier:");
+  out.push(
+    `  entry  ${tick(state.seniority.entry_level_query_modifier)} append "entry level" to ` +
+      `himalayas / freehire / adzuna query strings`
+  );
+  return out.join("\n");
 }
 
 /** Human-readable dump of a saved scope, for `--show`. Pure. */
@@ -110,6 +147,16 @@ export function renderPreferences(preferences: Preferences): string {
   const types = (["job", "internship", "oss"] as const).filter((k) => preferences.work_types[k]);
   out.push(`\nWork types: ${types.length > 0 ? types.join(", ") : "(none)"}  |  freelance: off (locked)`);
   out.push(`Remote-only: ${preferences.remote_only} (locked)`);
+
+  const excluded = preferences.seniority.levels.filter((l) => l.excluded);
+  out.push(`\nSeniority exclusions (${excluded.length}):`);
+  if (excluded.length === 0) out.push("  (none — no posting is gated on seniority)");
+  for (const level of excluded) {
+    out.push(`  [x] ${level.level}  →  ${level.terms.join(", ")}`);
+  }
+  out.push(
+    `Entry-level query modifier: ${preferences.seniority.entry_level_query_modifier ? "on" : "off"}`
+  );
   return `${out.join("\n")}\n`;
 }
 
@@ -118,6 +165,9 @@ Commands:
   <number>        tick / untick that field
   add <term>      add a custom field (evidence backing is computed for it)
   job | internship | oss    toggle that work type
+  s<number>       exclude / stop excluding that seniority level
+  adopt s<number> take that level's newly available terms
+  entry           toggle the entry-level query modifier
   done            confirm and save to preferences.json
   quit            abort — nothing is written
   help            show this
@@ -130,16 +180,22 @@ Commands:
 interface Artifacts {
   proposal: ScopeProposal;
   inventory: Evidence[];
-  existing: Preferences | null;
+  existing: ScopeBaseline | null;
 }
 
 /** Load every input artifact through its existing strict loader. Throws on any
- *  malformed file, with the offending file + path named. No partial setup. */
+ *  malformed file, with the offending file + path named. No partial setup.
+ *
+ *  The existing scope is read with `loadBaseline`, NOT `loadPreferences`: this
+ *  is the one place a pre-seniority (v1) file must still open, because this is
+ *  the command whose job is to replace it. Everything else about the file is
+ *  validated with the same strict code, and a baseline can never be persisted
+ *  without passing through the reducer and a confirmed `buildPreferences`. */
 function loadArtifacts(root: string, preferencesPath: string, now: string): Artifacts {
   const resume = loadBaseResume(resolve(root, "resume/base_resume.json"));
   const profile = loadOperatorProfile(resolve(root, "resume/operator_profile.json"));
   const inventory = loadInventory(resolve(root, "evidence/inventory.md"));
-  const existing = existsSync(preferencesPath) ? loadPreferences(preferencesPath) : null;
+  const existing = existsSync(preferencesPath) ? loadBaseline(preferencesPath) : null;
   const proposal = deriveScope(
     { resume, profile, inventory, ...(existing ? { existing } : {}) },
     { now }
@@ -160,6 +216,14 @@ async function runInteractive(args: string[]): Promise<void> {
       ? `Loaded existing scope from ${DEFAULT_PREFERENCES_PATH} — showing it as the baseline.\n`
       : `No ${DEFAULT_PREFERENCES_PATH} yet — deriving a fresh proposal from your resume, profile, and evidence inventory.\n`
   );
+  if (existing && existing.seniority === null) {
+    out.write(
+      `\nThat file is schema v${existing.version}, which predates the seniority dimension.\n` +
+        `Your field ticks and work types are carried forward below. The new Seniority\n` +
+        `section is proposed with nothing excluded, so confirming without touching it\n` +
+        `reproduces your current discovery behaviour exactly.\n`
+    );
+  }
   if (proposal.newly_backed.length > 0) {
     out.write(`New evidence now backs: ${proposal.newly_backed.join(", ")}\n`);
   }
@@ -211,6 +275,11 @@ async function runInteractive(args: string[]): Promise<void> {
   out.write(`  ${enabled.length} field(s) enabled: ${enabled.map((f) => f.name).join(", ")}\n`);
   const types = (["job", "internship", "oss"] as const).filter((k) => preferences.work_types[k]);
   out.write(`  work types: ${types.join(", ") || "(none)"}\n`);
+  const excluded = preferences.seniority.levels.filter((l) => l.excluded).map((l) => l.level);
+  out.write(`  seniority excluded: ${excluded.join(", ") || "(none)"}\n`);
+  out.write(
+    `  entry-level query modifier: ${preferences.seniority.entry_level_query_modifier ? "on" : "off"}\n`
+  );
   void args;
 }
 

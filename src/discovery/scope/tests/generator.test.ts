@@ -6,7 +6,8 @@
 import { describe, expect, it } from "vitest";
 import { computeBacking, deriveScope, normalizeTerm } from "../generator";
 import { SCOPE_VOCABULARY } from "../config";
-import type { BaseResume, Evidence, OperatorProfile, Preferences } from "../types";
+import { SENIORITY_LEVELS } from "../seniority";
+import type { BaseResume, Evidence, OperatorProfile, ScopeBaseline } from "../types";
 
 const NOW = "2026-07-20T12:00:00.000Z";
 
@@ -208,7 +209,9 @@ describe("deriveScope", () => {
   });
 
   describe("re-run against an existing scope", () => {
-    const existing: Preferences = {
+    // Deliberately a v1 baseline: the pre-seniority shape a real operator file
+    // has today, read through the version-tolerant baseline reader.
+    const existing: ScopeBaseline = {
       version: 1,
       generated_at: "2026-01-01T00:00:00.000Z",
       confirmed_at: "2026-01-01T00:00:00.000Z",
@@ -231,7 +234,7 @@ describe("deriveScope", () => {
         },
       ],
       work_types: { job: true, internship: false, oss: true, freelance: false },
-      remote_only: true,
+      seniority: null,
     };
 
     it("carries the operator's ticks forward, even against a fresh proposal", () => {
@@ -305,5 +308,81 @@ describe("deriveScope", () => {
       );
       expect(p.newly_backed).toEqual([]);
     });
+  });
+});
+
+describe("deriveScope — seniority dimension", () => {
+  const base = { resume: resume(), profile: profile(), inventory: [] };
+
+  it("proposes every level with NOTHING excluded on a fresh derivation", () => {
+    const { seniority } = deriveScope(base, { now: NOW });
+    expect(seniority.levels.map((l) => l.level)).toEqual([
+      "senior",
+      "staff",
+      "principal",
+      "lead",
+      "management",
+    ]);
+    expect(seniority.levels.every((l) => l.excluded === false)).toBe(true);
+    expect(seniority.entry_level_query_modifier).toBe(false);
+  });
+
+  it("carries the full config expansion, with nothing pending adoption", () => {
+    const { seniority } = deriveScope(base, { now: NOW });
+    const senior = seniority.levels.find((l) => l.level === "senior")!;
+    expect(senior.terms).toEqual(["senior", "sr.", "sr engineer"]);
+    expect(senior.available).toEqual([]);
+  });
+
+  it("proposes fresh against a v1 baseline — the migration is behaviour-neutral", () => {
+    const existing: ScopeBaseline = {
+      version: 1,
+      fields: [],
+      work_types: { job: true, internship: true, oss: true, freelance: false },
+      seniority: null,
+    };
+    const { seniority } = deriveScope({ ...base, existing }, { now: NOW });
+    expect(seniority.levels.every((l) => l.excluded === false)).toBe(true);
+    expect(seniority.entry_level_query_modifier).toBe(false);
+  });
+
+  it("carries a v2 baseline's exclusions, terms and modifier forward", () => {
+    const existing: ScopeBaseline = {
+      version: 2,
+      fields: [],
+      work_types: { job: true, internship: true, oss: true, freelance: false },
+      seniority: {
+        levels: SENIORITY_LEVELS.map((level) => ({
+          level: level.id,
+          excluded: level.id === "lead",
+          terms: [...level.terms],
+        })),
+        entry_level_query_modifier: true,
+      },
+    };
+    const { seniority } = deriveScope({ ...base, existing }, { now: NOW });
+    expect(seniority.levels.find((l) => l.level === "lead")?.excluded).toBe(true);
+    expect(seniority.levels.find((l) => l.level === "senior")?.excluded).toBe(false);
+    expect(seniority.entry_level_query_modifier).toBe(true);
+  });
+
+  it("surfaces config terms the baseline lacks as available — never auto-adopted", () => {
+    const existing: ScopeBaseline = {
+      version: 2,
+      fields: [],
+      work_types: { job: true, internship: true, oss: true, freelance: false },
+      seniority: {
+        levels: SENIORITY_LEVELS.map((level) => ({
+          level: level.id,
+          excluded: false,
+          // A file confirmed before config grew: only the first term.
+          terms: [level.terms[0]],
+        })),
+        entry_level_query_modifier: false,
+      },
+    };
+    const senior = deriveScope({ ...base, existing }, { now: NOW }).seniority.levels[0];
+    expect(senior.terms).toEqual(["senior"]);
+    expect(senior.available).toEqual(["sr.", "sr engineer"]);
   });
 });

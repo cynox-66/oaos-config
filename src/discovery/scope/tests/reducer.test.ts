@@ -11,6 +11,7 @@ import {
   parseScopeCommand,
   reduceScope,
 } from "../reducer";
+import { SENIORITY_LEVELS } from "../seniority";
 import type { ScopeProposal, ScopeState } from "../types";
 
 const proposal: ScopeProposal = {
@@ -35,6 +36,15 @@ const proposal: ScopeProposal = {
       supporting_evidence_ids: [],
     },
   ],
+  seniority: {
+    levels: SENIORITY_LEVELS.map((level) => ({
+      level: level.id,
+      excluded: false,
+      terms: [...level.terms],
+      available: [],
+    })),
+    entry_level_query_modifier: false,
+  },
 };
 
 const fresh = (): ScopeState => initialState(proposal);
@@ -230,11 +240,144 @@ describe("buildPreferences", () => {
       confirmed_at: "2026-07-20T12:05:00.000Z",
     });
     expect(prefs).toMatchObject({
-      version: 1,
+      version: 2,
       generated_at: "2026-07-20T12:00:00.000Z",
       confirmed_at: "2026-07-20T12:05:00.000Z",
       remote_only: true,
       work_types: { freelance: false },
     });
+  });
+});
+
+describe("seniority actions", () => {
+  const level = (s: ScopeState, id: string) => s.seniority.levels.find((l) => l.level === id)!;
+
+  it("toggles a level on and back off", () => {
+    const on = reduceScope(fresh(), { kind: "toggle_seniority", level: "senior" });
+    expect(level(on, "senior").excluded).toBe(true);
+    const off = reduceScope(on, { kind: "toggle_seniority", level: "senior" });
+    expect(level(off, "senior").excluded).toBe(false);
+  });
+
+  it("names the terms in the notice, so the operator sees what a tick means", () => {
+    const on = reduceScope(fresh(), { kind: "toggle_seniority", level: "senior" });
+    expect(on.notice).toContain("senior, sr., sr engineer");
+    expect(on.notice).toContain("TEXT");
+  });
+
+  it("leaves the other levels and the fields untouched", () => {
+    const on = reduceScope(fresh(), { kind: "toggle_seniority", level: "lead" });
+    expect(level(on, "senior").excluded).toBe(false);
+    expect(on.fields).toEqual(fresh().fields);
+  });
+
+  it("does not mutate its input", () => {
+    const before = fresh();
+    reduceScope(before, { kind: "toggle_seniority", level: "senior" });
+    expect(level(before, "senior").excluded).toBe(false);
+  });
+
+  it("returns state unchanged with a notice for an unknown level", () => {
+    const state = reduceScope(fresh(), { kind: "toggle_seniority", level: "architect" });
+    expect(state.seniority).toEqual(fresh().seniority);
+    expect(state.notice).toContain("No such seniority level");
+  });
+
+  it("toggles the entry-level query modifier independently of the exclusions", () => {
+    const on = reduceScope(fresh(), { kind: "toggle_entry_modifier" });
+    expect(on.seniority.entry_level_query_modifier).toBe(true);
+    expect(on.seniority.levels.every((l) => !l.excluded)).toBe(true);
+    expect(reduceScope(on, { kind: "toggle_entry_modifier" }).seniority.entry_level_query_modifier).toBe(
+      false
+    );
+  });
+
+  it("adopts a level's available terms only when asked", () => {
+    let state = fresh();
+    state.seniority.levels[0] = {
+      ...state.seniority.levels[0],
+      terms: ["senior"],
+      available: ["sr.", "sr engineer"],
+    };
+    const adopted = reduceScope(state, { kind: "adopt_seniority_terms", level: "senior" });
+    expect(level(adopted, "senior").terms).toEqual(["senior", "sr.", "sr engineer"]);
+    expect(level(adopted, "senior").available).toEqual([]);
+    expect(adopted.notice).toContain("Adopted 2 new term(s)");
+  });
+
+  it("notices, rather than throwing, when there is nothing to adopt", () => {
+    const state = reduceScope(fresh(), { kind: "adopt_seniority_terms", level: "senior" });
+    expect(state.notice).toContain("no new terms to adopt");
+    expect(state.seniority).toEqual(fresh().seniority);
+  });
+});
+
+describe("buildPreferences — seniority", () => {
+  it("stamps the confirmed exclusions, terms and modifier", () => {
+    let state = reduceScope(fresh(), { kind: "toggle_seniority", level: "senior" });
+    state = reduceScope(state, { kind: "toggle_entry_modifier" });
+    state = reduceScope(state, { kind: "confirm" });
+    const prefs = buildPreferences(state, { generated_at: "a", confirmed_at: "b" });
+
+    expect(prefs.seniority.entry_level_query_modifier).toBe(true);
+    expect(prefs.seniority.levels.find((l) => l.level === "senior")).toEqual({
+      level: "senior",
+      excluded: true,
+      terms: ["senior", "sr.", "sr engineer"],
+    });
+  });
+
+  it("drops `available` — an unadopted term was never confirmed", () => {
+    let state = fresh();
+    state.seniority.levels[0] = {
+      ...state.seniority.levels[0],
+      terms: ["senior"],
+      available: ["sr.", "sr engineer"],
+    };
+    state = reduceScope(state, { kind: "confirm" });
+    const prefs = buildPreferences(state, { generated_at: "a", confirmed_at: "b" });
+    expect(prefs.seniority.levels[0]).not.toHaveProperty("available");
+    expect(prefs.seniority.levels[0].terms).toEqual(["senior"]);
+  });
+
+  it("still refuses to build from an unconfirmed state", () => {
+    const state = reduceScope(fresh(), { kind: "toggle_seniority", level: "senior" });
+    expect(() => buildPreferences(state, { generated_at: "a", confirmed_at: "b" })).toThrow(
+      /must be confirmed/
+    );
+  });
+});
+
+describe("parseScopeCommand — seniority", () => {
+  it("parses s<n> to the level at that position", () => {
+    expect(parseScopeCommand("s1", fresh())).toEqual({ kind: "toggle_seniority", level: "senior" });
+    expect(parseScopeCommand("s5", fresh())).toEqual({
+      kind: "toggle_seniority",
+      level: "management",
+    });
+  });
+
+  it("parses `adopt s<n>`", () => {
+    expect(parseScopeCommand("adopt s4", fresh())).toEqual({
+      kind: "adopt_seniority_terms",
+      level: "lead",
+    });
+  });
+
+  it("parses `entry`", () => {
+    expect(parseScopeCommand("entry", fresh())).toEqual({ kind: "toggle_entry_modifier" });
+  });
+
+  it("rejects an out-of-range level number", () => {
+    expect(parseScopeCommand("s9", fresh())).toBeNull();
+    expect(parseScopeCommand("s0", fresh())).toBeNull();
+  });
+
+  it("leaves plain field numbers meaning exactly what they meant before", () => {
+    expect(parseScopeCommand("1", fresh())).toEqual({ kind: "toggle_field", name: "Security" });
+  });
+
+  it("does not mistake `adopt s1` for an `add` command", () => {
+    expect(parseScopeCommand("adopt s1", fresh())).not.toMatchObject({ kind: "add" });
   });
 });

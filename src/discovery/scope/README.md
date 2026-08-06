@@ -194,10 +194,33 @@ evidence backing against the in-memory inventory, then dispatches a fully-formed
 | `reducer.ts` | `reduceScope`, `parseScopeCommand`, `buildPreferences` — pure. |
 | `index.ts` | Public surface. |
 
-## Not wired yet
+## Consumers
 
-`preferences.json` is written but not yet consumed. Wave 5/6 wires it into the
-per-source query builders and swaps it in as the prerank gate's `vocabulary`
-input (a one-line call-site change by design). Query-string construction for any
-specific source is explicitly out of scope here — this module produces the
-**source-agnostic** scope.
+`preferences.json` is read (never written) by:
+
+- `orchestrator/vocabulary.ts` — enabled fields → prerank `domainTerms`, and the
+  confirmed seniority exclusions → prerank `negativeTerms`.
+- `stage3/query/scope-terms.ts` — enabled fields → per-source query terms.
+- `stage3/query/seniority-modifier.ts` — the entry-level modifier that
+  himalayas / freehire / adzuna append to their query strings.
+
+Query-string construction for any specific source stays out of this module — it
+produces the **source-agnostic** scope.
+
+## Seniority dimension (schema v2)
+
+Added 2026-08-06. Five levels, closed set, nothing excluded by default. The
+expanded terms are **persisted**, not re-expanded from config on read — they
+drive an unconditional pre-scoring gate, so what the operator confirmed has to
+be recoverable from the file. See `CHANGELOG.md` for the full rationale, the
+`loadPreferences` / `loadBaseline` split that makes the v1 → v2 migration
+survivable, and the live measurement.
+
+**A v1 file is rejected, not upgraded.** Run `oaos setup-scope` and re-confirm;
+your field ticks and work types carry forward, and confirming without touching
+the Seniority section reproduces your previous discovery behaviour exactly.
+
+**Read `seniority.ts`'s header before editing a term list.** Those terms match
+an item's whole text, body included, not its title
+(`docs/known-issues.md` #23), and removing one invalidates every
+`preferences.json` that persisted it.
