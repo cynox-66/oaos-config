@@ -915,6 +915,71 @@
     ACTIVATED_SOURCES, or stage3/registry.ts — audited against the Q3
     authorization at Step 3. Step-2 live cost: 22 requests (greenhouse 8 per
     #16's 2×, himalayas 13+1), zero Gemini, zero writes.
+- HIMALAYAS ACTIVATED (2026-08-06, Wave 8 ruling Q5) — the SECOND activated
+  source and the first `query_net` one. Two-line change (`sources.ts` row +
+  `ACTIVATED_SOURCES`), one commit, per the activation protocol. Suite
+  unchanged at 1120/83 — the allow-list guard is data-driven set equality, so
+  a correct activation moves no test count; if it ever does, something else
+  changed.
+  - SEQUENCING WAS THE POINT: activated AFTER G1, because pre-geo a mixed
+    batch buried Himalayas' India-eligible slice (Wave 5 measured it taking 23
+    of 25 slots on relevance alone; that figure is a PRE-GEO artifact and no
+    longer applies — the post-geo split is 4 greenhouse / 7 himalayas).
+  - FIRST REAL TWO-SOURCE RUN, verbatim:
+      source        fetched  cal  dedup  passed  gated  written  health
+      greenhouse        450    0    122       4      6        4  ✓ healthy
+      himalayas         227    0     25       7     13        7  ✓ healthy
+      Geo: 530 in → 27 eligible, 500 ineligible, 3 unresolved (passed)
+      Prerank: 30 in → 11 passed, 19 gated (negative_term 18, location 1)
+      Gemini: 67 calls · 0 rate-limited · 0 recovered · 0 failed
+              191s waiting (191s pacing, 0s backoff)
+    5m 48s wall clock. Airtable 53 → 64 records, ALL 11 CREATES (verified by
+    createdTime, not inferred). Tiers 1 B / 10 C. health.json gained its
+    himalayas entry (healthy, probe "cloud-native" returned 19 jobs).
+  - COST REVISED DOWN: 6.1 Gemini calls/item, not the 7.72/item projected from
+    the Greenhouse-only 2026-08-04 run. 67 calls ≈ 13% of the 500 RPD cap, so
+    ~7 such runs/day. Do not re-quote 7.72 without re-measuring.
+  - BATCHES ARE ADDITIVE ACROSS THESE TWO SOURCES — cross-source dedupe cannot
+    fire. The fingerprint is sha1(company|role|url-host) and every Himalayas
+    item's host is `himalayas.app` (227/227) vs the Greenhouse board host, so
+    the same posting on both platforms yields two fingerprints. Each source's
+    dedupe count matched its solo run exactly. Do not expect a combined run to
+    collapse duplicates across sources.
+  - THE G1 IDF FORWARD-NOTE IS RESOLVED, in the good direction. G1's
+    Greenhouse-only geo arm measured maxAchievable 2.78 with 3 of 9 present
+    terms at idf=0. The mixed batch measures **21.07 with 18 present terms and
+    NONE at idf=0** — the heterogeneous corpus removes the degeneracy, and the
+    homogeneous fallback stays dormant. Recognized, not rediscovered — which
+    is what that note existed for. PRECISION CAVEAT: the replication computed
+    IDF over N=12 (it applies insufficient_text + negative_term but not the
+    location gate) where prerank used N=11; a term at df=11 would be idf=0 on
+    prerank's true basis and the df distribution was not printed, so the exact
+    figure is approximate. The conclusion (fallback does not fire) is robust —
+    one item cannot collapse 18 terms to zero.
+  - FOUR FINDINGS LOGGED, NONE ACTED ON (docs/known-issues.md):
+    **#23 is now MEASURED at the post-G1 regime and its V3 ruling is
+    FALSIFIED there** — 10 of 18 negative_term gates are title-clean,
+    body-prose gates, including `Kubernetes Infrastructure Engineer`
+    (India-eligible, clean title, deleted before scoring); with no beyond_k
+    tail every one is a directly visible loss. **#25 third sighting** — 7 of
+    11 passed are non-engineering (4 GTM, 2 vague-title, 1 C-suite), ratio
+    unimproved by a second source. **#26 NEW** — seniority terms carry `cto`
+    but no other C-suite form, so a Chief Data Officer posting was written as
+    an opportunity. **#27 NEW** — `COUNTRY_NAME_TO_ISO` lacks Barbados and
+    Bahamas, which fail open under `unresolved: "pass"`; one Barbados-only
+    posting reached the passed set.
+  - **#28 NEW AND THE MOST CONSEQUENTIAL: Himalayas items normalize with an
+    EMPTY company.** The payload carries `companyName` (camelCase);
+    `adapters/job_board.ts` reads only snake_case forms; all 7 persisted
+    Himalayas records have NO Company field. Same defect class as the
+    2026-08-01 Greenhouse content/location mapping bug, invisible until this
+    activation. It makes those records unusable for outreach (Engines 5/7 and
+    researchOpportunity are all company-keyed) and degrades the fingerprint to
+    sha1(""|role|host), so distinct companies sharing a role title collapse.
+    NOT FIXED: the one-line fix changes fingerprints, which breaks
+    update-in-place for the 7 existing records — it needs a supervised session
+    with a migration story. **Read #28 before interpreting any Himalayas
+    record or re-running this source.**
 - Test count: 1120 passing (83 test files) — `vitest run`
   (re-verified 2026-08-06 after wave G1; the pre-G1 baseline 1030/78 was
   re-measured the same day in a clean worktree of main and confirmed.
@@ -1175,8 +1240,9 @@
   in research/phase1-eligibility/ (UNTRACKED — deliberately not committed with
   the wave; the operator decides if/where they land): FINDINGS.md + five track
   docs + G1 plan/status docs + raw captures + replay scripts. Operator rulings
-  from that session still queued: Q5 Himalayas activation (sequenced after G1
-  merges; allow-list protocol applies), Q6 A3's Adzuna exclusion (authorized,
+  from that session still queued: Q5 Himalayas activation (DONE 2026-08-06 —
+  see the "HIMALAYAS ACTIVATED" entry in Project state), Q6 A3's Adzuna
+  exclusion (authorized,
   unbuilt — Adzuna 4-token collapse CONFIRMED 0-results, probe ledger in
   track4), R2 role-type gate (schema shipped, gate awaits post-geo residual
   evidence), S1 freehire request-side filter (awaits page-waste evidence).

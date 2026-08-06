@@ -651,6 +651,38 @@ Operator ruling 2026-08-06: **A1 ships as built.**
 If `maxPerRun` ever changes, re-run this measurement before trusting the gate
 at the new k.
 
+### RE-MEASURED 2026-08-06 AT THE POST-G1 REGIME — THE RULING ABOVE IS FALSIFIED HERE
+
+The V3 ruling ("correct at k=25 — 17 of 171 in the visible set, zero false
+positives") was **explicitly scoped to the pre-G1 regime**, where `maxPerRun`
+bound and the gated items sat in the `beyond_k` tail. The G1 geo filter removed
+that regime: the batch reaching prerank is now ~30 items, not ~324, so
+`maxPerRun` does not bind (`beyond_k: 0`) and **there is no tail for a bad gate
+to hide in**. Every seniority gate is now a directly visible loss.
+
+**Measured on the first two-source run (2026-08-06, Wave 8 — greenhouse +
+himalayas, 30 geo-eligible items into prerank, 18 gated `negative_term`):**
+
+- **10 of the 18 have NO shipped seniority term in their title** — they were
+  gated on body prose alone. This is the exact "any shipped term anywhere in
+  the title" count that #24 records as never having been taken; it is a cleaner
+  measurement than #24's deciding-term upper bound.
+- The 8 title-matched gates are correct (Senior/Principal/Engineering-Manager
+  titles).
+- Among the 10 body-only gates are plausibly on-target roles, most starkly
+  **`Kubernetes Infrastructure Engineer`** — India-eligible, title entirely
+  clean, deleted before scoring. Also: `Infrastructure and Security Engineer`,
+  `Global Security Operations Engineer`, `Web Frontend Engineer - JS, CSS,
+  React, Flutter`, `Data Operations`.
+
+**Status: the hazard is CONFIRMED, and the V3 ruling no longer covers the
+regime OAOS actually runs in.** The remedy is the title-scoped negative gate
+named above, which lives inside frozen `src/discovery/prerank/` and requires an
+operator ruling. **It was NOT built, and no term list was shortened** —
+operator ruling 2026-08-06, restated: log the measurement, do not act on it.
+Shrinking a term list to improve a number is the failure mode the wave's
+verification exists to prevent.
+
 **The durable fix, if it is ever needed, is a title-scoped negative gate.** That
 lives inside `src/discovery/prerank/`, which is frozen, and would require an
 operator ruling. Do not attempt to compensate by shortening the term lists —
@@ -730,8 +762,128 @@ underlying condition — that prerank cannot tell a GTM role from an engineering
 role — was never addressed and was simply masked by better content. Sighting 2
 shows it re-surfacing through a different mechanism.
 
+**Sighting 3 (2026-08-06, Wave 8 — first two-source run, greenhouse +
+himalayas).** The condition is unchanged by activating a second source, and the
+ratio did not improve. Of the **11 items that passed prerank**:
+
+- **4 genuine engineering** — Kubernetes Engineer, Back-End Developer,
+  Front-End Developer, Frontend Web Developer.
+- **4 GTM** — all four Greenhouse survivors: *Partner Solutions Architect -
+  India*, *Solutions Architect - India*, *Enterprise Account Executive -
+  Mumbai*, *Partner Sales Director-India*.
+- **2 vague-title non-engineering** — *Ambassadors - Worldwide*, *Evangelist*.
+- **1 C-suite** — *Chief Data Officer (CDO)*. **Not counted as GTM**
+  (operator ruling): that one is a seniority vocabulary gap, logged separately
+  as #26.
+
+So 7 of 11 visible items are non-engineering, on a run where the geo filter had
+already removed 500 of 530 candidates. Cross-references: the July 2026-07-30
+watch item (Sighting 1, closed for its stated cause and incomplete as a
+finding), Sighting 2 in the seniority wave, and the G1 wave entry in CLAUDE.md,
+which records that the geo filter removed 4 of the 5 then-visible GTM roles
+without touching the underlying condition.
+
 **Not fixed, and deliberately so.** No change was made to the prerank
 vocabulary, the prerank config, or the scoring rubric in response to this —
-operator ruling 2026-08-06, out of scope for the seniority wave. Recorded here
-so a third sighting is recognised as the same condition rather than
-re-diagnosed from scratch.
+operator ruling 2026-08-06, out of scope for the seniority wave and restated
+for Wave 8. Recorded here so each sighting is recognised as the same condition
+rather than re-diagnosed from scratch. The specced remedy is R2 (title-scoped
+role-type exclusions) in research/phase1-eligibility/track5-specs.md; its
+schema shipped in v3, its gate deliberately did not.
+
+---
+
+## 26. Seniority terms miss C-suite titles other than `cto` (LOG ONLY)
+
+Surfaced by the first Himalayas run (2026-08-06, Wave 8). A **Chief Data
+Officer (CDO)** posting passed prerank and was written as a real opportunity
+record (Tier C, 17/5/22). It should have been gated on seniority and was not:
+`SENIORITY_LEVELS`'s `management` list carries `cto` but no other C-suite
+abbreviation or expansion — not `cdo`, `ciso`, `cio`, `cpo`, `chief * officer`.
+
+A sibling **Chief AI Officer (CAIO)** in the same batch *was* gated — but on
+body prose, not its title, so that is not evidence the vocabulary covers the
+class. It is the #23 whole-text hazard firing by luck in the useful direction.
+
+**This is a vocabulary gap, not #25 contamination** (operator ruling
+2026-08-06): a CDO is not a go-to-market role, it is a C-suite role the
+seniority dimension is supposed to exclude and doesn't.
+
+Not fixed. A term-list edit is a scope change under D15 — adding terms means
+config gains them, they surface as `available` / `<NEW TERMS>`, and the
+operator adopts them by explicit action at the next `oaos setup-scope`. Do NOT
+edit the list opportunistically, and do not treat this entry as authorization.
+
+---
+
+## 27. `COUNTRY_NAME_TO_ISO` is missing Barbados and Bahamas — they fail open (LOG ONLY)
+
+Measured on the first two-source run (2026-08-06, Wave 8). Two Himalayas
+postings carried `locationRestrictions` of `["Barbados"]` and `["Bahamas"]`.
+Neither name is in `COUNTRY_NAME_TO_ISO` (`src/discovery/geo/countries.ts`),
+so both mapped to `unresolved`, and under the operator's confirmed
+`unresolved: "pass"` policy both passed the geo filter.
+
+One of them — **Chief Data Officer (CDO), Barbados-only** — reached the passed
+set and consumed pipeline budget on a posting the operator is not eligible for.
+(It is also #26: it should have been gated on seniority first.)
+
+**The filter behaved exactly as designed.** `"pass"` is fail-open by the
+operator's own ruling, and every unresolved item is counted and surfaced in the
+run summary's Geo line. The defect is purely that the vocabulary has gaps: the
+table was curated from the 2026-08-06 census of *observed* values, and small
+island states never appeared in it.
+
+Fix is a data addition (more ISO short names) in a later wave. Do NOT touch it
+now. Note the generalization when it is fixed: any curated-from-observation
+table under-covers by construction, so the durable question is whether
+`countries.ts` should carry the full ISO-3166 list rather than an observed
+subset — a design decision, not a patch.
+
+---
+
+## 28. Himalayas items normalize with an EMPTY company — `companyName` is never read (LOG ONLY, materially affects persisted records)
+
+Found in the first real Himalayas run (2026-08-06, Wave 8), confirmed at three
+levels:
+
+1. **Payload:** Himalayas job objects carry the company under **`companyName`**
+   (camelCase) — verified across 227 fetched items and in the captured sample.
+2. **Adapter:** `src/engines/normalization/adapters/job_board.ts:46-51` reads
+   company from `["company", "company_name", "organization", "employer"]` —
+   all snake_case. `companyName` matches **none** of them.
+3. **Persisted result:** all 7 Himalayas records written this run have **no
+   `Company` field at all** in Airtable (the key is absent, not blank).
+
+**Same defect class as the 2026-08-01 Greenhouse `content`/`location` mapping
+bug**: the data is present in the payload under a key the reader does not
+check. It was invisible until Himalayas was activated, because no earlier run
+ever normalized a Himalayas item.
+
+**Consequences, in order of severity:**
+
+- **The records are unusable for outreach.** Engine 5 resolves contacts by
+  company (`findContactsByCompany`), Engine 7 drafts reference the company, and
+  `researchOpportunity` fetches a *company* profile. None of that can run
+  against an empty string.
+- **The fingerprint degrades to `sha1("" | role | himalayas.app)`.** Company
+  contributes nothing, so two *different* companies posting an identically
+  titled role collapse into one opportunity. 25 of 227 items were dropped as
+  within-run duplicates this run; an unknown share of those are genuine
+  distinct companies rather than true duplicates.
+- **Quality scores are likely depressed** for the affected records (the two
+  lowest new records scored Quality 3 and 5). Not isolated — stated as a
+  plausible contributor, not a measured cause.
+
+**Hypothesis, NOT verified:** the run spent 67 Gemini calls for 11 items (6.1
+each) against a 7.72/item projection derived from a Greenhouse-only run. A
+company-less item may skip the research call. Correlation only — no mechanism
+was traced, and it must not be reported as a finding without one.
+
+**Not fixed.** The fix is a one-line key-list addition, but `job_board.ts` is
+inside a frozen engine, the key list is shared by every job_board source, and
+changing what `company` resolves to **changes fingerprints**, which breaks
+update-in-place for the 7 existing records and creates duplicates on the next
+run. That needs a supervised session with a migration story — exactly the
+`normalizeRole` hazard already recorded in the Track-2 duplicate analysis.
+Do NOT fix opportunistically.
