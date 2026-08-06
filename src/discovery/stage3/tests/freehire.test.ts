@@ -10,7 +10,7 @@
 import { describe, expect, it } from "vitest";
 import { normalize } from "../../../engines/normalization";
 import { createFreehireSource, FREEHIRE_CONFIG } from "../sources/freehire";
-import { fixedDeps, preferencesFixture, recordingDeps, NOW } from "./query-helpers";
+import { fixedDeps, preferencesFixture, recordingDeps, seniorityFixture, NOW } from "./query-helpers";
 
 const row = {
   public_slug: "site-reliability-engineer-strike-jpr62upf",
@@ -170,5 +170,31 @@ describe("freehire contract", () => {
     const result = await createFreehireSource(FREEHIRE_CONFIG, prefs).healthCheck(deps);
     expect(deps.requests).toHaveLength(1);
     expect(result.ok).toBe(true);
+  });
+});
+
+describe("freehire — entry-level query modifier (A3)", () => {
+  const withModifier = preferencesFixture(["Kubernetes", "Security"], [], seniorityFixture([], true));
+
+  it("appends the modifier to q, keeping work_mode=remote", async () => {
+    const deps = fixedDeps(body([]));
+    await createFreehireSource(FREEHIRE_CONFIG, withModifier).fetch(deps);
+    expect(deps.requests[0]).toContain("q=kubernetes+entry+level");
+    expect(deps.requests[0]).toContain("work_mode=remote");
+  });
+
+  it("sends the bare term when the modifier is off", async () => {
+    const deps = fixedDeps(body([]));
+    await createFreehireSource(FREEHIRE_CONFIG, prefs).fetch(deps);
+    expect(deps.requests[0]).toContain("q=kubernetes&");
+  });
+
+  it("does NOT change the request count, or the one-page limit", async () => {
+    const off = fixedDeps(body([]));
+    const on = fixedDeps(body([]));
+    await createFreehireSource(FREEHIRE_CONFIG, prefs).fetch(off);
+    await createFreehireSource(FREEHIRE_CONFIG, withModifier).fetch(on);
+    expect(on.requests).toHaveLength(off.requests.length);
+    expect(on.requests.every((u) => u.includes("limit=20") && u.includes("offset=0"))).toBe(true);
   });
 });

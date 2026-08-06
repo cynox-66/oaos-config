@@ -31,6 +31,7 @@ import type { Preferences } from "../../scope/types";
 import type { FetchResult, HealthCheckResult, SourceDeps, SourceError, Stage3Source } from "../types";
 import { getJson, isRecord, readArray, str } from "../query/http-json";
 import { cappedTermsError, deriveQueryTerms } from "../query/scope-terms";
+import { queryTermWithSeniority } from "../query/seniority-modifier";
 
 export interface HimalayasConfig {
   searchUrl: string;
@@ -42,8 +43,13 @@ export const HIMALAYAS_CONFIG: HimalayasConfig = {
 
 const SOURCE_NAME = "himalayas";
 
-function searchUrlFor(config: HimalayasConfig, term: string): string {
-  return `${config.searchUrl}?q=${encodeURIComponent(term)}`;
+/**
+ * The seniority modifier decorates `q`; it never adds a query. One request per
+ * scope term either way — see query/seniority-modifier.ts.
+ */
+function searchUrlFor(config: HimalayasConfig, term: string, preferences: Preferences): string {
+  const q = queryTermWithSeniority(term, preferences);
+  return `${config.searchUrl}?q=${encodeURIComponent(q)}`;
 }
 
 /**
@@ -53,10 +59,11 @@ function searchUrlFor(config: HimalayasConfig, term: string): string {
 async function runQuery(
   config: HimalayasConfig,
   term: string,
+  preferences: Preferences,
   deps: SourceDeps
 ): Promise<{ items: RawItem[]; errors: SourceError[] }> {
   const scope = `${SOURCE_NAME}:${term}`;
-  const response = await getJson(searchUrlFor(config, term), scope, deps);
+  const response = await getJson(searchUrlFor(config, term, preferences), scope, deps);
   if (!response.ok) return { items: [], errors: [response.error] };
 
   // Zero results legitimately omit `jobs` on some responses — absent is empty,
@@ -108,7 +115,7 @@ async function fetchHimalayas(
   // Sequential on purpose: 13 requests to one host, one at a time, is polite
   // by construction and keeps the run's request pattern predictable.
   for (const term of terms) {
-    const result = await runQuery(config, term, deps);
+    const result = await runQuery(config, term, preferences, deps);
     errors.push(...result.errors);
     for (const item of result.items) {
       const key = identity(item);
@@ -158,7 +165,7 @@ export function createHimalayasSource(
           detail: "no enabled fields in preferences.json — nothing to search for",
         };
       }
-      const result = await runQuery(config, terms[0], deps);
+      const result = await runQuery(config, terms[0], preferences, deps);
       const ok = result.errors.length === 0;
       return {
         ok,

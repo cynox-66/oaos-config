@@ -7,7 +7,7 @@
 
 import { describe, expect, it } from "vitest";
 import { createHimalayasSource, HIMALAYAS_CONFIG } from "../sources/himalayas";
-import { fixedDeps, preferencesFixture, recordingDeps, NOW } from "./query-helpers";
+import { fixedDeps, preferencesFixture, recordingDeps, seniorityFixture, NOW } from "./query-helpers";
 
 const job = {
   title: "Kubernetes Engineer",
@@ -200,5 +200,45 @@ describe("himalayas contract", () => {
     );
     expect(result.ok).toBe(false);
     expect(result.detail).toContain("no enabled fields");
+  });
+});
+
+describe("himalayas — entry-level query modifier (A3)", () => {
+  const withModifier = preferencesFixture(["Kubernetes", "Security"], [], seniorityFixture([], true));
+
+  it("sends the bare term when the modifier is not confirmed", async () => {
+    const deps = fixedDeps(body([]));
+    await createHimalayasSource(HIMALAYAS_CONFIG, prefs).fetch(deps);
+    expect(deps.requests[0]).toContain("q=kubernetes");
+    expect(deps.requests[0]).not.toContain("entry");
+  });
+
+  it("appends the modifier to q when it is confirmed", async () => {
+    const deps = fixedDeps(body([]));
+    await createHimalayasSource(HIMALAYAS_CONFIG, withModifier).fetch(deps);
+    expect(deps.requests[0]).toContain("q=kubernetes%20entry%20level");
+    expect(deps.requests[1]).toContain("q=security%20entry%20level");
+  });
+
+  it("does NOT change the request count — the cap is untouched by construction", async () => {
+    const off = fixedDeps(body([]));
+    const on = fixedDeps(body([]));
+    await createHimalayasSource(HIMALAYAS_CONFIG, prefs).fetch(off);
+    await createHimalayasSource(HIMALAYAS_CONFIG, withModifier).fetch(on);
+    expect(on.requests).toHaveLength(off.requests.length);
+    expect(on.requests).toHaveLength(2);
+  });
+
+  it("is not driven by the exclusion ticks", async () => {
+    const deps = fixedDeps(body([]));
+    const excludedOnly = preferencesFixture(["Kubernetes"], [], seniorityFixture(["senior"], false));
+    await createHimalayasSource(HIMALAYAS_CONFIG, excludedOnly).fetch(deps);
+    expect(deps.requests[0]).not.toContain("entry");
+  });
+
+  it("applies to the healthCheck probe too, so it exercises the real URL shape", async () => {
+    const deps = fixedDeps(body([]));
+    await createHimalayasSource(HIMALAYAS_CONFIG, withModifier).healthCheck(deps);
+    expect(deps.requests[0]).toContain("entry%20level");
   });
 });
