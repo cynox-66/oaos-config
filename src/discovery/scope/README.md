@@ -224,3 +224,37 @@ the Seniority section reproduces your previous discovery behaviour exactly.
 an item's whole text, body included, not its title
 (`docs/known-issues.md` #23), and removing one invalidates every
 `preferences.json` that persisted it.
+
+## Geo eligibility + role types (schema v3)
+
+Added 2026-08-06 (wave G1). Two new sections on `Preferences`:
+
+- **`geo: GeoPreference | null`** — the operator's SOURCE-AGNOSTIC geographic
+  eligibility: `eligible_countries` (ISO alpha-2, uppercase), `worldwide_ok`,
+  and an `unresolved` policy (`"pass" | "gate"`). `null` is a *confirmed*
+  `geo off` — filter disabled, discovery behaves exactly as v2. Consumed by
+  `src/discovery/geo/` (per-source mapping) via the orchestrator; this module
+  only records the decision. The reducer refuses `done` while the section is
+  active with no eligible country — "keep the old behaviour" is one explicit
+  command (`geo off`), never a default.
+- **`role_types: RoleTypeSelection[]`** — SCHEMA ONLY in v3 (operator ruling
+  Q4): exclusion *intent* with persisted title-scoped terms; no gate consumes
+  it yet, so all-unexcluded is behaviour-neutral by construction.
+
+**The completeness asymmetry with seniority is deliberate — do not "fix" it
+in either direction.** `seniority.levels` must carry every config id exactly
+once (a closed 5-level set, confirmed complete in one wave; a missing level
+would be an unstated gate decision). `role_types` must NOT require
+completeness: for an exclusion gate, absence of an id can only mean
+never-confirmed-therefore-never-gated — the fail-open, behaviour-neutral
+default — so config may GAIN role-type ids across waves without invalidating
+any existing v3 file. A config-gained id surfaces as `<NEW>` at the next
+`setup-scope` and is adopted only by an explicit toggle. Everything else
+stays strict: unknown ids, duplicate ids, terms outside that id's config
+list, and excluded-with-no-terms all reject loudly.
+
+**A v1/v2 file is rejected, not upgraded** — same migration mechanism as
+v1 → v2: `loadPreferences` (consumption) rejects with an actionable message;
+`loadBaseline` (setup-scope only) carries everything previously confirmed
+forward, with `geo`/`role_types` `undefined` for a pre-v3 file (nothing to
+carry) vs `null` for a confirmed `geo off`.

@@ -13,9 +13,13 @@
 import { readFileSync, writeFileSync } from "node:fs";
 import { PREFERENCES_VERSION } from "./config";
 import { ALL_SENIORITY_TERMS, SENIORITY_LEVEL_IDS } from "./seniority";
+import { ROLE_TYPE_IDS, roleType } from "./role-types";
 import type {
   FieldOrigin,
+  GeoPreference,
   Preferences,
+  RoleTypeId,
+  RoleTypeSelection,
   ScopeBaseline,
   ScopeField,
   SeniorityLevelId,
@@ -219,6 +223,117 @@ function parseSeniority(raw: unknown, path: string): SeniorityPreference {
   };
 }
 
+/**
+ * Validate the geo dimension. `null` is a VALID confirmed state (the operator
+ * ran `geo off`: dimension confirmed-absent, filter disabled). An active
+ * section must carry at least one eligible country — an active geo scope with
+ * no eligible country would gate everything, which no operator confirmed
+ * through the reducer (it refuses `done` on that state), so finding it in a
+ * file is a hand-edit.
+ */
+function parseGeo(raw: unknown, path: string): GeoPreference | null {
+  if (raw === null) return null;
+  const o = asObject(raw, path);
+
+  const countries = asStringArray(o.eligible_countries, `${path}.eligible_countries`);
+  if (countries.length === 0) {
+    throw new ScopeValidationError(
+      `${path}.eligible_countries: must not be empty while the geo section is active — ` +
+        `an empty list would gate every posting. Use "geo": null to confirm the dimension off.`
+    );
+  }
+  const seen = new Set<string>();
+  countries.forEach((code, i) => {
+    if (!/^[A-Z]{2}$/.test(code)) {
+      throw new ScopeValidationError(
+        `${path}.eligible_countries[${i}]: "${code}" is not an ISO-3166 alpha-2 code ` +
+          `(two uppercase letters, e.g. "IN")`
+      );
+    }
+    if (seen.has(code)) {
+      throw new ScopeValidationError(`${path}.eligible_countries[${i}]: duplicate country "${code}"`);
+    }
+    seen.add(code);
+  });
+
+  const unresolved = o.unresolved;
+  if (unresolved !== "pass" && unresolved !== "gate") {
+    fail(`${path}.unresolved`, '"pass" or "gate"', unresolved);
+  }
+
+  return {
+    eligible_countries: countries,
+    worldwide_ok: asBoolean(o.worldwide_ok, `${path}.worldwide_ok`),
+    unresolved,
+  };
+}
+
+/**
+ * Validate the role_types dimension.
+ *
+ * DELIBERATELY LOOSER THAN SENIORITY ON EXACTLY ONE AXIS (operator ruling Q4,
+ * 2026-08-06): completeness is NOT required — a file missing a config id is
+ * valid, because for an exclusion gate absence can only mean
+ * never-confirmed-therefore-never-gated, and requiring completeness would make
+ * every config-gained id invalidate every existing v3 file. Everything else is
+ * strict: unknown ids, duplicate ids, terms outside that id's config list, and
+ * an excluded entry with no terms all reject loudly. Do not "fix" the
+ * asymmetry in either direction — see types.ts RoleTypeSelection.
+ */
+function parseRoleTypes(raw: unknown, path: string): RoleTypeSelection[] {
+  const rawEntries = asArray(raw, path);
+  const out: RoleTypeSelection[] = [];
+  const seenIds = new Map<string, number>();
+
+  rawEntries.forEach((entry, i) => {
+    const entryPath = `${path}[${i}]`;
+    const e = asObject(entry, entryPath);
+    const id = asNonEmptyString(e.id, `${entryPath}.id`);
+
+    const definition = roleType(id);
+    if (definition === null) {
+      throw new ScopeValidationError(
+        `${entryPath}.id: unknown role type "${id}" — expected one of ${ROLE_TYPE_IDS.join(", ")}`
+      );
+    }
+    const first = seenIds.get(id);
+    if (first !== undefined) {
+      throw new ScopeValidationError(
+        `${entryPath}.id: duplicate role type "${id}" (already at index ${first})`
+      );
+    }
+    seenIds.set(id, i);
+
+    const excluded = asBoolean(e.excluded, `${entryPath}.excluded`);
+    const terms = asStringArray(e.terms, `${entryPath}.terms`);
+    const seenTerms = new Set<string>();
+    terms.forEach((term, t) => {
+      if (!definition.terms.includes(term)) {
+        throw new ScopeValidationError(
+          `${entryPath}.terms[${t}]: "${term}" is not a known term for role type "${id}". ` +
+            `Terms are confirmed through \`oaos setup-scope\`, never hand-written — ` +
+            `and a term removed from config invalidates files that persisted it, by design.`
+        );
+      }
+      if (seenTerms.has(term)) {
+        throw new ScopeValidationError(`${entryPath}.terms[${t}]: duplicate term "${term}"`);
+      }
+      seenTerms.add(term);
+    });
+
+    if (excluded && terms.length === 0) {
+      throw new ScopeValidationError(
+        `${entryPath}.terms: excluded is true but no terms are confirmed — an exclusion ` +
+          `with no terms is a no-op that misrepresents the operator\'s intent`
+      );
+    }
+
+    out.push({ id: id as RoleTypeId, excluded, terms });
+  });
+
+  return out;
+}
+
 /** The part of the schema shared by a full read and a baseline read. */
 function parseCommon(
   o: Record<string, unknown>,
@@ -243,17 +358,26 @@ function parseCommon(
   return { fields, work_types: parseWorkTypes(o.work_types, `${path}.work_types`) };
 }
 
-/** The migration stop for a file written before the seniority dimension. */
+/** The migration stop for a file written under an older schema. Dispatches on
+ *  the found version so the operator reads the message that fits their file. */
 function outdatedVersionError(path: string, found: number): ScopeValidationError {
+  if (found === 2) {
+    return new ScopeValidationError(
+      `${path} is version 2; this build requires version 3 (adds the geo eligibility ` +
+        `section). Run \`oaos setup-scope\` to re-confirm your scope — your confirmed ` +
+        `fields and seniority choices will be carried forward and you will be asked to ` +
+        `confirm the new geo section.`
+    );
+  }
   return new ScopeValidationError(
-    `${path}: schema version ${found} predates the seniority dimension ` +
+    `${path}: schema version ${found} predates the seniority and geo dimensions ` +
       `(current version is ${PREFERENCES_VERSION}).\n\n` +
-      `Your file was NOT changed and NOT upgraded. Inferring a seniority preference you\n` +
-      `never confirmed is exactly what D15 forbids, so this is a stop, not a migration.\n\n` +
+      `Your file was NOT changed and NOT upgraded. Inferring a preference you never\n` +
+      `confirmed is exactly what D15 forbids, so this is a stop, not a migration.\n\n` +
       `Run \`oaos setup-scope\` and type 'done' to re-confirm:\n` +
       `  - your existing field ticks and work types are carried forward as the baseline\n` +
-      `  - the new Seniority section is proposed with nothing excluded, so confirming\n` +
-      `    without touching it reproduces your current discovery behaviour exactly`
+      `  - the new Seniority, Geo and Role-type sections are proposed conservatively;\n` +
+      `    the geo section asks for your eligible countries (or an explicit 'geo off')`
   );
 }
 
@@ -295,6 +419,8 @@ export function parsePreferences(raw: unknown, path = "preferences"): Preference
     work_types,
     remote_only: true,
     seniority: parseSeniority(o.seniority, `${path}.seniority`),
+    geo: parseGeo("geo" in o ? o.geo : undefined, `${path}.geo`),
+    role_types: parseRoleTypes(o.role_types, `${path}.role_types`),
   };
 }
 
@@ -337,6 +463,14 @@ export function parseBaseline(raw: unknown, path = "preferences"): ScopeBaseline
     // Parsed strictly when present; absent for a pre-seniority file, which is
     // the whole reason this reader exists.
     seniority: o.version >= 2 ? parseSeniority(o.seniority, `${path}.seniority`) : null,
+    // Tri-state (types.ts): undefined = pre-v3 (nothing to carry), null = a
+    // confirmed `geo off`, object = a confirmed geo scope.
+    ...(o.version >= 3
+      ? {
+          geo: parseGeo(o.geo, `${path}.geo`),
+          role_types: parseRoleTypes(o.role_types, `${path}.role_types`),
+        }
+      : {}),
   };
 }
 

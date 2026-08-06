@@ -13,9 +13,12 @@
 
 import { PROPOSED_WORK_TYPES, SCOPE_VOCABULARY } from "./config";
 import { SENIORITY_LEVELS } from "./seniority";
+import { ROLE_TYPES } from "./role-types";
 import type {
   Evidence,
   FieldBacking,
+  GeoSectionState,
+  RoleTypeState,
   ScopeBaseline,
   ScopeDeps,
   ScopeField,
@@ -140,6 +143,56 @@ function deriveSeniority(existing: ScopeBaseline | undefined): SeniorityProposal
 }
 
 /**
+ * Propose the geo section.
+ *
+ * Fresh derivation (and any pre-v3 baseline): EMPTY country list, worldwide
+ * on, unresolved "pass", untouched. Nothing is inferred — not even from the
+ * operator's profile — because geo eligibility is a legal/personal fact only
+ * the operator can assert (G1 ruling). The reducer refuses `done` while the
+ * section is active and empty, so the empty proposal cannot leak into a file.
+ *
+ * v3 baseline: the confirmed state carries forward — including a confirmed
+ * `geo off` (baseline.geo === null) — and the section counts as touched.
+ */
+function deriveGeo(existing: ScopeBaseline | undefined): GeoSectionState {
+  const prior = existing?.geo;
+  if (prior === undefined) {
+    return { countries: [], worldwide_ok: true, unresolved: "pass", off: false, touched: false };
+  }
+  if (prior === null) {
+    return { countries: [], worldwide_ok: true, unresolved: "pass", off: true, touched: true };
+  }
+  return {
+    countries: [...prior.eligible_countries],
+    worldwide_ok: prior.worldwide_ok,
+    unresolved: prior.unresolved,
+    off: false,
+    touched: true,
+  };
+}
+
+/**
+ * Propose the role-type section: every config id, nothing excluded fresh,
+ * baseline exclusions/terms carried forward. A config id the baseline does
+ * not carry appears as a fresh unexcluded entry — the ruled Q4 tolerance
+ * (see types.ts RoleTypeSelection): absence means never-confirmed-therefore-
+ * never-gated, so a config-gained id never invalidates an existing file.
+ */
+function deriveRoleTypes(existing: ScopeBaseline | undefined): RoleTypeState[] {
+  const prior = existing?.role_types;
+  return ROLE_TYPES.map((definition) => {
+    const carried = prior?.find((t) => t.id === definition.id) ?? null;
+    const terms = carried ? [...carried.terms] : [...definition.terms];
+    return {
+      id: definition.id,
+      excluded: carried ? carried.excluded : false,
+      terms,
+      available: definition.terms.filter((term) => !terms.includes(term)),
+    };
+  });
+}
+
+/**
  * Derive the proposed field map.
  *
  * Proposal rule: a vocabulary field is pre-ticked iff it is evidence-backed OR
@@ -198,5 +251,7 @@ export function deriveScope(inputs: ScopeInputs, deps: ScopeDeps): ScopeProposal
     work_types,
     newly_backed,
     seniority: deriveSeniority(inputs.existing),
+    geo: deriveGeo(inputs.existing),
+    role_types: deriveRoleTypes(inputs.existing),
   };
 }

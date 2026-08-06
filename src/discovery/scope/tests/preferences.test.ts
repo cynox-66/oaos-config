@@ -24,7 +24,7 @@ afterAll(() => rmSync(dir, { recursive: true, force: true }));
 
 function valid(): Preferences {
   return {
-    version: 2,
+    version: 3,
     generated_at: "2026-07-20T12:00:00.000Z",
     confirmed_at: "2026-07-20T12:05:00.000Z",
     fields: [
@@ -55,6 +55,8 @@ function valid(): Preferences {
       })),
       entry_level_query_modifier: false,
     },
+    geo: { eligible_countries: ["IN"], worldwide_ok: true, unresolved: "pass" },
+    role_types: [],
   };
 }
 
@@ -88,7 +90,7 @@ describe("parsePreferences — schema rejection", () => {
   it("rejects a non-object", () => expectRejection([], "preferences: expected object"));
 
   it("rejects a newer/unknown version", () => {
-    expectRejection(corrupt((o) => void (o.version = 3)), "preferences.version: expected 2");
+    expectRejection(corrupt((o) => void (o.version = 4)), "preferences.version: expected 3");
   });
 
   it.each([
@@ -307,7 +309,7 @@ describe("parseSeniority — schema rejection", () => {
 describe("v1 → v2 migration", () => {
   it("rejects a v1 file with an actionable message, never upgrading it", () => {
     expect(() => parsePreferences(v1())).toThrow(ScopeValidationError);
-    expect(() => parsePreferences(v1())).toThrow("predates the seniority dimension");
+    expect(() => parsePreferences(v1())).toThrow("predates the seniority and geo dimensions");
     expect(() => parsePreferences(v1())).toThrow("Run `oaos setup-scope`");
     expect(() => parsePreferences(v1())).toThrow("NOT changed and NOT upgraded");
   });
@@ -332,9 +334,9 @@ describe("parseBaseline — version-tolerant, for the editing baseline only", ()
     expect(baseline.fields.map((f) => f.name)).toEqual(["Security", "wasm"]);
   });
 
-  it("reads a v2 file, carrying the seniority selections", () => {
+  it("reads a current (v3) file, carrying the seniority selections", () => {
     const baseline = parseBaseline(valid());
-    expect(baseline.version).toBe(2);
+    expect(baseline.version).toBe(3);
     expect(baseline.seniority?.levels.find((l) => l.level === "senior")?.excluded).toBe(true);
   });
 

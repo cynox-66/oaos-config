@@ -12,6 +12,7 @@ import {
   reduceScope,
 } from "../reducer";
 import { SENIORITY_LEVELS } from "../seniority";
+import { ROLE_TYPES } from "../role-types";
 import type { ScopeProposal, ScopeState } from "../types";
 
 const proposal: ScopeProposal = {
@@ -45,6 +46,15 @@ const proposal: ScopeProposal = {
     })),
     entry_level_query_modifier: false,
   },
+  // Pre-filled and touched, so existing confirm-path tests keep confirming;
+  // the active-but-empty refusal has its own dedicated tests.
+  geo: { countries: ["IN"], worldwide_ok: true, unresolved: "pass", off: false, touched: true },
+  role_types: ROLE_TYPES.map((t) => ({
+    id: t.id,
+    excluded: false,
+    terms: [...t.terms],
+    available: [],
+  })),
 };
 
 const fresh = (): ScopeState => initialState(proposal);
@@ -240,7 +250,7 @@ describe("buildPreferences", () => {
       confirmed_at: "2026-07-20T12:05:00.000Z",
     });
     expect(prefs).toMatchObject({
-      version: 2,
+      version: 3,
       generated_at: "2026-07-20T12:00:00.000Z",
       confirmed_at: "2026-07-20T12:05:00.000Z",
       remote_only: true,

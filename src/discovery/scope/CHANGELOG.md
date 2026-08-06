@@ -153,3 +153,47 @@ its title, and the gate runs **before** scoring. See `seniority.ts`'s header and
 them genuine senior titles), and **that result is scoped to k = 25**. Bare level
 words were rejected wherever they carry a non-seniority meaning — notably bare
 `sr`, which matches `sr-iov` because `-` is a boundary character.
+
+## [0.3.0] — 2026-08-06 — geo eligibility + role_types schema (v3, wave G1)
+
+Schema `2 → 3`. Operator rulings Q1–Q4 (research/phase1-eligibility, FINDINGS
+§4) govern everything below.
+
+### Added
+
+- `Preferences.geo: GeoPreference | null` — `eligible_countries` (ISO-3166
+  alpha-2, uppercase, non-empty while active), `worldwide_ok`, `unresolved:
+  "pass" | "gate"`. `null` = confirmed `geo off` (filter disabled; v2-identical
+  discovery). Eligibility downstream is decided by MEMBERSHIP TESTS ONLY,
+  never list-length heuristics (the Hostaway 148-country-EMEA finding).
+- `Preferences.role_types` — exclusion intent with persisted title-scoped
+  terms (`role-types.ts`, closed id set). SCHEMA ONLY: the gate is
+  deliberately not built (ruling Q4), so a later gate build needs no version
+  bump. `roleTypeExclusionTerms` exported as the future gate's seam; nothing
+  calls it in v3.
+- Reducer commands: `geo add|remove <cc>`, `geo worldwide on|off`,
+  `geo unresolved pass|gate`, `geo off|on`, `rt<n>`, `adopt rt<n>`.
+  `confirm` refuses on an active-but-empty geo section, naming both exits.
+- Validator: strict on both new sections; role_types completeness NOT
+  required (the ruled Q4 asymmetry — see README; config may gain ids freely,
+  a config-gained id surfaces as `<NEW>` and never invalidates a file).
+- Migration: v2 rejected on consumption with the exact ruled message;
+  `parseBaseline` reads v1/v2/v3, `geo`/`role_types` tri-state
+  (`undefined` pre-v3 / `null` confirmed-off / object confirmed).
+- `unknown_source` ruling (Q2) recorded on `GeoPreference.unresolved`'s doc:
+  the policy governs mapper-ran-but-unparseable ONLY; a source with no mapper
+  always passes the orchestrator filter and is reported loudly by name.
+
+### Unchanged
+
+`buildPreferences` remains the sole stamper (unforgeability extends to both
+sections with zero new mechanism); the two locked literals; all v2 seniority
+semantics including its completeness invariant.
+
+### Verification
+
++90 tests (suite 1030 → 1120, 78 → 83 files). Live-verified 2026-08-06: the
+operator re-confirmed v3 via a real `oaos setup-scope`; a Greenhouse dry-run
+through the geo filter matched the captured-bytes replay byte-for-byte
+(446 → 324 → 8 eligible + 1 unresolved → 4 passed); a Himalayas `--source`
+dry-run measured 18/200 eligible with a clean false-positive audit.
