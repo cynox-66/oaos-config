@@ -25,6 +25,7 @@
 
 import { normalize } from "../../engines/normalization";
 import type { RawItem } from "../../engines/normalization/types";
+import { itemsPassingGeo, partitionByGeo } from "../geo";
 import { prerank } from "../prerank";
 import type { GateReason, GatedItem } from "../prerank/types";
 import { advanceHealth, createHealthState } from "../stage3/health";
@@ -61,6 +62,9 @@ function emptySummary(entry: SourceTableEntry): SourceRunSummary {
     fetched: 0,
     calendarRouted: 0,
     deduped: 0,
+    geoIneligible: 0,
+    geoUnresolved: 0,
+    geoUnknownSource: 0,
     prerankPassed: 0,
     prerankGated: 0,
     gatedByReason: {},
@@ -120,7 +124,7 @@ function recordHealth(
  * prerank accounting-invariant violation) propagates.
  */
 export async function runStage3(deps: Stage3RunDeps): Promise<Stage3RunSummary> {
-  const { entries, sourceDeps, vocabulary, prerankConfig, health, writeCalendar, processItem, buildContext, dryRun } =
+  const { entries, sourceDeps, vocabulary, prerankConfig, geo, health, writeCalendar, processItem, buildContext, dryRun } =
     deps;
 
   const runTimestamp = sourceDeps.now();
@@ -217,13 +221,53 @@ export async function runStage3(deps: Stage3RunDeps): Promise<Stage3RunSummary> 
     recordHealth(entry, previous, checked, health, dryRun, summary);
   }
 
+  // ── 1b. Geo-eligibility filter (G1) — between dedupe and prerank ─────────
+  // Runs only under a CONFIRMED geo scope (v3). `geo` null/undefined ⇒ the
+  // filter is disabled and the batch reaches prerank untouched — byte-
+  // identical pre-G1 behaviour. Ineligible items are gated HERE so they never
+  // spend a prerank slot or a Gemini call; nothing is dropped silently
+  // (partition-sum invariant inside partitionByGeo, every count reported).
+  let geoSummary: Stage3RunSummary["geo"] = null;
+  let prerankInput: RawItem[] = pipelineItems;
+
+  if (geo !== null && geo !== undefined && pipelineItems.length > 0) {
+    const sourceOf = (item: RawItem): string => owner.get(item) ?? "";
+    const partition = partitionByGeo(pipelineItems, sourceOf, geo);
+    prerankInput = itemsPassingGeo(partition, geo);
+
+    const unknownSources = new Set<string>();
+    for (const item of partition.unknown) unknownSources.add(sourceOf(item));
+    for (const { item } of partition.ineligible) {
+      const s = byName.get(sourceOf(item));
+      if (s) s.geoIneligible += 1;
+    }
+    for (const { item } of partition.unresolved) {
+      const s = byName.get(sourceOf(item));
+      if (s) s.geoUnresolved += 1;
+    }
+    for (const item of partition.unknown) {
+      const s = byName.get(sourceOf(item));
+      if (s) s.geoUnknownSource += 1;
+    }
+
+    geoSummary = {
+      total: pipelineItems.length,
+      eligible: partition.eligible.length,
+      ineligible: partition.ineligible.length,
+      unresolved: partition.unresolved.length,
+      unresolvedPolicy: geo.unresolved,
+      unknownSource: partition.unknown.length,
+      unknownSources: [...unknownSources].sort(),
+    };
+  }
+
   // ── 2. Prerank the whole run's batch at once ──────────────────────────────
   let prerankSummary: Stage3RunSummary["prerank"] = null;
   let survivors: RawItem[] = [];
 
-  if (pipelineItems.length > 0) {
+  if (prerankInput.length > 0) {
     const result = prerank(
-      { items: pipelineItems, vocabulary, config: prerankConfig },
+      { items: prerankInput, vocabulary, config: prerankConfig },
       { now: () => runTimestamp }
     );
     survivors = result.passed;
@@ -281,7 +325,7 @@ export async function runStage3(deps: Stage3RunDeps): Promise<Stage3RunSummary> 
     if (s.health.recovered) recovered.push(s.name);
   }
 
-  return { dryRun, runTimestamp, sources: summaries, prerank: prerankSummary, calendar, autoDisabled, recovered };
+  return { dryRun, runTimestamp, sources: summaries, geo: geoSummary, prerank: prerankSummary, calendar, autoDisabled, recovered };
 }
 
 // ============================================================

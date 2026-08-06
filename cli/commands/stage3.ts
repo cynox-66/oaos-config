@@ -224,6 +224,10 @@ export async function runStage3Command(args: string[]): Promise<void> {
     entries,
     sourceDeps: createSourceDeps(),
     vocabulary,
+    // The operator's confirmed geo eligibility (v3). `loadScope` is already
+    // v3-strict, so a file without a geo decision cannot reach here; null is
+    // a confirmed `geo off` and disables the filter.
+    geo: preferences.geo,
     health: createHealthStore(HEALTH_PATH),
     writeCalendar: (calendarEntries) => writeCalendarEntries(calendarEntries),
     // In a dry run the processor is never invoked; skip building real clients

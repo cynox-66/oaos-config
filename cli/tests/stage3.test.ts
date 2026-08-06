@@ -131,6 +131,7 @@ function summary(overrides: Partial<Stage3RunSummary> = {}): Stage3RunSummary {
     dryRun: false,
     runTimestamp: "2026-07-28T00:00:00.000Z",
     sources: [sourceRow()],
+    geo: null,
     prerank: null,
     calendar: null,
     autoDisabled: [],
@@ -138,6 +139,42 @@ function summary(overrides: Partial<Stage3RunSummary> = {}): Stage3RunSummary {
     ...overrides,
   };
 }
+
+describe("formatStage3Summary — geo block (G1)", () => {
+  const geoBlock = (over: Partial<NonNullable<Stage3RunSummary["geo"]>> = {}) => ({
+    total: 324,
+    eligible: 8,
+    ineligible: 313,
+    unresolved: 3,
+    unresolvedPolicy: "pass" as const,
+    unknownSource: 0,
+    unknownSources: [] as string[],
+    ...over,
+  });
+
+  it("renders the geo line with the unresolved policy spelled out", () => {
+    const out = formatStage3Summary(summary({ geo: geoBlock() }));
+    expect(out).toMatch(/Geo: 324 in → 8 eligible, 313 ineligible, 3 unresolved \(passed\)/);
+  });
+
+  it("marks gated unresolved items as GATED", () => {
+    const out = formatStage3Summary(summary({ geo: geoBlock({ unresolvedPolicy: "gate" }) }));
+    expect(out).toMatch(/3 unresolved \(GATED\)/);
+  });
+
+  it("NAMES unmapped sources loudly when their items bypass the filter (ruling Q2)", () => {
+    const out = formatStage3Summary(
+      summary({ geo: geoBlock({ unknownSource: 12, unknownSources: ["hn-hiring", "nlnet"] }) })
+    );
+    expect(out).toContain("NO geo mapper");
+    expect(out).toContain("hn-hiring, nlnet");
+  });
+
+  it("omits the geo block entirely when the filter is off", () => {
+    const out = formatStage3Summary(summary({ geo: null }));
+    expect(out).not.toContain("Geo:");
+  });
+});
 
 describe("formatStage3Summary", () => {
   it("renders a per-source row with every counter", () => {
