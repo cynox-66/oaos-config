@@ -761,9 +761,96 @@
     defect (Defect 2 above): with real descriptions in play, genuine
     engineering roles outscore the sales role on content and it loses its
     slot in the top-25 prerank cut. No prerank change was made or is needed.
-- Test count: 924 passing (74 test files) — `vitest run`
-  (re-verified 2026-07-30; `git rev-parse main origin/main` also verified
-  equal at e02170b that day — main WAS genuinely pushed.)
+    RE-OPENED AS A GENERAL CONDITION 2026-08-06 — see docs/known-issues.md #25.
+    The closure above was correct FOR ITS STATED CAUSE (empty descriptions) and
+    incomplete as a finding: prerank has no engineering-vs-GTM discrimination,
+    and that was masked by better content, not fixed. Second sighting recorded
+    in the seniority wave entry below. Still not acted on.
+- SENIORITY DIMENSION COMPLETE (2026-08-06) — a scope-module change, not a
+  construction wave. Adds the operator's first way to express entry-level
+  intent. `src/discovery/scope/seniority.ts` + schema v2 + two consumption
+  sites. Read src/discovery/scope/README.md before touching it.
+  - THE GAP IT CLOSED: `vocabulary.ts` mapped Preferences → PrerankVocabulary
+    asymmetrically — domainTerms from the file, roleTerms AND negativeTerms
+    from DEFAULT_VOCABULARY. There was no seniority axis anywhere in confirmed
+    scope. The NEGATIVE-TERM half of that asymmetry is now closed; the
+    `roleTerms` half REMAINS OPEN and is documented in vocabulary.ts's header.
+  - SHAPE: `Preferences.seniority = { levels: [{level, excluded, terms}],
+    entry_level_query_modifier }`. Five levels, CLOSED SET (senior / staff /
+    principal / lead / management) — unlike `fields` there is no `add` path,
+    because an operator-authored term would be an unreviewed entry in an
+    unconditional pre-scoring gate. The modifier is a SEPARATE boolean, not
+    derived from `levels`: excluding filters what came back, the modifier
+    rewrites what third-party APIs are asked for. Two consequences, two
+    confirmations.
+  - THE EXPANDED TERMS ARE PERSISTED, not expanded from config at read time
+    (operator ruling, overruling the ScopeField precedent). ScopeField expands
+    a POSITIVE signal — worst case it matches more of what you wanted. This
+    expands a NEGATIVE, unconditional, pre-scoring gate — worst case it
+    silently deletes opportunities the operator never sees. A term-list edit is
+    therefore a scope change, and D15 requires re-confirmation for those.
+    Config MAY GAIN terms freely (they surface as `available` / `<NEW TERMS>`
+    and are taken only by an explicit `adopt s<n>`); config REMOVING a term
+    invalidates every file that persisted it, loudly, by design.
+  - VERSION 2 + MIGRATION. A v1 file is REJECTED with an actionable message,
+    never upgraded or defaulted. THE NON-OBVIOUS PART: `setup-scope` reads the
+    existing file to carry ticks forward, so a strictly-rejecting read would
+    make the one command that fixes a v1 file the one command that cannot open
+    it. Hence the split — `loadPreferences`/`parsePreferences` (CONSUMPTION,
+    strict on version) vs `loadBaseline`/`parseBaseline` (BASELINE ONLY,
+    version-tolerant, returns a `ScopeBaseline` and never a `Preferences`).
+    Unforgeability holds: a tolerated v1 file still cannot become a persisted
+    scope without the reducer and a confirmed `buildPreferences`.
+  - PROPOSED UNTICKED, always. Nothing excluded, modifier off. Sharper reason
+    than the usual under-propose policy: it makes the migration
+    BEHAVIOUR-NEUTRAL — re-confirming without touching the section reproduces
+    the previous discovery exactly.
+  - A1 IS COMPOSITIONAL, NOT BUDGETARY. Measured 2026-08-06: both arms passed
+    EXACTLY 25 because `maxPerRun` binds in both. The gate REALLOCATES the 25
+    slots. It does not raise yield, and it does not save a single Gemini call.
+    Any earlier framing in this wave — including in the wave prompt — that it
+    "raises effective yield" is MEASURABLY WRONG.
+  - THE RULING IS SCOPED TO `maxPerRun: 25`. 171 of 323 items were gated, but
+    only 17 were in the control's passed 25 — the other 154 sit in the
+    `beyond_k`/`below_floor` tail BECAUSE k IS SMALL. All 17 were genuine
+    Senior/Staff/EM/Senior-PM titles (zero false positives in the visible set),
+    which is why A1 SHIPS AS BUILT. A LARGER `maxPerRun` EXPOSES MORE OF THE
+    154, including the six body-prose false positives named in
+    docs/known-issues.md #23. IF `maxPerRun` EVER CHANGES, RE-RUN THIS
+    MEASUREMENT BEFORE TRUSTING THE GATE AT THE NEW k.
+  - A3 SHIPS WIRED AND `enabled: false` (operator ruling). himalayas/freehire/
+    adzuna compose the modifier inside `searchUrlFor`, DOWNSTREAM of
+    `deriveQueryTerms` — it decorates a query string and never adds one, so
+    MAX_QUERY_TERMS (15), one-page-per-query and drop-and-report are intact BY
+    CONSTRUCTION. remotive has no query parameter at all; hn-hiring's scope
+    drives its PREFILTER (an OR — a modifier would WIDEN it); company_board
+    sources send no query. V2 measured no collapse on Himalayas (227→189
+    fetched, 83% retained) BUT ran with exclusions ACTIVE IN BOTH ARMS, so it
+    measures the modifier's MARGINAL effect on top of A1, not A3 in isolation.
+    ADZUNA'S 4-TOKEN QUERY (`<term> remote entry level`) IS UNPROBED and is the
+    open collapse risk — probe it before enabling.
+  - SECOND SIGHTING of the GTM-vs-engineering condition: with exclusions
+    active, ClickHouse *Commercial Account Executive* ×2 and Chainguard *Field
+    Marketing Manager - CEUR* floated into the passed 25. They did not become
+    more relevant — engineering roles above them were removed. Direct
+    consequence of A1 being compositional. docs/known-issues.md #25. NOT acted
+    on; do not change the vocabulary, prerank config, or the rubric for it.
+  - NOTED, NOT BUILT: `runStage3` returns COUNTS only — no items, no
+    fingerprints — and `processItem` is never called in a dry run, so run-level
+    corpus membership is not observable. Verifying the passed SETS needed a
+    record/replay harness in `scripts/verify-seniority.ts`. Returning deduped
+    fingerprints from the orchestrator would remove that need; out of scope.
+  - 96 new tests (2 new files: scope/tests/seniority.test.ts,
+    stage3/tests/seniority-modifier.test.ts). Suite 934 → 1030 (76 → 78 files).
+    Zero diff to the 12 engines, pipeline, persistence, `src/discovery/prerank/`
+    (NOT ONE LINE — DEFAULT_VOCABULARY untouched; prerank receives a richer
+    vocabulary through the injected-data seam and learns nothing about
+    seniority), orchestrator/sources.ts, the ACTIVATED_SOURCES allow-list, the
+    registry, or any Stage-3 frame file.
+- Test count: 1030 passing (78 test files) — `vitest run`
+  (re-verified 2026-08-06. NOTE: this entry read "924 passing (74 files)" until
+  then and was stale by 10 tests / 2 files — the 2026-08-01 greenhouse-seam
+  additions were never recorded here. Measure before quoting it.)
 - No tsconfig.json by design — tsx direct execution throughout
 - Test framework: vitest (`npm test` = `vitest run`)
 
@@ -1004,7 +1091,16 @@
     fix is the Airtable row context menu → "Delete records", not cell
     clearing. This has no code-level consequence — it is an operator-tooling
     lesson, not a defect in any engine, adapter, or the persistence layer.
+- SENIORITY DIMENSION: COMPLETE 2026-08-06, staged, NOT PUSHED. See the
+  "SENIORITY DIMENSION COMPLETE" entry in Project state above for the schema,
+  the migration split, the two consumption sites and every measured number.
+  preferences.json was re-confirmed by the operator (v2, all 13 fields carried
+  forward, all five seniority levels excluded, modifier off) — created by a real
+  `oaos setup-scope`, never by a session. Live-verified per the bounded policy:
+  40 requests total, zero Gemini (V1 greenhouse A/B with record+replay, V2
+  himalayas modifier A/B, V3 passed-set diff over one held corpus).
 - ALSO STILL OPEN, unchanged: Wave 7 registry expansion (the locked 8-entry
   COMPANY_REGISTRY, incl. the logged ClickHouse-runs-Ashby finding) and the
   local web UI (D16), neither started. Freelance/gig discovery remains deferred
-  by locked decision.
+  by locked decision. Adzuna's 4-token query is unprobed (see the seniority
+  entry) and A3 stays `enabled: false` until it is.
