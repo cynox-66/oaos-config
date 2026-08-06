@@ -664,7 +664,24 @@
   stale entry after a deactivation. **PROTOCOL FOR EVERY FUTURE ACTIVATION: add
   the name to `ACTIVATED_SOURCES` AND flip `enabled: true` in sources.ts IN THE
   SAME COMMIT** (deactivation removes both, together). That pairing is the whole
-  mechanism. Currently activated: `greenhouse`.
+  mechanism. Currently activated: `greenhouse`, `himalayas`.
+- ACTIVATION PROTOCOL, SECOND REQUIREMENT (added 2026-08-06 after the third
+  instance of one defect class in a week): **EVERY ACTIVATION MUST INCLUDE A
+  POST-RUN FIELD-COMPLETENESS CHECK ON THE WRITTEN RECORDS** — company,
+  description_norm, remote, location, comp_basis, completeness. Read them back
+  from Airtable after the first real run and confirm each is populated.
+  - WHY THIS IS PROTOCOL, NOT A LESSON IN A WAVE ENTRY: **a source's first
+    activation is the only moment its normalization contract is tested.**
+    Three instances, one class, one week — Greenhouse `content` → description
+    and Greenhouse `location.name` → location (both mapped 2026-08-01, commit
+    53a2fe2, after ~5 days of runs writing empty descriptions), and Himalayas
+    `companyName` → company (found 2026-08-06, known-issues #28, UNFIXED).
+    Every one is the same shape: the data is present in the payload under a key
+    the reader does not check, and everything downstream degrades quietly.
+  - **FIXTURES STRUCTURALLY CANNOT CATCH THIS** — the sibling of #21. A fixture
+    is written from the same reading of the payload as the adapter, so it
+    encodes the misreading and passes. Only real records read back after a real
+    run expose it. A green suite is not evidence about this class.
 - WAVE 8 (SOURCE ACTIVATION) — IN PROGRESS. Dates, not SHAs: the activation
   commits are described by date deliberately. An earlier session's
   dangling-SHA references were cleaned up during the 2026-07-29 working-tree
@@ -968,18 +985,32 @@
     an opportunity. **#27 NEW** — `COUNTRY_NAME_TO_ISO` lacks Barbados and
     Bahamas, which fail open under `unresolved: "pass"`; one Barbados-only
     posting reached the passed set.
-  - **#28 NEW AND THE MOST CONSEQUENTIAL: Himalayas items normalize with an
-    EMPTY company.** The payload carries `companyName` (camelCase);
-    `adapters/job_board.ts` reads only snake_case forms; all 7 persisted
-    Himalayas records have NO Company field. Same defect class as the
-    2026-08-01 Greenhouse content/location mapping bug, invisible until this
-    activation. It makes those records unusable for outreach (Engines 5/7 and
-    researchOpportunity are all company-keyed) and degrades the fingerprint to
-    sha1(""|role|host), so distinct companies sharing a role title collapse.
-    NOT FIXED: the one-line fix changes fingerprints, which breaks
-    update-in-place for the 7 existing records — it needs a supervised session
-    with a migration story. **Read #28 before interpreting any Himalayas
-    record or re-running this source.**
+  - **#28 NEW — TOP OF THE DEFECT QUEUE, AHEAD OF THE TITLE-SCOPED NEGATIVE
+    GATE. Himalayas items normalize with an EMPTY company.** The payload
+    carries `companyName` (camelCase); `adapters/job_board.ts` reads only
+    snake_case forms; all 7 persisted Himalayas records have NO Company field.
+    Same defect class as the 2026-08-01 Greenhouse content/location mapping
+    bug, invisible until this activation.
+    - **WHY IT OUTRANKS THE TITLE-SCOPED GATE (#23): it corrupts the
+      FINGERPRINT.** `sha1("" | role | himalayas.app)` collapses EVERY
+      Himalayas company that shares a role title into one opportunity. 25 of
+      227 items were dropped as within-run duplicates on the first run; the
+      genuine share is **UNKNOWN AND UNRECOVERABLE** — the collapsed items were
+      never written, so there is nothing to audit after the fact. The loss is
+      silent, it compounds on every run, and it worsens the longer Himalayas
+      stays active. **#23 costs visible opportunities; #28 costs invisible
+      ones.** That is the whole ordering argument.
+    - It also makes the written records unusable for outreach — Engines 5/7 and
+      `researchOpportunity` are all company-keyed.
+    - **THE FIX IS NOT A ONE-LINE CHANGE. It requires a SUPERVISED MIGRATION
+      SESSION, and the migration story comes BEFORE the key addition.** Adding
+      `companyName` to the key list re-fingerprints the 7 records already
+      written: update-in-place breaks and the next run duplicates them. Anyone
+      who "just adds the key" ships a second defect on top of the first.
+    - Himalayas STAYS ACTIVATED meanwhile (operator ruling 2026-08-06):
+      deactivating hides the defect and buys nothing, the fix needs its own
+      session either way, and the source's geo and health behaviour are
+      correct. **Read #28 before interpreting any Himalayas record.**
 - Test count: 1120 passing (83 test files) — `vitest run`
   (re-verified 2026-08-06 after wave G1; the pre-G1 baseline 1030/78 was
   re-measured the same day in a clean worktree of main and confirmed.

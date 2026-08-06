@@ -842,7 +842,7 @@ subset — a design decision, not a patch.
 
 ---
 
-## 28. Himalayas items normalize with an EMPTY company — `companyName` is never read (LOG ONLY, materially affects persisted records)
+## 28. Himalayas items normalize with an EMPTY company — `companyName` is never read (**TOP OF THE DEFECT QUEUE** — ahead of #23's title-scoped gate)
 
 Found in the first real Himalayas run (2026-08-06, Wave 8), confirmed at three
 levels:
@@ -880,10 +880,23 @@ each) against a 7.72/item projection derived from a Greenhouse-only run. A
 company-less item may skip the research call. Correlation only — no mechanism
 was traced, and it must not be reported as a finding without one.
 
-**Not fixed.** The fix is a one-line key-list addition, but `job_board.ts` is
-inside a frozen engine, the key list is shared by every job_board source, and
-changing what `company` resolves to **changes fingerprints**, which breaks
-update-in-place for the 7 existing records and creates duplicates on the next
-run. That needs a supervised session with a migration story — exactly the
-`normalizeRole` hazard already recorded in the Track-2 duplicate analysis.
-Do NOT fix opportunistically.
+**Why this outranks #23's title-scoped negative gate** (operator ruling
+2026-08-06): it corrupts the **fingerprint**. `sha1("" | role | himalayas.app)`
+collapses every Himalayas company sharing a role title. The 25 items dropped as
+duplicates on the first run cannot be audited — they were never written, so the
+genuine share is unknown and unrecoverable. The loss is silent, compounds every
+run, and worsens the longer the source stays active. #23 costs *visible*
+opportunities; #28 costs *invisible* ones.
+
+**Not fixed, and it is NOT a one-line change.** It requires a **supervised
+migration session, and the migration story comes before the key addition.**
+`job_board.ts` is inside a frozen engine, the key list is shared by every
+job_board source, and changing what `company` resolves to **changes
+fingerprints** — which breaks update-in-place for the 7 existing records and
+duplicates them on the next run. Adding the key without the migration ships a
+second defect on top of the first. Same hazard already recorded for
+`normalizeRole` in the Track-2 duplicate analysis. Do NOT fix opportunistically.
+
+**Himalayas stays activated meanwhile** (operator ruling 2026-08-06):
+deactivating hides the defect, buys nothing, and the fix needs its own session
+regardless; the source's geo and health behaviour are correct.
