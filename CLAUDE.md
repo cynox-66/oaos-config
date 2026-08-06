@@ -847,10 +847,78 @@
     vocabulary through the injected-data seam and learns nothing about
     seniority), orchestrator/sources.ts, the ACTIVATED_SOURCES allow-list, the
     registry, or any Stage-3 frame file.
-- Test count: 1030 passing (78 test files) — `vitest run`
-  (re-verified 2026-08-06. NOTE: this entry read "924 passing (74 files)" until
-  then and was stale by 10 tests / 2 files — the 2026-08-01 greenhouse-seam
-  additions were never recorded here. Measure before quoting it.)
+- GEO ELIGIBILITY DIMENSION COMPLETE (2026-08-06, wave G1) — schema v3 + the
+  first geo filter. Branch feat/geo-eligibility, HELD AT COMMIT (not merged,
+  not pushed). Read src/discovery/scope/README.md (v3 section) and
+  research/phase1-eligibility/ (the research session that specified it, incl.
+  FINDINGS.md §4 operator rulings Q1–Q8) before touching any of it.
+  - WHAT IT IS: `Preferences.geo` — the operator's SOURCE-AGNOSTIC eligibility
+    (eligible_countries ISO alpha-2 / worldwide_ok / unresolved pass|gate;
+    `null` = confirmed off = v2-identical behaviour) — plus
+    `Preferences.role_types` (SCHEMA ONLY, gate deliberately not built, Q4).
+    `src/discovery/geo/` maps each source's own vocabulary onto it
+    (greenhouse location.name; himalayas locationRestrictions; freehire
+    countries/regions; remotive candidate_required_location; adzuna
+    structural-IN; everything else `unknown_source`). The orchestrator
+    partitions the deduped batch BEFORE prerank; ineligible items never spend
+    a prerank slot or a Gemini call. MEMBERSHIP TESTS ONLY, never list-length
+    heuristics (the Hostaway 148-country-EMEA finding). `unknown_source`
+    ALWAYS passes, reported loudly by name, independent of the unresolved
+    policy (ruling Q2) — it is a different failure class from unresolved.
+  - THE Q4 ASYMMETRY, RULED — do not "fix" it in either direction: seniority
+    REQUIRES level completeness (closed set, confirmed complete in one wave);
+    role_types MUST NOT (absence = never-confirmed-therefore-never-gated, so
+    config may gain ids across waves without invalidating any v3 file; a
+    gained id surfaces as `<NEW>` and is adopted only explicitly).
+  - MIGRATION: v1/v2 files are REJECTED on consumption with an actionable
+    message; `loadBaseline` carries everything forward for `setup-scope`
+    (geo/role_types tri-state: undefined pre-v3 / null confirmed-off /
+    object). G1 landing bricks Stage 3 until one interactive re-confirmation
+    — D15 working as designed. The operator re-confirmed 2026-08-06 (v3, 13
+    fields, all five seniority levels excluded, geo=IN/worldwide-ok/pass,
+    role_types untouched).
+  - LIVE-MATCHES-REPLAY, THE VERIFICATION HEADLINE: the live Greenhouse
+    dry-run through the geo filter matched the same-day captured-bytes replay
+    BYTE-FOR-BYTE on every count. That validates the record/replay harness
+    against production and retroactively strengthens every offline conclusion
+    in research/phase1-eligibility/.
+  - THE GREENHOUSE VERDICT, PLAINLY: 446 fetched → 324 deduped → 8 eligible →
+    4 passed, of which 3 are GTM roles (Track 2d). G1 DID NOT FIX GREENHOUSE;
+    IT REVEALED THAT THE FOUR REGISTERED BOARDS STRUCTURALLY CANNOT SERVE AN
+    INDIA-BASED OPERATOR. The filter is correct; the source is wrong. A future
+    reader seeing "446 → 4" without this sentence will assume a defect. This
+    finding drives Q7 (source mix — Himalayas activation next, then
+    Workday/Red Hat 19 remote-India, Ashby/SigNoz, registry expansion with an
+    India lens). Himalayas measured 18/200 eligible (9%) with 7 passed,
+    seniority-clean — the first run whose entire passed set is plausibly
+    actionable.
+  - #23 AT THE NEW REGIME: the seniority gate's "correct at k=25" ruling was
+    measured when maxPerRun bound and the gated items sat in the beyond_k
+    tail. Post-G1, maxPerRun does NOT bind (geo-arm prerank: 9 in → 4 passed,
+    beyond_k 0, below_floor 0), the tail is gone, and every seniority gate is
+    a directly visible loss (5 of 9 geo-eligible items gated negative_term).
+    The measurement is NOT invalidated — it is UNMEASURED at the new regime.
+  - IDF MARGIN, forward-looking: the homogeneous fallback did NOT fire in the
+    geo arm (maxAchievable 2.78 > 0) but the margin is thin — 3 of 9 present
+    terms (observability, data, platform) sat at idf=0, ranking rested on 6
+    terms. Combined multi-source batches will shift composition; recognize
+    this rather than rediscovering it.
+  - TWO RECORDED SIMPLIFICATIONS vs the Step-1 plan: (1) no offices[]
+    corroboration — the census-derived city table subsumes every observed
+    bare-city case and Track 1b measured offices as occasionally stale per
+    sibling; (2) geo counts render in the run-level Geo block, not as
+    source-table columns.
+  - 90 new tests (5 new files: geo countries/map, scope geo-schema/
+    geo-reducer, orchestrator geo-filter; + geo block cases in
+    cli/tests/stage3.test.ts). Zero diff to src/discovery/prerank/ (NOT ONE
+    LINE), the 12 engines, pipeline, persistence, orchestrator/sources.ts,
+    ACTIVATED_SOURCES, or stage3/registry.ts — audited against the Q3
+    authorization at Step 3. Step-2 live cost: 22 requests (greenhouse 8 per
+    #16's 2×, himalayas 13+1), zero Gemini, zero writes.
+- Test count: 1120 passing (83 test files) — `vitest run`
+  (re-verified 2026-08-06 after wave G1; the pre-G1 baseline 1030/78 was
+  re-measured the same day in a clean worktree of main and confirmed.
+  Standing note: this entry has gone stale twice — measure before quoting it.)
 - No tsconfig.json by design — tsx direct execution throughout
 - Test framework: vitest (`npm test` = `vitest run`)
 
@@ -1099,8 +1167,22 @@
   `oaos setup-scope`, never by a session. Live-verified per the bounded policy:
   40 requests total, zero Gemini (V1 greenhouse A/B with record+replay, V2
   himalayas modifier A/B, V3 passed-set diff over one held corpus).
+- GEO ELIGIBILITY (wave G1): COMPLETE 2026-08-06, on feat/geo-eligibility,
+  HELD AT COMMIT — not merged, not pushed, awaiting operator instruction. See
+  the "GEO ELIGIBILITY DIMENSION COMPLETE" entry in Project state for the
+  full record (the Greenhouse verdict, the #23 regime note, the IDF margin,
+  the two simplifications). The eligibility research session's artifacts live
+  in research/phase1-eligibility/ (UNTRACKED — deliberately not committed with
+  the wave; the operator decides if/where they land): FINDINGS.md + five track
+  docs + G1 plan/status docs + raw captures + replay scripts. Operator rulings
+  from that session still queued: Q5 Himalayas activation (sequenced after G1
+  merges; allow-list protocol applies), Q6 A3's Adzuna exclusion (authorized,
+  unbuilt — Adzuna 4-token collapse CONFIRMED 0-results, probe ledger in
+  track4), R2 role-type gate (schema shipped, gate awaits post-geo residual
+  evidence), S1 freehire request-side filter (awaits page-waste evidence).
 - ALSO STILL OPEN, unchanged: Wave 7 registry expansion (the locked 8-entry
   COMPANY_REGISTRY, incl. the logged ClickHouse-runs-Ashby finding) and the
   local web UI (D16), neither started. Freelance/gig discovery remains deferred
-  by locked decision. Adzuna's 4-token query is unprobed (see the seniority
-  entry) and A3 stays `enabled: false` until it is.
+  by locked decision. A3 stays `enabled: false` (its Adzuna collapse risk is
+  now MEASURED — see the G1 entry — the one-line exclusion is authorized but
+  not yet built).
