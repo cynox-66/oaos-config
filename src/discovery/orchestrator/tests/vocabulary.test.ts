@@ -36,13 +36,15 @@ function seniority(excluded: string[] = [], entry_level_query_modifier = false):
 
 function preferences(fields: ScopeField[], seniorityPreference = seniority()): Preferences {
   return {
-    version: 2,
+    version: 3,
     generated_at: "2026-07-28T00:00:00.000Z",
     confirmed_at: "2026-07-28T00:05:00.000Z",
     fields,
     work_types: { job: true, internship: true, oss: true, freelance: false },
     remote_only: true,
     seniority: seniorityPreference,
+    geo: null,
+    role_types: [],
   };
 }
 

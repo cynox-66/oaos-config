@@ -82,7 +82,59 @@ export function renderState(state: ScopeState, newlyBacked: string[] = []): stri
   out.push(`  ${tick(state.work_types.job)} job    ${tick(state.work_types.internship)} internship    ${tick(state.work_types.oss)} oss    [ ] freelance (locked off in v1)`);
   out.push("  Remote-only: locked on in v1");
   out.push(renderSeniority(state));
+  out.push(renderGeo(state));
+  out.push(renderRoleTypes(state));
   return `${out.join("\n")}\n`;
+}
+
+/**
+ * Render the geo section. Pure.
+ *
+ * The section cannot be confirmed while active-and-empty (the reducer refuses
+ * `done`), so the render says what the two legitimate exits are instead of
+ * letting the operator discover the refusal by surprise.
+ */
+export function renderGeo(state: ScopeState): string {
+  const out: string[] = [];
+  const marker = state.geo.touched ? "" : "  <NEW IN v3>";
+  out.push(`\nGeo eligibility${marker}:`);
+  if (state.geo.off) {
+    out.push("  OFF — geo filtering disabled; discovery behaves exactly as before v3.");
+    out.push("  ('geo on' to re-activate)");
+    return out.join("\n");
+  }
+  out.push(
+    state.geo.countries.length === 0
+      ? "  eligible countries: (none yet — 'geo add IN' to add, or 'geo off' to disable)"
+      : `  eligible countries: ${state.geo.countries.join(", ")}`
+  );
+  out.push(`  ${tick(state.geo.worldwide_ok)} worldwide-remote postings count as eligible ('geo worldwide on|off')`);
+  out.push(
+    `  unresolved geo: ${state.geo.unresolved} — ${
+      state.geo.unresolved === "pass"
+        ? "unparseable postings pass, surfaced in run summaries"
+        : "unparseable postings are gated (dropped and reported)"
+    } ('geo unresolved pass|gate')`
+  );
+  return out.join("\n");
+}
+
+/**
+ * Render the role-type section. Pure. v3 ships the SCHEMA only — an exclusion
+ * here records intent; no gate consumes it yet, and the render says so.
+ */
+export function renderRoleTypes(state: ScopeState): string {
+  const out: string[] = [];
+  out.push("\nRole types — exclude these (recorded as intent; the gate is not built yet):");
+  state.role_types.forEach((type, i) => {
+    const flag = type.available.length > 0 ? "  <NEW TERMS>" : "";
+    out.push(`  rt${i + 1}. ${tick(type.excluded)} ${type.id}${flag}`);
+    out.push(`        terms: ${type.terms.join(", ")}`);
+    if (type.available.length > 0) {
+      out.push(`        available: ${type.available.join(", ")}   ('adopt rt${i + 1}' to include)`);
+    }
+  });
+  return out.join("\n");
 }
 
 /**
@@ -157,6 +209,21 @@ export function renderPreferences(preferences: Preferences): string {
   out.push(
     `Entry-level query modifier: ${preferences.seniority.entry_level_query_modifier ? "on" : "off"}`
   );
+
+  if (preferences.geo === null) {
+    out.push(`\nGeo eligibility: OFF (confirmed) — no geo filtering`);
+  } else {
+    out.push(`\nGeo eligibility:`);
+    out.push(`  eligible countries: ${preferences.geo.eligible_countries.join(", ")}`);
+    out.push(`  worldwide-remote counts as eligible: ${preferences.geo.worldwide_ok ? "yes" : "no"}`);
+    out.push(`  unresolved geo: ${preferences.geo.unresolved}`);
+  }
+
+  const excludedTypes = preferences.role_types.filter((t) => t.excluded);
+  out.push(`\nRole-type exclusions (intent only — no gate consumes these yet): ${excludedTypes.length}`);
+  for (const t of excludedTypes) {
+    out.push(`  [x] ${t.id}  →  ${t.terms.join(", ")}`);
+  }
   return `${out.join("\n")}\n`;
 }
 
@@ -168,6 +235,13 @@ Commands:
   s<number>       exclude / stop excluding that seniority level
   adopt s<number> take that level's newly available terms
   entry           toggle the entry-level query modifier
+  geo add <cc>    add an eligible country (ISO code, e.g. 'geo add IN')
+  geo remove <cc> remove an eligible country
+  geo worldwide on|off    whether worldwide-remote postings count as eligible
+  geo unresolved pass|gate    policy for unparseable geo
+  geo off | geo on        disable / re-enable geo filtering entirely
+  rt<number>      exclude / stop excluding that role type (schema only in v3)
+  adopt rt<number> take that role type's newly available terms
   done            confirm and save to preferences.json
   quit            abort — nothing is written
   help            show this
@@ -222,6 +296,15 @@ async function runInteractive(args: string[]): Promise<void> {
         `Your field ticks and work types are carried forward below. The new Seniority\n` +
         `section is proposed with nothing excluded, so confirming without touching it\n` +
         `reproduces your current discovery behaviour exactly.\n`
+    );
+  }
+  if (existing && existing.geo === undefined) {
+    out.write(
+      `\nThat file is schema v${existing.version}, which predates the geo dimension (v3).\n` +
+        `Everything you previously confirmed is carried forward below. The new Geo\n` +
+        `section starts empty: add your eligible countries ('geo add IN') or disable\n` +
+        `it explicitly ('geo off') — 'done' will refuse until you do one of the two.\n` +
+        `The Role-types section is proposed with nothing excluded (schema only in v3).\n`
     );
   }
   if (proposal.newly_backed.length > 0) {
@@ -280,6 +363,13 @@ async function runInteractive(args: string[]): Promise<void> {
   out.write(
     `  entry-level query modifier: ${preferences.seniority.entry_level_query_modifier ? "on" : "off"}\n`
   );
+  out.write(
+    preferences.geo === null
+      ? "  geo filtering: off (confirmed)\n"
+      : `  geo: ${preferences.geo.eligible_countries.join(", ")} · worldwide ${preferences.geo.worldwide_ok ? "ok" : "not ok"} · unresolved ${preferences.geo.unresolved}\n`
+  );
+  const excludedTypes = preferences.role_types.filter((t) => t.excluded).map((t) => t.id);
+  out.write(`  role types excluded (intent only): ${excludedTypes.join(", ") || "(none)"}\n`);
   void args;
 }
 

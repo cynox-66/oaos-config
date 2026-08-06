@@ -31,7 +31,7 @@ afterEach(() => {
 
 function preferences(over: Partial<Preferences> = {}): Preferences {
   return {
-    version: 2,
+    version: 3,
     generated_at: "2026-07-20T12:00:00.000Z",
     confirmed_at: "2026-07-20T12:05:00.000Z",
     fields: [
@@ -70,6 +70,8 @@ function preferences(over: Partial<Preferences> = {}): Preferences {
       })),
       entry_level_query_modifier: false,
     },
+    geo: { eligible_countries: ["IN"], worldwide_ok: true, unresolved: "pass" },
+    role_types: [],
     ...over,
   };
 }
@@ -120,6 +122,8 @@ describe("renderState (pure)", () => {
       })),
       entry_level_query_modifier: false,
     },
+    geo: { countries: ["IN"], worldwide_ok: true, unresolved: "pass", off: false, touched: true },
+    role_types: [],
   });
   const text = renderState(state, ["Security"]);
 
@@ -231,6 +235,9 @@ describe("end-to-end over the pure chain", () => {
       supporting_evidence_ids: [],
     });
     state = reduceScope(state, { kind: "toggle_work_type", key: "internship" });
+    // The v3 geo section refuses `done` while active-and-empty — the operator
+    // must either add an eligible country or explicitly `geo off`.
+    state = reduceScope(state, { kind: "geo_add_country", code: "in" });
     state = reduceScope(state, { kind: "confirm" });
 
     const prefs = buildPreferences(state, {
@@ -263,6 +270,12 @@ describe("end-to-end over the pure chain", () => {
       oss: true,
       freelance: false,
     });
+    expect(reloaded.geo).toEqual({
+      eligible_countries: ["IN"],
+      worldwide_ok: true,
+      unresolved: "pass",
+    });
+    expect(reloaded.role_types.every((t) => !t.excluded)).toBe(true);
   });
 
   it("a re-run of derivation over the saved file preserves the operator's ticks", () => {
@@ -295,6 +308,8 @@ describe("seniority rendering (pure)", () => {
       })),
       entry_level_query_modifier: false,
     },
+    geo: { countries: ["IN"], worldwide_ok: true, unresolved: "pass", off: false, touched: true },
+    role_types: [],
   });
   const text = renderState(state);
 

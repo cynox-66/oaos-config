@@ -384,6 +384,26 @@ export function formatStage3Summary(s: Stage3RunSummary): string {
     lines.push(`  ${x.name.padEnd(14)} ${why}`);
   }
 
+  if (s.geo != null) {
+    const unresolvedNote =
+      s.geo.unresolvedPolicy === "pass"
+        ? `${s.geo.unresolved} unresolved (passed)`
+        : `${s.geo.unresolved} unresolved (GATED)`;
+    lines.push(
+      "",
+      `  Geo: ${s.geo.total} in → ${s.geo.eligible} eligible, ${s.geo.ineligible} ineligible, ` +
+        unresolvedNote
+    );
+    // Unmapped sources bypass geo filtering entirely (ruling Q2) — that has
+    // to be loud and NAMED, never a silent pass-through.
+    if (s.geo.unknownSource > 0) {
+      lines.push(
+        `  ⚠ Geo: ${s.geo.unknownSource} item(s) from source(s) with NO geo mapper passed ` +
+          `unfiltered: ${s.geo.unknownSources.join(", ")}`
+      );
+    }
+  }
+
   if (s.prerank !== null) {
     const reasons = Object.entries(s.prerank.gatedByReason)
       .filter(([, n]) => n > 0)

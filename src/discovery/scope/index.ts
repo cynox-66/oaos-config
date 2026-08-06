@@ -29,7 +29,12 @@ export {
 } from "./seniority";
 
 export type {
+  GeoPreference,
+  GeoSectionState,
   Preferences,
+  RoleTypeId,
+  RoleTypeSelection,
+  RoleTypeState,
   ScopeBaseline,
   ScopeField,
   WorkTypeSelection,
@@ -49,3 +54,10 @@ export type {
   SeniorityProposal,
 } from "./types";
 export type { SeniorityLevelDefinition } from "./seniority";
+export {
+  ROLE_TYPES,
+  ROLE_TYPE_IDS,
+  roleType,
+  roleTypeExclusionTerms,
+} from "./role-types";
+export type { RoleTypeDefinition } from "./role-types";

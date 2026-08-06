@@ -19,12 +19,13 @@ export const SCOPE_VOCABULARY: readonly string[] = Object.keys(DOMAIN_KEYWORDS);
 /**
  * Schema version of preferences.json. Bumping requires a migration path.
  *
- * v1 → v2 added the seniority dimension. A v1 file is REJECTED with an
- * actionable message, never silently upgraded or defaulted: inferring a
- * seniority preference the operator never confirmed is exactly what D15
- * forbids. See preferences.ts `parsePreferences` / `parseBaseline`.
+ * v1 → v2 added the seniority dimension. v2 → v3 added geo eligibility and
+ * the role_types schema. An older file is REJECTED with an actionable
+ * message, never silently upgraded or defaulted: inferring a preference the
+ * operator never confirmed is exactly what D15 forbids. See preferences.ts
+ * `parsePreferences` / `parseBaseline`.
  */
-export const PREFERENCES_VERSION = 2 as const;
+export const PREFERENCES_VERSION = 3 as const;
 
 /** Default on-disk location, relative to the repo root. */
 export const DEFAULT_PREFERENCES_PATH = "preferences.json";

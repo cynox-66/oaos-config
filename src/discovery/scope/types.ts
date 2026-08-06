@@ -116,10 +116,97 @@ export interface SeniorityPreference {
   entry_level_query_modifier: boolean;
 }
 
+// ── Geo eligibility (v3) ────────────────────────────────────────────────────
+
+/**
+ * The operator's geographic eligibility — SOURCE-AGNOSTIC by ruling (G1
+ * Amendment B): this records where the OPERATOR can be hired from; per-source
+ * adapters in src/discovery/geo/ map each source's own vocabulary onto it.
+ *
+ * Eligibility is decided by MEMBERSHIP TESTS ONLY, never length heuristics
+ * (the Hostaway finding, track1-geo.md §1d: a 148-country list that is exactly
+ * "EMEA" excludes India — "long list" must never be read as "effectively
+ * worldwide").
+ */
+export interface GeoPreference {
+  /**
+   * ISO-3166 alpha-2, UPPERCASE, deduped. Must be non-empty when the section
+   * is active — an active geo section with no eligible country would gate
+   * everything, so the reducer refuses `done` on it.
+   */
+  eligible_countries: string[];
+  /**
+   * Whether explicitly-unrestricted postings (Himalayas' empty
+   * `locationRestrictions`, Remotive's "Worldwide", freehire's
+   * `regions:["global"]`) count as eligible.
+   */
+  worldwide_ok: boolean;
+  /**
+   * Policy when a mapper RAN and could not parse the value: "pass" keeps the
+   * item (surfaced as geo_unresolved), "gate" drops it (reported).
+   *
+   * This flag does NOT govern `unknown_source` — a source with no mapper at
+   * all. That class ALWAYS passes, reported separately (operator ruling Q2,
+   * 2026-08-06): under "gate", activating any unmapped source would silently
+   * gate 100% of it, and the OSS-program sources are grants/mentorships where
+   * country-of-residence eligibility does not apply as it does to employment.
+   */
+  unresolved: "pass" | "gate";
+}
+
+// ── Role types (v3 — SCHEMA ONLY; the gate is deliberately NOT built) ───────
+
+/**
+ * The closed set of role types the operator may exclude. Closed like
+ * seniority's levels (no `add` path — an operator-authored exclusion term
+ * would be an unreviewed entry in a future unconditional gate), but UNLIKE
+ * seniority the persisted file is NOT required to carry every id — see
+ * {@link RoleTypeSelection} for why that asymmetry is deliberate.
+ */
+export type RoleTypeId =
+  | "account_executive"
+  | "sales_development"
+  | "marketing"
+  | "customer_success"
+  | "recruiting"
+  | "solutions_engineering"
+  | "partner_engineering";
+
+/**
+ * One role type's confirmed exclusion state, with the expanded TITLE-scoped
+ * terms that exclusion will mean once the gate exists. Terms are persisted for
+ * the same reason seniority's are (negative, unconditional intent — see
+ * {@link SeniorityLevelSelection}).
+ *
+ * ── THE COMPLETENESS ASYMMETRY WITH SENIORITY IS DELIBERATE — do not "fix" it
+ * in either direction (operator ruling Q4, 2026-08-06). Seniority requires
+ * every config level present because a missing level would be an UNSTATED
+ * gate decision on a closed 5-level set confirmed complete in one wave.
+ * role_types is designed for config GROWTH across waves: for an exclusion
+ * gate, ABSENCE of an id can only mean "never confirmed, therefore never
+ * gated" — the fail-open, behaviour-neutral default. So config gaining a new
+ * id leaves every existing v3 file VALID (no forced re-confirmation); the new
+ * id surfaces as <NEW> at the next `oaos setup-scope` and is adopted only by
+ * an explicit toggle. What stays strict: unknown ids, duplicate ids,
+ * non-member terms, and excluded-with-no-terms all reject loudly.
+ */
+export interface RoleTypeSelection {
+  id: RoleTypeId;
+  /**
+   * Exclusion INTENT. As of v3 no gate consumes this — the schema ships ahead
+   * of the mechanism (ruling Q4) so a later gate build needs no version bump.
+   */
+  excluded: boolean;
+  /** The expanded title-scoped terms, exactly as confirmed. Members of this
+   *  id's config term list only. Non-empty whenever `excluded` is true. */
+  terms: string[];
+}
+
 /** The persisted discovery scope — single source of truth for what we search for. */
 export interface Preferences {
-  /** Bumped 1 → 2 by the seniority dimension. A v1 file is REJECTED, never upgraded. */
-  version: 2;
+  /** 1 → 2: seniority. 2 → 3: geo eligibility + role_types schema. An older
+   *  file is REJECTED with an actionable message, never upgraded. */
+  version: 3;
   /** ISO-8601 — when the field map was derived. */
   generated_at: string;
   /** ISO-8601 — set only after explicit operator confirmation. */
@@ -129,6 +216,16 @@ export interface Preferences {
   /** Locked literal `true` in v1 — remote-only is a charter decision. */
   remote_only: true;
   seniority: SeniorityPreference;
+  /**
+   * Null ⇔ the operator explicitly confirmed `geo off`: the dimension is
+   * confirmed-absent, the filter is disabled, and discovery behaves exactly
+   * as v2 did. A DECISION, not a default — the reducer refuses `done` while
+   * the geo section is active but has no eligible country.
+   */
+  geo: GeoPreference | null;
+  /** Q4: schema ships now (all-unexcluded ⇒ behaviour-neutral); the gate
+   *  ships in a later wave without a version bump. */
+  role_types: RoleTypeSelection[];
 }
 
 /**
@@ -152,6 +249,14 @@ export interface ScopeBaseline {
   work_types: WorkTypeSelection;
   /** Null when the file predates the seniority dimension (v1). */
   seniority: SeniorityPreference | null;
+  /**
+   * Tri-state: `undefined` when the file predates v3 (no geo decision exists
+   * to carry), `null` when a v3 file confirmed `geo off`, a GeoPreference
+   * when one was confirmed. The generator proposes fresh only for `undefined`.
+   */
+  geo?: GeoPreference | null;
+  /** Undefined when the file predates v3. */
+  role_types?: RoleTypeSelection[];
 }
 
 // ============================================================
@@ -192,6 +297,11 @@ export interface ScopeProposal {
    */
   newly_backed: string[];
   seniority: SeniorityProposal;
+  /** Fresh derivation: empty countries / worldwide on / unresolved "pass",
+   *  untouched. Baseline v3: carried forward, touched. */
+  geo: GeoSectionState;
+  /** Every config id, baseline exclusions/terms carried, all-unexcluded fresh. */
+  role_types: RoleTypeState[];
 }
 
 /**
@@ -218,6 +328,33 @@ export interface SeniorityProposal {
   entry_level_query_modifier: boolean;
 }
 
+/**
+ * The geo section as the operator edits it. `off` mirrors the persisted
+ * `geo: null` (dimension confirmed-absent). `touched` is presentation state —
+ * the `<NEW IN v3>` marker clears once the operator issues any geo command —
+ * and is never persisted.
+ */
+export interface GeoSectionState {
+  countries: string[];
+  worldwide_ok: boolean;
+  unresolved: "pass" | "gate";
+  off: boolean;
+  touched: boolean;
+}
+
+/**
+ * One role type as the operator edits it. `available` mirrors seniority's
+ * config-gained-terms pattern; a config-gained ID appears as a fresh
+ * unexcluded entry (see RoleTypeSelection on why that is safe).
+ */
+export interface RoleTypeState {
+  id: RoleTypeId;
+  excluded: boolean;
+  terms: string[];
+  /** Config terms not yet adopted. Never persisted. */
+  available: string[];
+}
+
 /** Evidence backing for a single term, computed against the inventory. */
 export interface FieldBacking {
   evidence_backed: boolean;
@@ -235,6 +372,8 @@ export interface ScopeState {
   fields: ScopeField[];
   work_types: WorkTypeSelection;
   seniority: SeniorityProposal;
+  geo: GeoSectionState;
+  role_types: RoleTypeState[];
   status: "editing" | "confirmed" | "aborted";
   /** Last acknowledgement or rejection, for the shell to print. */
   notice: string | null;
@@ -253,6 +392,16 @@ export type ScopeAction =
   | { kind: "toggle_seniority"; level: string }
   | { kind: "adopt_seniority_terms"; level: string }
   | { kind: "toggle_entry_modifier" }
+  /** `code` is a raw operator string; the reducer validates the ISO shape. */
+  | { kind: "geo_add_country"; code: string }
+  | { kind: "geo_remove_country"; code: string }
+  | { kind: "geo_set_worldwide"; on: boolean }
+  | { kind: "geo_set_unresolved"; policy: "pass" | "gate" }
+  /** `off: true` confirms the dimension absent; `off: false` re-activates it. */
+  | { kind: "geo_set_off"; off: boolean }
+  /** `id` is a plain string so an unknown id is a notice, not a throw. */
+  | { kind: "toggle_role_type"; id: string }
+  | { kind: "adopt_role_type_terms"; id: string }
   | { kind: "confirm" }
   | { kind: "abort" };
 
@@ -267,6 +416,13 @@ export type ScopeCommand =
   | { kind: "toggle_seniority"; level: string }
   | { kind: "adopt_seniority_terms"; level: string }
   | { kind: "toggle_entry_modifier" }
+  | { kind: "geo_add_country"; code: string }
+  | { kind: "geo_remove_country"; code: string }
+  | { kind: "geo_set_worldwide"; on: boolean }
+  | { kind: "geo_set_unresolved"; policy: "pass" | "gate" }
+  | { kind: "geo_set_off"; off: boolean }
+  | { kind: "toggle_role_type"; id: string }
+  | { kind: "adopt_role_type_terms"; id: string }
   | { kind: "confirm" }
   | { kind: "abort" }
   | { kind: "help" };

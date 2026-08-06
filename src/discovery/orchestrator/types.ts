@@ -7,7 +7,7 @@
 
 import type { RawItem } from "../../engines/normalization/types";
 import type { PrerankConfig, PrerankVocabulary } from "../prerank/types";
-import type { Preferences } from "../scope/types";
+import type { GeoPreference, Preferences } from "../scope/types";
 import type {
   CalendarEntry,
   SourceDeps,
@@ -118,6 +118,13 @@ export interface Stage3RunDeps {
   /** Merged over DEFAULT_PRERANK_CONFIG by the prerank module. */
   prerankConfig?: Partial<PrerankConfig>;
   health: HealthStore;
+  /**
+   * The operator's confirmed geo eligibility (v3). `null` means a confirmed
+   * `geo off`; `undefined` is treated identically (filter disabled) so every
+   * pre-G1 caller and test keeps its exact behaviour. Like `vocabulary`, the
+   * orchestrator never reads preferences.json — the CLI loads and passes.
+   */
+  geo?: GeoPreference | null;
   /** Real implementation is `writeCalendarEntries` (D18). */
   writeCalendar: (entries: CalendarEntry[]) => CalendarSinkResult;
   /** normalize → runPipeline → persist, for every preranked survivor. */
@@ -160,6 +167,13 @@ export interface SourceRunSummary {
   calendarRouted: number;
   /** Items dropped as within-run duplicate fingerprints. */
   deduped: number;
+  /** Items gated as geo-ineligible before prerank (0 when the filter is off). */
+  geoIneligible: number;
+  /** Items whose geo could not be parsed by a mapper that ran. Counted under
+   *  BOTH policies; whether they proceeded is the run-level policy field. */
+  geoUnresolved: number;
+  /** Items from a source with no geo mapper — always proceed (ruling Q2). */
+  geoUnknownSource: number;
   prerankPassed: number;
   prerankGated: number;
   /** Zero-filled for every GateReason present in this source's gated items. */
@@ -176,6 +190,20 @@ export interface Stage3RunSummary {
   /** From sourceDeps.now(), held for the whole run. */
   runTimestamp: string;
   sources: SourceRunSummary[];
+  /** Run-wide geo-filter counters; null when the filter is off (no confirmed
+   *  geo scope) or when no pipeline-sink item was fetched. */
+  geo: {
+    total: number;
+    eligible: number;
+    ineligible: number;
+    unresolved: number;
+    /** The policy applied to `unresolved` this run. */
+    unresolvedPolicy: "pass" | "gate";
+    unknownSource: number;
+    /** Source-table names whose items went through unmapped — named so the
+     *  operator sees WHICH sources bypass geo filtering (ruling Q2). */
+    unknownSources: string[];
+  } | null;
   /** Run-wide prerank counters; null when no pipeline-sink item was fetched. */
   prerank: {
     total: number;

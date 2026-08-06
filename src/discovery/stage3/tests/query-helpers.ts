@@ -50,13 +50,15 @@ export function preferencesFixture(
   seniority: SeniorityPreference = seniorityFixture()
 ): Preferences {
   return {
-    version: 2,
+    version: 3,
     generated_at: "2026-07-27T00:00:00.000Z",
     confirmed_at: "2026-07-27T00:00:00.000Z",
     fields: [...enabled.map((n) => field(n, true)), ...disabled.map((n) => field(n, false))],
     work_types: { job: true, internship: true, oss: true, freelance: false },
     remote_only: true,
     seniority,
+    geo: null,
+    role_types: [],
   };
 }
 
