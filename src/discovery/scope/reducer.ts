@@ -10,6 +10,7 @@
 // UI, let alone persisted.
 
 import { PREFERENCES_VERSION } from "./config";
+import { SENIORITY_LEVEL_IDS } from "./seniority";
 import type {
   Preferences,
   ScopeAction,
@@ -17,6 +18,7 @@ import type {
   ScopeField,
   ScopeProposal,
   ScopeState,
+  SeniorityProposal,
   WorkTypeKey,
 } from "./types";
 
@@ -26,11 +28,20 @@ function key(name: string): string {
   return name.toLowerCase().trim();
 }
 
+/** Deep copy of the seniority section, so no action ever mutates its input. */
+function copySeniority(seniority: SeniorityProposal): SeniorityProposal {
+  return {
+    levels: seniority.levels.map((l) => ({ ...l, terms: [...l.terms], available: [...l.available] })),
+    entry_level_query_modifier: seniority.entry_level_query_modifier,
+  };
+}
+
 /** Seed editing state from a derived proposal. Nothing is confirmed yet. */
 export function initialState(proposal: ScopeProposal): ScopeState {
   return {
     fields: proposal.fields.map((f) => ({ ...f, supporting_evidence_ids: [...f.supporting_evidence_ids] })),
     work_types: { ...proposal.work_types },
+    seniority: copySeniority(proposal.seniority),
     status: "editing",
     notice: null,
   };
@@ -109,6 +120,58 @@ export function reduceScope(state: ScopeState, action: ScopeAction): ScopeState 
       };
     }
 
+    case "toggle_seniority": {
+      const index = state.seniority.levels.findIndex((l) => l.level === key(action.level));
+      if (index === -1) {
+        return { ...state, notice: `No such seniority level: "${action.level}"` };
+      }
+      const seniority = copySeniority(state.seniority);
+      const level = seniority.levels[index];
+      level.excluded = !level.excluded;
+      return {
+        ...state,
+        seniority,
+        notice: level.excluded
+          ? `Excluding ${level.level} — gates any posting whose TEXT carries: ${level.terms.join(", ")}`
+          : `No longer excluding ${level.level}`,
+      };
+    }
+
+    case "adopt_seniority_terms": {
+      const index = state.seniority.levels.findIndex((l) => l.level === key(action.level));
+      if (index === -1) {
+        return { ...state, notice: `No such seniority level: "${action.level}"` };
+      }
+      if (state.seniority.levels[index].available.length === 0) {
+        return {
+          ...state,
+          notice: `${state.seniority.levels[index].level} has no new terms to adopt`,
+        };
+      }
+      const seniority = copySeniority(state.seniority);
+      const level = seniority.levels[index];
+      const adopted = [...level.available];
+      level.terms = [...level.terms, ...adopted];
+      level.available = [];
+      return {
+        ...state,
+        seniority,
+        notice: `Adopted ${adopted.length} new term(s) for ${level.level}: ${adopted.join(", ")}`,
+      };
+    }
+
+    case "toggle_entry_modifier": {
+      const seniority = copySeniority(state.seniority);
+      seniority.entry_level_query_modifier = !seniority.entry_level_query_modifier;
+      return {
+        ...state,
+        seniority,
+        notice: seniority.entry_level_query_modifier
+          ? "Entry-level query modifier ON — himalayas / freehire / adzuna query strings will narrow"
+          : "Entry-level query modifier OFF",
+      };
+    }
+
     case "confirm":
       return { ...state, status: "confirmed", notice: null };
 
@@ -122,7 +185,11 @@ export function reduceScope(state: ScopeState, action: ScopeAction): ScopeState 
  * unrecognized so the shell can print the help hint.
  *
  * Accepted: a field's 1-based number (toggle), `add <term>`, a work-type name,
- * `done`/`confirm`, `quit`/`abort`/`q`, `help`/`?`.
+ * `s<n>` (toggle a seniority level), `adopt s<n>`, `entry`, `done`/`confirm`,
+ * `quit`/`abort`/`q`, `help`/`?`.
+ *
+ * Seniority uses its own `s<n>` namespace so plain field numbers keep meaning
+ * exactly what they meant before this dimension existed — nothing renumbers.
  */
 export function parseScopeCommand(line: string, state: ScopeState): ScopeCommand | null {
   const input = line.trim();
@@ -132,6 +199,19 @@ export function parseScopeCommand(line: string, state: ScopeState): ScopeCommand
   if (lower === "help" || lower === "?") return { kind: "help" };
   if (lower === "done" || lower === "confirm") return { kind: "confirm" };
   if (lower === "quit" || lower === "abort" || lower === "q") return { kind: "abort" };
+  if (lower === "entry") return { kind: "toggle_entry_modifier" };
+
+  const adopt = /^adopt\s+s(\d+)$/i.exec(input);
+  if (adopt) {
+    const level = seniorityLevelAt(state, Number(adopt[1]));
+    return level === null ? null : { kind: "adopt_seniority_terms", level };
+  }
+
+  const seniority = /^s(\d+)$/i.exec(input);
+  if (seniority) {
+    const level = seniorityLevelAt(state, Number(seniority[1]));
+    return level === null ? null : { kind: "toggle_seniority", level };
+  }
 
   if (/^\d+$/.test(input)) {
     const index = Number(input) - 1;
@@ -149,10 +229,23 @@ export function parseScopeCommand(line: string, state: ScopeState): ScopeCommand
   return null;
 }
 
+/** The 1-based seniority level id at `n`, or null when out of range. */
+function seniorityLevelAt(state: ScopeState, n: number): string | null {
+  const index = n - 1;
+  if (index < 0 || index >= state.seniority.levels.length) return null;
+  return state.seniority.levels[index].level;
+}
+
 /**
  * Assemble the persisted {@link Preferences} from a CONFIRMED state. Throws if
  * the state was not confirmed — `confirmed_at` may only ever be stamped by an
  * explicit operator confirmation, so this is the one guarded constructor.
+ *
+ * This is also the sole stamper of the seniority dimension. The expanded TERMS
+ * are persisted, not just the level ticks: they drive an unconditional
+ * pre-scoring gate, so what the operator confirmed has to be recoverable from
+ * the file rather than re-derived from whatever config says later. `available`
+ * is dropped — an unadopted term was, by definition, not confirmed.
  */
 export function buildPreferences(
   state: ScopeState,
@@ -163,6 +256,14 @@ export function buildPreferences(
       `buildPreferences: refusing to build from status="${state.status}" — scope must be confirmed`
     );
   }
+  const known = new Set<string>(SENIORITY_LEVEL_IDS);
+  const unknown = state.seniority.levels.filter((l) => !known.has(l.level));
+  if (unknown.length > 0) {
+    throw new Error(
+      `buildPreferences: unknown seniority level(s) ${unknown.map((l) => l.level).join(", ")}`
+    );
+  }
+
   return {
     version: PREFERENCES_VERSION,
     generated_at: stamps.generated_at,
@@ -170,5 +271,13 @@ export function buildPreferences(
     fields: state.fields.map((f) => ({ ...f, supporting_evidence_ids: [...f.supporting_evidence_ids] })),
     work_types: { ...state.work_types, freelance: false },
     remote_only: true,
+    seniority: {
+      levels: state.seniority.levels.map((l) => ({
+        level: l.level,
+        excluded: l.excluded,
+        terms: [...l.terms],
+      })),
+      entry_level_query_modifier: state.seniority.entry_level_query_modifier,
+    },
   };
 }

@@ -12,14 +12,16 @@
 // would silently widen discovery scope, which D15 forbids.
 
 import { PROPOSED_WORK_TYPES, SCOPE_VOCABULARY } from "./config";
+import { SENIORITY_LEVELS } from "./seniority";
 import type {
   Evidence,
   FieldBacking,
-  Preferences,
+  ScopeBaseline,
   ScopeDeps,
   ScopeField,
   ScopeInputs,
   ScopeProposal,
+  SeniorityProposal,
   WorkTypeSelection,
 } from "./types";
 
@@ -64,7 +66,7 @@ function profileTerms(inputs: ScopeInputs): Set<string> {
 }
 
 /** Carry the operator's confirmed tick state forward across a re-run. */
-function baselineTicks(existing: Preferences | undefined): Map<string, boolean> {
+function baselineTicks(existing: ScopeBaseline | undefined): Map<string, boolean> {
   const map = new Map<string, boolean>();
   for (const field of existing?.fields ?? []) {
     map.set(normalizeTerm(field.name), field.enabled);
@@ -73,7 +75,7 @@ function baselineTicks(existing: Preferences | undefined): Map<string, boolean> 
 }
 
 /** Which fields were evidence-backed at the time of the last confirmation. */
-function baselineBacking(existing: Preferences | undefined): Set<string> {
+function baselineBacking(existing: ScopeBaseline | undefined): Set<string> {
   const set = new Set<string>();
   for (const field of existing?.fields ?? []) {
     if (field.evidence_backed) set.add(normalizeTerm(field.name));
@@ -99,6 +101,42 @@ function buildField(
     enabled,
     supporting_evidence_ids: backing.supporting_evidence_ids,
   };
+}
+
+/**
+ * Propose the seniority dimension.
+ *
+ * Fresh derivation: every level present, NOTHING excluded, modifier off, and
+ * the full config term expansion carried as `terms`. Under-proposing is policy
+ * here for a sharper reason than elsewhere in this module — a negative term is
+ * an unconditional pre-scoring gate, so a wrong pre-tick silently deletes
+ * opportunities the operator never sees, while a missed tick costs one
+ * keystroke. It also makes the v1 migration behaviour-neutral: an operator who
+ * re-confirms without touching this section gets exactly today's discovery.
+ *
+ * Re-run over a v2 baseline: the operator's exclusions, modifier, and confirmed
+ * TERMS all carry forward. Config terms the baseline does not carry surface as
+ * `available` — the second axis of the `newly_backed` pattern: shown, never
+ * auto-applied, adopted only by an explicit action. A term-list edit is a scope
+ * change, and D15 requires the operator to confirm scope changes.
+ *
+ * Re-run over a v1 baseline (`seniority === null`): proposed fresh.
+ */
+function deriveSeniority(existing: ScopeBaseline | undefined): SeniorityProposal {
+  const prior = existing?.seniority ?? null;
+
+  const levels = SENIORITY_LEVELS.map((definition) => {
+    const carried = prior?.levels.find((l) => l.level === definition.id) ?? null;
+    const terms = carried ? [...carried.terms] : [...definition.terms];
+    return {
+      level: definition.id,
+      excluded: carried ? carried.excluded : false,
+      terms,
+      available: definition.terms.filter((term) => !terms.includes(term)),
+    };
+  });
+
+  return { levels, entry_level_query_modifier: prior?.entry_level_query_modifier ?? false };
 }
 
 /**
@@ -154,5 +192,11 @@ export function deriveScope(inputs: ScopeInputs, deps: ScopeDeps): ScopeProposal
     ? { ...inputs.existing.work_types, freelance: false }
     : { ...PROPOSED_WORK_TYPES };
 
-  return { generated_at: deps.now, fields, work_types, newly_backed };
+  return {
+    generated_at: deps.now,
+    fields,
+    work_types,
+    newly_backed,
+    seniority: deriveSeniority(inputs.existing),
+  };
 }

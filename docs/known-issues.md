@@ -599,3 +599,139 @@ Not changed. Current behaviour produces good scoring results (Engine 2 reads
 truncated Notes field — the 1000-char cap only affects what a human sees in
 Airtable, not what gets scored). Recorded so nobody later wonders why longer
 postings don't visibly differ in Notes.
+
+---
+
+## 23. Prerank negative-term matching is whole-text, not title-scoped (LOG ONLY — measured harmless at k=25, see the V3 outcome below)
+
+The seniority dimension (Wave: Seniority, 2026-08-06) is the first feature to
+put anything into `PrerankVocabulary.negativeTerms` — it was `[]` from Wave 0
+until now. That list is consumed at exactly one place,
+`src/discovery/prerank/prerank.ts:102`:
+
+```ts
+if (vocabulary.negativeTerms.some((term) => termPresent(text, term))) {
+  preScoreGated.push({ item, reason: "negative_term", score: null });
+```
+
+Two properties of that line make the gate blunter than it looks:
+
+1. `text` is `extractText(item)` — **every string leaf of the item's payload to
+   depth 6, including the full description body**. It is not the title. A
+   posting that merely *mentions* a level ("you'll partner with senior
+   engineers", "reports to the Engineering Manager") is gated exactly as
+   readily as one that *is* that level.
+2. It is the second hard gate, evaluated **before** scoring. There is no
+   relevance floor and no top-K to recover from — a hit is unconditional.
+
+**Measured, 2026-08-06, live against the four activated Greenhouse boards** (V1
+and V3 of the seniority wave; all five levels excluded, corpus 445 fetched →
+323 deduped):
+
+- 171 of 323 items (53%) were gated `negative_term`; `senior` alone decided 145
+  of the 171 (85%).
+- Mechanically, 130 of the 171 carried the deciding term in the TITLE and 41 in
+  the body only. See #24 for why 41 is an upper bound, not a false-positive count.
+- Six items were plausible non-senior engineering roles gated on body prose
+  alone: Chainguard *Security Engineer*, ClickHouse *QA Engineer - Core
+  Database*, ClickHouse *Support Engineer - China*, Tailscale *Customer
+  Reliability Engineer*, Tailscale *Customer Support Engineer*, Tailscale
+  *Software Engineer, Strategic Projects*.
+
+**THE V3 OUTCOME — why this stays logged and was not fixed.** Only **17 of the
+171** gated items were in the control run's passed 25; the other 154 sat in the
+`beyond_k` / `below_floor` tail and would have been dropped anyway. All 17 were
+genuine Senior / Staff / Engineering-Manager / Senior-PM titles — **zero false
+positives in the visible set**, and none of the six body-prose cases above was
+among them. At `maxPerRun: 25` the hazard cost nothing a human would have seen.
+Operator ruling 2026-08-06: **A1 ships as built.**
+
+**This measurement is scoped to `maxPerRun: 25`.** The 154 sit in the tail
+*because k is small*. A larger budget exposes more of them, the six included.
+If `maxPerRun` ever changes, re-run this measurement before trusting the gate
+at the new k.
+
+**The durable fix, if it is ever needed, is a title-scoped negative gate.** That
+lives inside `src/discovery/prerank/`, which is frozen, and would require an
+operator ruling. Do not attempt to compensate by shortening the term lists —
+tuning a term list to improve a measurement is the failure mode the wave's
+verification existed to prevent.
+
+Related: hyphenated title forms are not covered, because `-` is a boundary
+character to `termPresent` — `"staff engineer"` does not match `staff-engineer`.
+Recorded, not worked around.
+
+---
+
+## 24. No `tsconfig.json` — type errors are structurally invisible to the suite (LOG ONLY)
+
+The repo runs `tsx` directly and `vitest` transpiles without typechecking, so
+nothing in `npm test` ever evaluates a type. A type error is not a failing
+test; it is nothing at all.
+
+Found concretely during the seniority wave: `src/discovery/stage3/tests/
+query-helpers.ts` had `origin: "vocabulary"` on its `ScopeField` fixture, but
+`FieldOrigin` is `"derived" | "operator_added"`. That literal was invalid from
+the day it was written (Wave 5) and the suite stayed green through every run
+since. Corrected to `"derived"` in this wave, in a file already being edited.
+
+Same class of blind spot as #21: the suite cannot see a category of defect, so
+"890 green" / "1030 green" is not evidence about it either way. **No typecheck
+gate was added this wave** — operator ruling. Recorded so the next session
+knows the guarantee the suite does and does not provide.
+
+**A second measurement artifact of the same family, recorded here rather than
+in #23 because it is about the classifier, not the gate.** The title-vs-body
+attribution in `scripts/verify-seniority.ts` tests the **deciding** term — the
+first match in vocabulary order — and `senior` sorts first. So an item whose
+title carries a later-sorting shipped term still gets classified "body only"
+when `senior` also appears in its body:
+
+- Grafana *Staff Software Engineer – Identity and Access* ×3 → deciding term
+  `senior`, though the title contains `staff software engineer`.
+- ClickHouse *Principal Software Engineer - Postgres` → same.
+- Chainguard *Sr. Product Marketing Manager* → title contains `sr.`.
+
+**41 body-only is therefore an UPPER BOUND on title-clean items, not a
+false-positive count.** By inspection ~14 of the 41 are this artifact. An exact
+"any shipped term anywhere in the title" count was not taken.
+
+---
+
+## 25. Non-engineering roles float into the visible set when engineering roles are removed from the top of the batch (LOG ONLY — SECOND SIGHTING)
+
+Prerank's vocabulary has **no engineering-vs-GTM discrimination**. Sales,
+marketing and customer-success postings at infrastructure companies share the
+domain terms that drive the score — *platform*, *cloud*, *customer*,
+*solutions*, *security*, *observability* — so they compete for top-K slots on
+the same footing as engineering roles.
+
+**Sighting 2 (2026-08-06, seniority wave V3).** With the seniority exclusions
+active, three clearly non-engineering roles were promoted into the passed 25
+that were not there under the control:
+
+- ClickHouse — *Commercial Account Executive*
+- ClickHouse — *Commercial Account Executive - Canada*
+- Chainguard — *Field Marketing Manager - CEUR*
+
+They did not become more relevant. Senior engineering roles were removed from
+above them and they floated up. This is a direct, expected consequence of A1
+being **compositional** (see the CLAUDE.md wave entry): the 25 slots are
+reallocated, and whatever ranks next takes the slot regardless of its kind.
+
+**Sighting 1 (2026-07-30, Wave 8) — cross-referenced deliberately.** A
+Chainguard *"Senior Partner Sales Engineer - Brazil"* scored 39 on quality and
+reached the top 25. That was tracked as a watch item and **closed 2026-08-04**
+when the role vanished from the table after the Greenhouse field-mapping and
+`stripHtml` fixes landed: with real descriptions in play, genuine engineering
+roles outscored it. **That closure was correct for its stated cause and is
+incomplete as a general finding.** The cause was empty `description_norm`; the
+underlying condition — that prerank cannot tell a GTM role from an engineering
+role — was never addressed and was simply masked by better content. Sighting 2
+shows it re-surfacing through a different mechanism.
+
+**Not fixed, and deliberately so.** No change was made to the prerank
+vocabulary, the prerank config, or the scoring rubric in response to this —
+operator ruling 2026-08-06, out of scope for the seniority wave. Recorded here
+so a third sighting is recognised as the same condition rather than
+re-diagnosed from scratch.

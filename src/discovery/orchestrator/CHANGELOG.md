@@ -152,3 +152,51 @@ volume. The homogeneous-batch fallback correctly did not trigger.
 - No query-net sources (Wave 5), no registry expansion (Wave 7).
 - No engine, pipeline, persistence, prerank, scope, or Stage-3
   frame/source/adapter file was modified.
+
+---
+
+## Seniority → negativeTerms (2026-08-06)
+
+`preferencesToVocabulary` now unions the confirmed seniority dimension's
+**persisted** terms into `negativeTerms`, alongside `DEFAULT_VOCABULARY`'s
+(empty today; the union is written honestly so it stays correct if that
+changes). Deduped and normalized to prerank's matching form; ordered by config
+level order so output is deterministic regardless of how the file was written.
+
+It reads the terms **persisted in `preferences.json`**, not the config
+expansion — a later config edit must not change discovery behaviour behind the
+operator's back. `domainTerms` and `roleTerms` are untouched.
+
+`src/discovery/prerank/` was **not opened**. Prerank is not told about
+seniority; it receives a richer `negativeTerms` list through the injected-data
+seam it has always had. `DEFAULT_VOCABULARY` is unmodified.
+
+The header's asymmetry note is updated: the `negativeTerms` half is closed, the
+`roleTerms` half remains open.
+
+### Measured, live, 2026-08-06
+
+Greenhouse, four activated boards, all five levels excluded, dry runs only:
+
+- 445 fetched → 323 deduped; 171 gated `negative_term`; `senior` decided 145.
+- **Both arms passed exactly 25** — `maxPerRun` binds in both. The gate is
+  **compositional**: it reallocates the 25 slots. It does not raise yield and
+  does not save a Gemini call.
+- **17 of the 171** were in the control's passed 25; the other 154 sat in the
+  `beyond_k` / `below_floor` tail. All 17 were genuine Senior/Staff/EM/
+  Senior-PM titles. **This is scoped to `maxPerRun: 25`** — a larger k exposes
+  more of the 154.
+
+### Observability gap found, not closed
+
+`Stage3RunSummary` carries counts only — no items, no fingerprints — and
+`processItem` is never called in a dry run, so run-level corpus membership is
+not observable. Verifying the passed *sets* required a record/replay harness in
+`stage3/scripts/verify-seniority.ts`. Returning deduped fingerprints from
+`runStage3` would remove that need; deliberately not built.
+
+### Not done here
+
+- `sources.ts` untouched: no `enabled` flag changed, `ACTIVATED_SOURCES`
+  unchanged. A3 ships wired and off.
+- No engine, pipeline, persistence, prerank, or Stage-3 frame file modified.

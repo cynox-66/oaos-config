@@ -56,3 +56,100 @@ builders, Wave 6 orchestration) read it; nothing else writes it.
 
 `preferences.json` has no consumer yet. Wave 5/6 feeds it to the per-source
 query builders and to the prerank gate's `vocabulary` input.
+
+---
+
+## Seniority dimension — schema v2 (2026-08-06)
+
+Adds the operator's first way to express **entry-level intent**. Before this,
+`orchestrator/vocabulary.ts` took `domainTerms` from `preferences.json` but
+`roleTerms` *and* `negativeTerms` from `DEFAULT_VOCABULARY`, so there was no
+seniority axis anywhere in confirmed scope. The negative-term half of that
+asymmetry is now closed. The `roleTerms` half remains open, by design and
+recorded in that file's header.
+
+### Shape
+
+`Preferences.seniority = { levels: [{ level, excluded, terms }],
+entry_level_query_modifier }`.
+
+- **Five levels, closed set** — `senior` / `staff` / `principal` / `lead` /
+  `management`. Unlike `fields`, there is deliberately **no `add` path**: an
+  operator-authored exclusion term would be an unreviewed entry in an
+  unconditional, pre-scoring gate.
+- **`entry_level_query_modifier` is a separate boolean**, not derived from
+  `levels`. Excluding a level filters what came back; the modifier rewrites what
+  third-party APIs are asked for and can collapse a result set. Different
+  consequences, so two confirmations.
+- A years-of-experience level was **considered and not built** — real phrasing
+  varies too widely to enumerate ("minimum of 10 years", "10-12 years", "a
+  decade of"), so any list would under-cover while still over-gating.
+
+### The expanded terms are persisted (operator ruling, overruling precedent)
+
+`ScopeField` persists a label (`"Kubernetes"`) and lets config expand it. That
+is right for a **positive** signal — worst case it matches more of what the
+operator wanted. Seniority expands a **negative, unconditional, pre-scoring**
+gate, whose worst case is silently deleting opportunities the operator never
+sees. A term-list edit is therefore a scope change, and D15 requires scope
+changes to be re-confirmed — which is only possible if the file records what was
+actually confirmed.
+
+Consequences, both intentional:
+
+- Config may **gain** terms freely. They surface as `available` /
+  `<NEW TERMS>` and enter the file only via an explicit `adopt s<n>`.
+- Config **removing** a term invalidates every file that persisted it, loudly.
+  A session that removes one owes the operator a migration.
+
+The validator checks **membership in the union of all levels' term lists**, not
+per-level equality, so a term that migrates between levels does not break
+existing files.
+
+### Migration: the split that makes the version bump survivable
+
+`PREFERENCES_VERSION` 1 → 2. A v1 file is **rejected with an actionable
+message**, never upgraded, defaulted, or coerced.
+
+The non-obvious part: `setup-scope` reads the existing file to carry the
+operator's ticks forward, so a strictly-rejecting read would make the one
+command that fixes a v1 file the one command that cannot open it — and the
+message's promise to preserve their ticks would be false. Hence:
+
+| reader | version | returns | used by |
+|---|---|---|---|
+| `parsePreferences` / `loadPreferences` | strictly 2 | `Preferences` | every discovery path |
+| `parseBaseline` / `loadBaseline` | 1 or 2 | `ScopeBaseline` | `setup-scope` only |
+
+`ScopeBaseline` is deliberately **not** a `Preferences`: a tolerated v1 file
+still cannot become a persisted scope without passing through the reducer and a
+confirmed `buildPreferences`. Everything other than the version literal is
+validated by the same strict code. Unforgeability is unchanged.
+
+### Proposed unticked, always
+
+Nothing excluded, modifier off — on a fresh derivation and on a v1 migration
+alike. Under-proposing is standing policy, but the reason is sharper here: a
+negative term is unconditional and pre-scoring, so a wrong pre-tick deletes
+opportunities invisibly while a missed tick costs one keystroke. It also makes
+the migration **behaviour-neutral** — re-confirming without touching the section
+reproduces the previous discovery exactly.
+
+### Interactive surface
+
+`s<n>` toggles a level, `adopt s<n>` takes its newly available terms, `entry`
+toggles the modifier. Seniority has its own `s`-prefixed namespace so plain
+field numbers keep meaning exactly what they meant before; nothing renumbers.
+Each level renders its exact terms next to it, with the whole-text warning
+inline — the operator is confirming a blunt instrument and is told so at the
+moment of confirmation.
+
+### The caveat that governs the term lists
+
+`negativeTerms` are matched against an item's **whole text**, body included, not
+its title, and the gate runs **before** scoring. See `seniority.ts`'s header and
+`docs/known-issues.md` #23. Measured live 2026-08-06: harmless at
+`maxPerRun: 25` (17 of 171 gated items were in the control's visible 25, all of
+them genuine senior titles), and **that result is scoped to k = 25**. Bare level
+words were rejected wherever they carry a non-seniority meaning — notably bare
+`sr`, which matches `sr-iov` because `-` is a boundary character.

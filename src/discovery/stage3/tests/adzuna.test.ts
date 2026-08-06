@@ -11,7 +11,7 @@ import { describe, expect, it } from "vitest";
 import { normalize } from "../../../engines/normalization";
 import { extractText } from "../../prerank/text";
 import { createAdzunaSource, ADZUNA_CONFIG } from "../sources/adzuna";
-import { fixedDeps, preferencesFixture, NOW } from "./query-helpers";
+import { fixedDeps, preferencesFixture, seniorityFixture, NOW } from "./query-helpers";
 
 const CREDENTIALS = { appId: "test-id", appKey: "test-key" };
 
@@ -183,5 +183,31 @@ describe("adzuna contract", () => {
     const health = await source().healthCheck(fixedDeps(body([])));
     expect(health.ok).toBe(true);
     expect(health.checkedAt).toBe(NOW);
+  });
+});
+
+describe("adzuna — entry-level query modifier (A3)", () => {
+  const withModifier = preferencesFixture(["Kubernetes", "Security"], [], seniorityFixture([], true));
+
+  it("composes a 3-clause what= — the term, ' remote', then the modifier", async () => {
+    const deps = fixedDeps(body([]));
+    await source(withModifier).fetch(deps);
+    expect(deps.requests[0]).toContain("what=kubernetes+remote+entry+level");
+  });
+
+  it("keeps ' remote' when the modifier is off", async () => {
+    const deps = fixedDeps(body([]));
+    await source().fetch(deps);
+    expect(deps.requests[0]).toContain("what=kubernetes+remote");
+    expect(deps.requests[0]).not.toContain("entry");
+  });
+
+  it("does NOT change the request count, or the page-1-only cap", async () => {
+    const off = fixedDeps(body([]));
+    const on = fixedDeps(body([]));
+    await source().fetch(off);
+    await source(withModifier).fetch(on);
+    expect(on.requests).toHaveLength(off.requests.length);
+    expect(on.requests.every((u) => u.includes("/search/1?"))).toBe(true);
   });
 });

@@ -3,7 +3,8 @@
 // Purpose: Shared fakes for the Wave 5 query_net source tests. Not a test file
 //          (no *.test.* in the name), so vitest does not collect it.
 
-import type { Preferences, ScopeField } from "../../scope/types";
+import { SENIORITY_LEVELS } from "../../scope/seniority";
+import type { Preferences, ScopeField, SeniorityPreference } from "../../scope/types";
 import type { SourceDeps } from "../types";
 
 export const NOW = "2026-07-28T12:00:00.000Z";
@@ -11,11 +12,30 @@ export const NOW = "2026-07-28T12:00:00.000Z";
 function field(name: string, enabled: boolean): ScopeField {
   return {
     name,
-    origin: "vocabulary",
+    // "derived", not "vocabulary": FieldOrigin has only "derived" |
+    // "operator_added". The old literal was invalid and survived because the
+    // repo has no tsconfig.json and vitest transpiles without typechecking
+    // (docs/known-issues.md #24).
+    origin: "derived",
     evidence_backed: true,
     aspirational: false,
     enabled,
     supporting_evidence_ids: ["C4-1"],
+  };
+}
+
+/** Every level present, nothing excluded — the shape a fresh confirmation makes. */
+export function seniorityFixture(
+  excluded: string[] = [],
+  entry_level_query_modifier = false
+): SeniorityPreference {
+  return {
+    levels: SENIORITY_LEVELS.map((level) => ({
+      level: level.id,
+      excluded: excluded.includes(level.id),
+      terms: [...level.terms],
+    })),
+    entry_level_query_modifier,
   };
 }
 
@@ -24,14 +44,19 @@ function field(name: string, enabled: boolean): ScopeField {
  * real preferences.json — tests must be disk-free, and D15 means no session
  * ever produces that file.
  */
-export function preferencesFixture(enabled: string[], disabled: string[] = []): Preferences {
+export function preferencesFixture(
+  enabled: string[],
+  disabled: string[] = [],
+  seniority: SeniorityPreference = seniorityFixture()
+): Preferences {
   return {
-    version: 1,
+    version: 2,
     generated_at: "2026-07-27T00:00:00.000Z",
     confirmed_at: "2026-07-27T00:00:00.000Z",
     fields: [...enabled.map((n) => field(n, true)), ...disabled.map((n) => field(n, false))],
     work_types: { job: true, internship: true, oss: true, freelance: false },
     remote_only: true,
+    seniority,
   };
 }
 

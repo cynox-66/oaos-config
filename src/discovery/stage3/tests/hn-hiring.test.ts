@@ -10,7 +10,7 @@
 import { describe, expect, it } from "vitest";
 import { createHnHiringSource, HN_CONFIG, threadSearchUrl } from "../sources/hn-hiring";
 import { decodeCommentText, liftCompany, prefilterComments } from "../query/hn-prefilter";
-import { fixedDeps, preferencesFixture, recordingDeps, NOW } from "./query-helpers";
+import { fixedDeps, preferencesFixture, recordingDeps, seniorityFixture, NOW } from "./query-helpers";
 import { normalize } from "../../../engines/normalization";
 
 const HIRING_ID = "48747976";
@@ -369,5 +369,27 @@ describe("liftCompany guards", () => {
 
   it("accepts a trailing period — 'Acme Inc.' is a company name", () => {
     expect(liftCompany("Acme Inc. | Role | Remote")).toBe("Acme Inc.");
+  });
+});
+
+describe("hn-hiring is NOT subject to the entry-level query modifier (A3)", () => {
+  // Scope drives HN's PREFILTER, not its two fixed requests. The prefilter is an
+  // OR over scope terms, so a modifier would WIDEN the filter — the opposite of
+  // the operator's intent — and the requests are unconditional either way.
+  const withModifier = preferencesFixture(["Kubernetes"], [], seniorityFixture([], true));
+
+  it("issues the same two requests with the modifier on", async () => {
+    const off = hnDeps();
+    const on = hnDeps();
+    await createHnHiringSource(HN_CONFIG, preferencesFixture(["Kubernetes"])).fetch(off);
+    await createHnHiringSource(HN_CONFIG, withModifier).fetch(on);
+    expect(on.requests).toEqual(off.requests);
+    expect(on.requests).toHaveLength(2);
+  });
+
+  it("never puts the modifier text into a request", async () => {
+    const deps = hnDeps();
+    await createHnHiringSource(HN_CONFIG, withModifier).fetch(deps);
+    expect(deps.requests.some((u) => u.includes("entry"))).toBe(false);
   });
 });

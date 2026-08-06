@@ -17,7 +17,7 @@ import {
   serializeRemotiveState,
   utcDay,
 } from "../query/remotive-state";
-import { fixedDeps, preferencesFixture, NOW } from "./query-helpers";
+import { fixedDeps, preferencesFixture, seniorityFixture, NOW } from "./query-helpers";
 
 const job = {
   id: 2091035,
@@ -245,5 +245,17 @@ describe("remotive state file posture", () => {
 
   it("utcDay rejects a non-instant instead of guessing", () => {
     expect(() => utcDay("not a date")).toThrow(RemotiveStateError);
+  });
+});
+
+describe("remotive is NOT subject to the entry-level query modifier (A3)", () => {
+  it("has no query surface for a modifier to reach — the URL is scope-independent", async () => {
+    const deps = fixedDeps(body([]));
+    await createRemotiveSource(REMOTIVE_CONFIG, createMemoryRemotiveStore()).fetch(deps);
+    expect(deps.requests[0]).toBe(remotiveUrl(REMOTIVE_CONFIG));
+    expect(deps.requests[0]).not.toContain("entry");
+    // Asserting the constructor takes no Preferences at all: faking a scope
+    // dependency here would misrepresent the API.
+    void preferencesFixture(["Kubernetes"], [], seniorityFixture([], true));
   });
 });

@@ -12,7 +12,17 @@
 
 import { readFileSync, writeFileSync } from "node:fs";
 import { PREFERENCES_VERSION } from "./config";
-import type { FieldOrigin, Preferences, ScopeField, WorkTypeSelection } from "./types";
+import { ALL_SENIORITY_TERMS, SENIORITY_LEVEL_IDS } from "./seniority";
+import type {
+  FieldOrigin,
+  Preferences,
+  ScopeBaseline,
+  ScopeField,
+  SeniorityLevelId,
+  SeniorityLevelSelection,
+  SeniorityPreference,
+  WorkTypeSelection,
+} from "./types";
 
 /** Raised when preferences.json fails to match the schema or an invariant. */
 export class ScopeValidationError extends Error {
@@ -133,26 +143,87 @@ function parseWorkTypes(raw: unknown, path: string): WorkTypeSelection {
 }
 
 /**
- * Validate an unknown value as {@link Preferences}. Pure — no I/O. Throws
- * {@link ScopeValidationError} naming the offending path. Unknown extra keys are
- * ignored (the result is rebuilt field-by-field, same as cli/resume.ts).
+ * Validate the seniority dimension.
+ *
+ * Strict on three axes, each rejecting loudly rather than repairing:
+ *  - the level SET must be exactly the closed config set, each id once;
+ *  - every persisted term must be a MEMBER of the union of all config term
+ *    lists. Membership, not per-level equality: config may gain terms without
+ *    invalidating existing files, while a config REMOVAL invalidates files that
+ *    persisted the removed term — deliberate, see types.ts;
+ *  - no duplicate terms within a level (a sign of a hand-edit).
  */
-export function parsePreferences(raw: unknown, path = "preferences"): Preferences {
+function parseSeniority(raw: unknown, path: string): SeniorityPreference {
   const o = asObject(raw, path);
+  const rawLevels = asArray(o.levels, `${path}.levels`);
 
-  if (o.version !== PREFERENCES_VERSION) {
+  const levels: SeniorityLevelSelection[] = [];
+  const seenLevels = new Map<string, number>();
+
+  rawLevels.forEach((entry, i) => {
+    const levelPath = `${path}.levels[${i}]`;
+    const e = asObject(entry, levelPath);
+    const id = asNonEmptyString(e.level, `${levelPath}.level`);
+
+    if (!(SENIORITY_LEVEL_IDS as readonly string[]).includes(id)) {
+      throw new ScopeValidationError(
+        `${levelPath}.level: unknown seniority level "${id}" — expected one of ` +
+          `${SENIORITY_LEVEL_IDS.join(", ")}`
+      );
+    }
+    const first = seenLevels.get(id);
+    if (first !== undefined) {
+      throw new ScopeValidationError(
+        `${levelPath}.level: duplicate level "${id}" (already at index ${first})`
+      );
+    }
+    seenLevels.set(id, i);
+
+    const terms = asStringArray(e.terms, `${levelPath}.terms`);
+    const seenTerms = new Set<string>();
+    terms.forEach((term, t) => {
+      if (!ALL_SENIORITY_TERMS.includes(term)) {
+        throw new ScopeValidationError(
+          `${levelPath}.terms[${t}]: "${term}" is not a known seniority term. ` +
+            `Terms are confirmed through \`oaos setup-scope\`, never hand-written — ` +
+            `and a term removed from config invalidates files that persisted it, by design.`
+        );
+      }
+      if (seenTerms.has(term)) {
+        throw new ScopeValidationError(`${levelPath}.terms[${t}]: duplicate term "${term}"`);
+      }
+      seenTerms.add(term);
+    });
+
+    levels.push({
+      level: id as SeniorityLevelId,
+      excluded: asBoolean(e.excluded, `${levelPath}.excluded`),
+      terms,
+    });
+  });
+
+  const missing = SENIORITY_LEVEL_IDS.filter((id) => !seenLevels.has(id));
+  if (missing.length > 0) {
     throw new ScopeValidationError(
-      `${path}.version: expected ${PREFERENCES_VERSION}, got ${JSON.stringify(o.version)}`
+      `${path}.levels: missing seniority level(s) ${missing.join(", ")} — ` +
+        `all ${SENIORITY_LEVEL_IDS.length} levels must be present`
     );
   }
 
-  const remoteOnly = asBoolean(o.remote_only, `${path}.remote_only`);
-  if (remoteOnly !== true) {
-    throw new ScopeValidationError(
-      `${path}.remote_only: must be true — remote-only is a locked charter decision`
-    );
-  }
+  return {
+    levels,
+    entry_level_query_modifier: asBoolean(
+      o.entry_level_query_modifier,
+      `${path}.entry_level_query_modifier`
+    ),
+  };
+}
 
+/** The part of the schema shared by a full read and a baseline read. */
+function parseCommon(
+  o: Record<string, unknown>,
+  path: string
+): { fields: ScopeField[]; work_types: WorkTypeSelection } {
   const fields = asArray(o.fields, `${path}.fields`).map((f, i) =>
     parseField(f, `${path}.fields[${i}]`)
   );
@@ -169,13 +240,103 @@ export function parsePreferences(raw: unknown, path = "preferences"): Preference
     seen.set(key, i);
   });
 
+  return { fields, work_types: parseWorkTypes(o.work_types, `${path}.work_types`) };
+}
+
+/** The migration stop for a file written before the seniority dimension. */
+function outdatedVersionError(path: string, found: number): ScopeValidationError {
+  return new ScopeValidationError(
+    `${path}: schema version ${found} predates the seniority dimension ` +
+      `(current version is ${PREFERENCES_VERSION}).\n\n` +
+      `Your file was NOT changed and NOT upgraded. Inferring a seniority preference you\n` +
+      `never confirmed is exactly what D15 forbids, so this is a stop, not a migration.\n\n` +
+      `Run \`oaos setup-scope\` and type 'done' to re-confirm:\n` +
+      `  - your existing field ticks and work types are carried forward as the baseline\n` +
+      `  - the new Seniority section is proposed with nothing excluded, so confirming\n` +
+      `    without touching it reproduces your current discovery behaviour exactly`
+  );
+}
+
+/**
+ * Validate an unknown value as {@link Preferences}. Pure — no I/O. Throws
+ * {@link ScopeValidationError} naming the offending path. Unknown extra keys are
+ * ignored (the result is rebuilt field-by-field, same as cli/resume.ts).
+ *
+ * This is the CONSUMPTION path — strict about the version. Reading a saved file
+ * merely to seed an editing baseline goes through {@link parseBaseline}, which
+ * tolerates v1; see ScopeBaseline in types.ts for why the two differ.
+ */
+export function parsePreferences(raw: unknown, path = "preferences"): Preferences {
+  const o = asObject(raw, path);
+
+  if (o.version !== PREFERENCES_VERSION) {
+    if (typeof o.version === "number" && o.version < PREFERENCES_VERSION) {
+      throw outdatedVersionError(path, o.version);
+    }
+    throw new ScopeValidationError(
+      `${path}.version: expected ${PREFERENCES_VERSION}, got ${JSON.stringify(o.version)}`
+    );
+  }
+
+  const remoteOnly = asBoolean(o.remote_only, `${path}.remote_only`);
+  if (remoteOnly !== true) {
+    throw new ScopeValidationError(
+      `${path}.remote_only: must be true — remote-only is a locked charter decision`
+    );
+  }
+
+  const { fields, work_types } = parseCommon(o, path);
+
   return {
     version: PREFERENCES_VERSION,
     generated_at: asTimestamp(o.generated_at, `${path}.generated_at`),
     confirmed_at: asTimestamp(o.confirmed_at, `${path}.confirmed_at`),
     fields,
-    work_types: parseWorkTypes(o.work_types, `${path}.work_types`),
+    work_types,
     remote_only: true,
+    seniority: parseSeniority(o.seniority, `${path}.seniority`),
+  };
+}
+
+/**
+ * Validate an unknown value as a {@link ScopeBaseline} — a previously-saved
+ * scope read ONLY to seed the interactive editing baseline.
+ *
+ * Version-tolerant BY DESIGN, and only here: a strict read would make
+ * `oaos setup-scope` — the one command that fixes a v1 file — the one command
+ * that cannot open it, and the migration message's promise to carry the
+ * operator's ticks forward would be false.
+ *
+ * Everything else is validated with the same strict code as a full read, and
+ * the result is deliberately NOT a Preferences: a tolerated v1 file still
+ * cannot become a persisted scope without passing through the reducer and a
+ * confirmed `buildPreferences`.
+ */
+export function parseBaseline(raw: unknown, path = "preferences"): ScopeBaseline {
+  const o = asObject(raw, path);
+
+  if (typeof o.version !== "number" || !Number.isInteger(o.version) || o.version < 1) {
+    throw new ScopeValidationError(
+      `${path}.version: expected a schema version integer >= 1, got ${JSON.stringify(o.version)}`
+    );
+  }
+  if (o.version > PREFERENCES_VERSION) {
+    throw new ScopeValidationError(
+      `${path}.version: ${o.version} is newer than this build understands ` +
+        `(${PREFERENCES_VERSION}) — refusing to read it as a baseline rather than ` +
+        `silently discarding settings it may carry`
+    );
+  }
+
+  const { fields, work_types } = parseCommon(o, path);
+
+  return {
+    version: o.version,
+    fields,
+    work_types,
+    // Parsed strictly when present; absent for a pre-seniority file, which is
+    // the whole reason this reader exists.
+    seniority: o.version >= 2 ? parseSeniority(o.seniority, `${path}.seniority`) : null,
   };
 }
 
@@ -188,19 +349,30 @@ export function parsePreferences(raw: unknown, path = "preferences"): Preference
  * the file path in the message — if it is missing, unparseable, or invalid.
  */
 export function loadPreferences(path: string): Preferences {
+  return parsePreferences(readJson(path), path);
+}
+
+/**
+ * Read + validate a saved scope as an editing {@link ScopeBaseline}. Accepts a
+ * pre-seniority (v1) file; see {@link parseBaseline}. Used ONLY by
+ * `oaos setup-scope` — never by a discovery path.
+ */
+export function loadBaseline(path: string): ScopeBaseline {
+  return parseBaseline(readJson(path), path);
+}
+
+function readJson(path: string): unknown {
   let text: string;
   try {
     text = readFileSync(path, "utf8");
   } catch (err) {
     throw new ScopeValidationError(`could not read ${path}: ${(err as Error).message}`);
   }
-  let parsed: unknown;
   try {
-    parsed = JSON.parse(text);
+    return JSON.parse(text);
   } catch (err) {
     throw new ScopeValidationError(`${path} is not valid JSON: ${(err as Error).message}`);
   }
-  return parsePreferences(parsed, path);
 }
 
 /**

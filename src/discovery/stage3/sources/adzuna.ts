@@ -42,6 +42,7 @@ import type { Preferences } from "../../scope/types";
 import type { FetchResult, HealthCheckResult, SourceDeps, SourceError, Stage3Source } from "../types";
 import { getJson, isRecord, readArray, str } from "../query/http-json";
 import { cappedTermsError, deriveQueryTerms } from "../query/scope-terms";
+import { queryTermWithSeniority } from "../query/seniority-modifier";
 import { quarantineContent } from "../query/truncation";
 
 export interface AdzunaCredentials {
@@ -68,12 +69,24 @@ export const ADZUNA_CONFIG: AdzunaConfig = {
 
 const SOURCE_NAME = "adzuna";
 
-function searchUrlFor(config: AdzunaConfig, credentials: AdzunaCredentials, term: string): string {
+/**
+ * The seniority modifier decorates `what`, which ALREADY carries the
+ * load-bearing " remote". With the modifier confirmed this becomes a 3-clause
+ * query ("<term> remote entry level") — the tightest of the three query_net
+ * sources and the one most likely to collapse to zero results. It still sends
+ * exactly one request per scope term.
+ */
+function searchUrlFor(
+  config: AdzunaConfig,
+  credentials: AdzunaCredentials,
+  term: string,
+  preferences: Preferences
+): string {
   const params = new URLSearchParams({
     app_id: credentials.appId,
     app_key: credentials.appKey,
     results_per_page: String(config.resultsPerPage),
-    what: `${term} remote`,
+    what: queryTermWithSeniority(`${term} remote`, preferences),
     sort_by: "date",
     max_days_old: String(config.maxDaysOld),
   });
@@ -135,10 +148,11 @@ async function runQuery(
   config: AdzunaConfig,
   credentials: AdzunaCredentials,
   term: string,
+  preferences: Preferences,
   deps: SourceDeps
 ): Promise<{ items: RawItem[]; errors: SourceError[] }> {
   const scope = `${SOURCE_NAME}:${term}`;
-  const response = await getJson(searchUrlFor(config, credentials, term), scope, deps);
+  const response = await getJson(searchUrlFor(config, credentials, term, preferences), scope, deps);
   if (!response.ok) return { items: [], errors: [response.error] };
 
   const rows = readArray(response.data, "results", scope, true);
@@ -180,7 +194,7 @@ async function fetchAdzuna(
   const seen = new Set<string>();
 
   for (const term of terms) {
-    const result = await runQuery(config, credentials, term, deps);
+    const result = await runQuery(config, credentials, term, preferences, deps);
     errors.push(...result.errors);
     for (const item of result.items) {
       const key = identity(item);
@@ -244,7 +258,7 @@ export function createAdzunaSource(
           detail: "no enabled fields in preferences.json — nothing to search for",
         };
       }
-      const result = await runQuery(config, credentials, terms[0], deps);
+      const result = await runQuery(config, credentials, terms[0], preferences, deps);
       const ok = result.errors.length === 0;
       return {
         ok,

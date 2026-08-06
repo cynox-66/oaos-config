@@ -37,6 +37,7 @@ import type { Preferences } from "../../scope/types";
 import type { FetchResult, HealthCheckResult, SourceDeps, SourceError, Stage3Source } from "../types";
 import { getJson, isRecord, readArray, str } from "../query/http-json";
 import { cappedTermsError, deriveQueryTerms } from "../query/scope-terms";
+import { queryTermWithSeniority } from "../query/seniority-modifier";
 import { quarantineContent } from "../query/truncation";
 
 export interface FreehireConfig {
@@ -52,9 +53,13 @@ export const FREEHIRE_CONFIG: FreehireConfig = {
 
 const SOURCE_NAME = "freehire";
 
-function searchUrlFor(config: FreehireConfig, term: string): string {
+/**
+ * The seniority modifier decorates `q`; it never adds a query. One request per
+ * scope term either way — see query/seniority-modifier.ts.
+ */
+function searchUrlFor(config: FreehireConfig, term: string, preferences: Preferences): string {
   const params = new URLSearchParams({
-    q: term,
+    q: queryTermWithSeniority(term, preferences),
     work_mode: "remote",
     limit: String(config.limit),
     offset: "0",
@@ -98,10 +103,11 @@ function toRawItem(raw: Record<string, unknown>, deps: SourceDeps): RawItem {
 async function runQuery(
   config: FreehireConfig,
   term: string,
+  preferences: Preferences,
   deps: SourceDeps
 ): Promise<{ items: RawItem[]; errors: SourceError[] }> {
   const scope = `${SOURCE_NAME}:${term}`;
-  const response = await getJson(searchUrlFor(config, term), scope, deps);
+  const response = await getJson(searchUrlFor(config, term, preferences), scope, deps);
   if (!response.ok) return { items: [], errors: [response.error] };
 
   const rows = readArray(response.data, "data", scope, true);
@@ -143,7 +149,7 @@ async function fetchFreehire(
   const seen = new Set<string>();
 
   for (const term of terms) {
-    const result = await runQuery(config, term, deps);
+    const result = await runQuery(config, term, preferences, deps);
     errors.push(...result.errors);
     for (const item of result.items) {
       const key = identity(item);
@@ -190,7 +196,7 @@ export function createFreehireSource(
           detail: "no enabled fields in preferences.json — nothing to search for",
         };
       }
-      const result = await runQuery(config, terms[0], deps);
+      const result = await runQuery(config, terms[0], preferences, deps);
       const ok = result.errors.length === 0;
       return {
         ok,
