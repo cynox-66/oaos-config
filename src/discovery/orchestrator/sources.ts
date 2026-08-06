@@ -135,7 +135,7 @@ export const STAGE3_SOURCES: SourceTableEntry[] = [
   //   hn-hiring 2 + 1  →  47 requests with every row enabled.
   {
     name: "himalayas",
-    enabled: false,
+    enabled: true,
     sink: "pipeline",
     family: "query_net",
     build: (ctx) => createHimalayasSource(undefined, ctx.preferences),

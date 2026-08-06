@@ -65,11 +65,14 @@ describe("the Stage-3 source table", () => {
     // Removing an activation means removing both, likewise together.
     //
     //   greenhouse — activated 2026-07-28, the first live Stage-3 source.
+    //   himalayas  — activated 2026-08-06, the first query_net source (ruling
+    //                Q5), sequenced after the G1 geo filter landed so its
+    //                India-eligible slice is reachable rather than buried.
     //
     // The assertion runs in both directions on purpose: name-not-in-list
     // catches an unrecorded flip, list-name-not-enabled catches an allow-list
     // entry left stale after a deactivation.
-    const ACTIVATED_SOURCES = ["greenhouse"];
+    const ACTIVATED_SOURCES = ["greenhouse", "himalayas"];
 
     const enabled = STAGE3_SOURCES.filter((e) => e.enabled).map((e) => e.name);
 
