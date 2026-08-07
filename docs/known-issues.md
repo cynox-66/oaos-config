@@ -842,7 +842,34 @@ subset — a design decision, not a patch.
 
 ---
 
-## 28. Himalayas items normalize with an EMPTY company — `companyName` is never read (**TOP OF THE DEFECT QUEUE** — ahead of #23's title-scoped gate)
+## 28. Himalayas items normalize with an EMPTY company — `companyName` is never read — **RESOLVED 2026-08-07**
+
+> **RESOLVED 2026-08-07** (`a78105d` fix + test, `adea862` migration). The
+> analysis below stands as written; this banner records the outcome.
+>
+> - **Fix:** `"companyName"` added to the company key list in
+>   `adapters/job_board.ts`. One key, with a comment naming this issue.
+> - **Regression tests (3):** the load-bearing one asserts the **structural
+>   invariant** — two employers sharing a role title must not produce one
+>   fingerprint — not field presence. See #30 for why that distinction is the
+>   generalizable lesson.
+> - **Migration, done before trusting the key:** all **7 of 7** fingerprints
+>   changed, confirming the collapse hazard this entry predicted was real and
+>   that a key-only fix would have duplicated every record. `Company` and
+>   `Fingerprint` were written **together**.
+> - **Safety gate:** `research/experience-eligibility/backfill-28.ts` re-ran
+>   the *same real* `normalize()` on each captured payload with `companyName`
+>   deleted and required byte-identical reproduction of the **stored**
+>   fingerprint before writing. All 7 reproduced exactly. Reuse this shape for
+>   any migration that changes a dedupe key.
+> - **Verified by read-back:** all 7 records now carry a non-empty `Company`
+>   and a full 40-character fingerprint.
+> - **The "unknown and unrecoverable" collapsed items remain unrecoverable.**
+>   The fix stops the loss; it does not recover what was never written.
+> - **The unverified Gemini-call hypothesis below was NOT investigated** and is
+>   neither confirmed nor refuted. It stays a hypothesis.
+
+
 
 Found in the first real Himalayas run (2026-08-06, Wave 8), confirmed at three
 levels:
@@ -900,3 +927,94 @@ second defect on top of the first. Same hazard already recorded for
 **Himalayas stays activated meanwhile** (operator ruling 2026-08-06):
 deactivating hides the defect, buys nothing, and the fix needs its own session
 regardless; the source's geo and health behaviour are correct.
+
+---
+
+## 29. Himalayas `seniority` is a REQUEST-SIDE RE-SCOPING PARAM, not a filter (DOCUMENTED EXTERNAL-API BEHAVIOUR — not a defect in our code)
+
+Measured 2026-08-07 during the experience-eligibility probe
+(`research/experience-eligibility/PROBE.md`). Recorded because the API accepts
+the parameter, returns HTTP 200, and returns plausible-looking results — so a
+future session **will** rediscover it and reach the same wrong conclusion this
+one initially did.
+
+**The endpoint accepts `&seniority=Entry-level` on
+`/jobs/api/search`.** It is honoured (isolated from six other candidate param
+names; `seniority` alone reproduced a combined probe byte-for-byte). What it
+does is **replace the `q=` match set, not filter it.**
+
+**Proven three ways on an `ebpf` control:**
+
+| evidence | measurement |
+|---|---|
+| `totalCount` **rose** under the param | bare `q=ebpf` → **1**; `q=ebpf&seniority=Entry-level` → **11**. A filter cannot enlarge a match set. |
+| the genuine match is **absent** | bare returned exactly one job, `eBPF Engineer - Remote` @ Odigos (`["Senior"]`). It does not appear in the faceted response. Intersection = **0**. |
+| results are **off-topic** | 9 of 11 faceted results contain no `ebpf` substring anywhere — a German tax clerk, a Brazilian internship talent pool, a payroll analyst, an SAP consultant. |
+
+**Why `kubernetes` was a misleading control and `ebpf` was the right one.**
+With `seniority=` present, `q=` appears to degrade to a loose or largely
+ignored match. For a common term there is enough genuine entry-level inventory
+to fill the 20-slot page, so results *look* on-topic (Kong, vCluster, Mirantis)
+and the re-scoping is invisible. A rare term has no such cover and exposes the
+fallback. **Probe rare terms, not representative ones, when testing whether a
+parameter filters.**
+
+### The control-design lesson, stated separately because it generalizes
+
+**`totalCount == returned` proves a result set is complete. `totalCount < 20`
+does not.** The two disagree on this API even for small sets: `devtools`
+returns `totalCount=6` with only **4** jobs; `networking` returns 19 of 636.
+The probe prompt's stated criterion (`totalCount < 20`) was **insufficient** and
+was correctly replaced with the strict-equality one — which held for exactly
+one sweep term (`ebpf`, 1 == 1) and is what made the test decisive. Any future
+probe asserting "this response is the complete match set" must use strict
+equality.
+
+**Consequence — see #30's sibling note and the CLAUDE.md entry:** experience-
+level eligibility has **no request-side mechanism on Himalayas**. If it is
+built, it must be a **response-side filter in the G1/geo pattern**. The
+"unreachable inventory" claim made earlier in that probe is **withdrawn**, and
+A3/Q6 is **not** superseded — it reverts to its prior state (shipped
+`enabled: false`, gated on the Adzuna exclusion, untouched).
+
+**Not a defect in our code. Nothing to fix.** `himalayas.ts` never sent this
+parameter and still does not.
+
+---
+
+## 30. Normalization defects are caught by structural invariants, not field-presence fixtures (STANDING TEST-DESIGN RULE — read beside the activation protocol)
+
+Promoted to a standing entry after the **third instance of one defect class in
+one week**: Greenhouse `content` → description, Greenhouse `location.name` →
+location (both 2026-08-01, `53a2fe2`), Himalayas `companyName` → company
+(#28, 2026-08-07). Every one has the same shape — *the data is present in the
+payload under a key the reader does not check, and everything downstream
+degrades quietly.*
+
+**The rule:** for a normalization defect, the assertion that catches it is a
+**structural invariant over outputs**, not a fixture asserting a field is
+populated.
+
+```
+weak    expect(normalize(item).company).toBe("VEXXHOST Inc.")
+strong  expect(normalize(a).fingerprint).not.toBe(normalize(b).fingerprint)
+        // two employers, same role title
+```
+
+**Why the weak form cannot work — this is #21's sibling.** A fixture is written
+from the *same reading of the payload* as the adapter. If the adapter misses
+`companyName`, the fixture author misses it too, writes `company_name` into the
+fixture, and the test **passes against the defect**. The fixture encodes the
+misreading. A green suite is not evidence about this class.
+
+**Why the strong form works:** it asserts a property the system must hold
+regardless of which key carries the data. It fails for *any* missed company
+key, on *any* future source — not only for `companyName` on Himalayas. It is
+also the form that states the actual harm: #28's cost was never the blank
+column, it was the fingerprint collapse.
+
+**Relationship to the activation protocol** (CLAUDE.md, added 2026-08-06):
+the post-run field-completeness check catches this class **empirically, once,
+at activation**. This rule catches it **structurally, forever, in the suite**.
+They are complementary — neither replaces the other, and the protocol remains
+mandatory because only real records expose a key nobody thought to check.

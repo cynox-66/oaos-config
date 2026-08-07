@@ -675,13 +675,28 @@
     Three instances, one class, one week — Greenhouse `content` → description
     and Greenhouse `location.name` → location (both mapped 2026-08-01, commit
     53a2fe2, after ~5 days of runs writing empty descriptions), and Himalayas
-    `companyName` → company (found 2026-08-06, known-issues #28, UNFIXED).
+    `companyName` → company (found 2026-08-06, known-issues #28, RESOLVED
+    2026-08-07).
     Every one is the same shape: the data is present in the payload under a key
     the reader does not check, and everything downstream degrades quietly.
+    (#28 RESOLVED 2026-08-07 — see its entry below. The class is not resolved;
+    the protocol stands.)
   - **FIXTURES STRUCTURALLY CANNOT CATCH THIS** — the sibling of #21. A fixture
     is written from the same reading of the payload as the adapter, so it
     encodes the misreading and passes. Only real records read back after a real
     run expose it. A green suite is not evidence about this class.
+  - **THE COMPLEMENTARY TEST-DESIGN RULE (added 2026-08-07, docs/known-issues.md
+    #30):** the assertion that DOES catch this class in the suite is a
+    **structural invariant over outputs**, never a field-presence fixture.
+    Weak: `expect(normalize(x).company).toBe("VEXXHOST Inc.")` — written from
+    the same misreading, passes against the defect. Strong:
+    `expect(normalize(a).fingerprint).not.toBe(normalize(b).fingerprint)` for
+    two employers sharing a role title — fails for ANY missed company key on
+    ANY future source, and states the actual harm rather than the symptom.
+    The protocol above catches this class EMPIRICALLY, ONCE, at activation; the
+    invariant catches it STRUCTURALLY, FOREVER. Neither replaces the other —
+    the post-run check stays mandatory, because only real records expose a key
+    nobody thought to check.
 - WAVE 8 (SOURCE ACTIVATION) — IN PROGRESS. Dates, not SHAs: the activation
   commits are described by date deliberately. An earlier session's
   dangling-SHA references were cleaned up during the 2026-07-29 working-tree
@@ -985,8 +1000,14 @@
     an opportunity. **#27 NEW** — `COUNTRY_NAME_TO_ISO` lacks Barbados and
     Bahamas, which fail open under `unresolved: "pass"`; one Barbados-only
     posting reached the passed set.
-  - **#28 NEW — TOP OF THE DEFECT QUEUE, AHEAD OF THE TITLE-SCOPED NEGATIVE
-    GATE. Himalayas items normalize with an EMPTY company.** The payload
+  - **#28 — RESOLVED 2026-08-07** (`a78105d` + `adea862`; see the dedicated
+    entry further down for the fix, the migration and the two standing rules it
+    produced). It WAS top of the defect queue; it no longer is, and #23's
+    title-scoped negative gate is now the front of that queue. The analysis
+    below is preserved as the record of why it outranked #23 — the reasoning
+    was correct and the predicted collapse hazard was confirmed (7 of 7
+    fingerprints changed). **Himalayas items normalize with an EMPTY
+    company.** The payload
     carries `companyName` (camelCase); `adapters/job_board.ts` reads only
     snake_case forms; all 7 persisted Himalayas records have NO Company field.
     Same defect class as the 2026-08-01 Greenhouse content/location mapping
@@ -1011,7 +1032,101 @@
       deactivating hides the defect and buys nothing, the fix needs its own
       session either way, and the source's geo and health behaviour are
       correct. **Read #28 before interpreting any Himalayas record.**
-- Test count: 1120 passing (83 test files) — `vitest run`
+- EXPERIENCE-LEVEL ELIGIBILITY: PROBED AND CLOSED (2026-08-07). A probe, not a
+  wave — no gate was built and none ships. 17 Himalayas requests, zero Gemini.
+  Full record: research/experience-eligibility/PROBE.md (committed 85fcbe9);
+  raw captures + the three probe scripts are LOCAL AND UNTRACKED.
+  - THE QUESTION: the operator is a first-year student with no professional
+    employment, and neither the geo nor the seniority gate catches "5+ years of
+    hands-on experience" in body prose on a title-clean posting (VEXXHOST
+    Kubernetes Engineer — 55/Tier B, the highest score OAOS has produced).
+  - **HIMALAYAS `seniority=` IS A RE-SCOPING PARAM, NOT A FILTER** — the
+    finding that closed the branch, docs/known-issues.md #29. The endpoint
+    ACCEPTS `&seniority=Entry-level`, returns 200, and returns plausible
+    results, so a future session will rediscover it and reach the same wrong
+    conclusion this one initially did. Proven three ways on an `ebpf` control:
+    `totalCount` **ROSE 1 → 11** (a filter cannot enlarge a match set); the one
+    genuine eBPF posting (`eBPF Engineer - Remote` @ Odigos) is ABSENT from the
+    faceted set, intersection 0; 9 of 11 faceted results contain no `ebpf`
+    substring (a German tax clerk, a Brazilian internship talent pool, a
+    payroll analyst). `kubernetes` looked convincing only because a common term
+    has enough genuine entry-level inventory to fill the 20-slot page and hide
+    the re-scoping. **Probe RARE terms, not representative ones, when testing
+    whether a parameter filters.**
+  - **CONTROL-DESIGN LESSON, recorded because it generalizes: `totalCount ==
+    returned` proves a result set is complete; `totalCount < 20` DOES NOT.**
+    They disagree on this API even for small sets — `devtools` returns
+    totalCount 6 with 4 jobs, `networking` 19 of 636. The task prompt's stated
+    criterion was insufficient and was correctly replaced with strict equality,
+    which held for exactly one sweep term (`ebpf`, 1 == 1) and is what made the
+    test decisive.
+  - **CONSEQUENCE: if experience-level eligibility is ever built, it MUST be a
+    RESPONSE-SIDE filter in the G1/geo pattern.** There is no request-side
+    mechanism on Himalayas. **NOT STARTED — that is its own wave with its own
+    Step 1. Do not begin it from this entry.**
+  - **TWO CLAIMS FROM THIS PROBE ARE WITHDRAWN, both struck through in place in
+    PROBE.md rather than deleted:** (1) "the facet reaches unreachable
+    inventory" — it was inferred from zero guid overlap, which the containment
+    test showed is equally consistent with re-scoping; (2) "A3/Q6 is
+    superseded" — **A3 IS NOT SUPERSEDED and reverts to its prior state**:
+    shipped `enabled: false`, gated on the Adzuna exclusion, untouched by
+    anything measured here.
+  - RESPONSE-SIDE GATING ON `seniority` WAS RULED OUT SEPARATELY (operator):
+    the field is present on **212/212** records with **no empty convention** —
+    the exact inverse of `locationRestrictions`, where an empty array carries
+    trustworthy meaning. It therefore CANNOT express "unknown", and it
+    disagrees with prose in both directions (`Mid-level` spans 1–7 years; 3 of
+    18 `Entry-level` items demand 2–3 years). Vocabulary is closed at 6 values:
+    Senior 56.6% / Mid-level 25.5% / Entry-level 8.5% / Manager / Executive /
+    Director. **No years field reaches the API at all** — the rendered page's
+    "Experience: 5 years minimum" row does not exist in the payload.
+  - SOURCE-YIELD FINDING THAT SURVIVES (this is what the probe is FOR, and it
+    feeds Q7 source-mix, not a filter): at the operator's ruled threshold
+    (gate a stated minimum ABOVE 1 year, pass unstated), the 2026-08-06
+    Himalayas passed 7 reduces to **3, of which exactly ONE is a genuine
+    engineering role** (Talent Sam, Front-End Developer, unstated). ~1 in 7
+    written records is plausibly actionable.
+  - **JOIN RECORDS TO PAYLOADS BY `Source URL` → `guid`, NEVER BY TITLE TEXT.**
+    The first pass matched by title and mis-attributed one record to KDCI when
+    it is Talent Sam — the corpus holds two distinct `Front-End Developer`
+    postings. That error produced "5 of 7 gate, and ZERO engineering roles
+    survive", which is **WRONG**. Measured figure is **4 of 7 gate, 3 survive,
+    one of them engineering.** Direction unchanged, magnitude corrected.
+- KNOWN-ISSUES #28 (Himalayas empty company) RESOLVED 2026-08-07 — `a78105d`
+  (fix + 3 tests), `adea862` (migration). NOT PUSHED. Suite 1120 → 1123 / 83
+  files. It was top of the defect queue; it no longer blocks Himalayas record
+  interpretation.
+  - Fix is ONE KEY: `"companyName"` added to the company list in
+    `adapters/job_board.ts`. The engine change is that small — the reason #28
+    insisted it "is NOT a one-line change" was never the key, it was the
+    MIGRATION, and that judgement was correct.
+  - **ALL 7 OF 7 FINGERPRINTS CHANGED**, confirming the predicted collapse
+    hazard was real: a key-only fix would have left 7 stale fingerprints and
+    DUPLICATED every record on the next run. `Company` and `Fingerprint` were
+    written TOGETHER. Verified by read-back: 7/7 non-empty Company, 40-char
+    fingerprint.
+  - **THE REUSABLE PATTERN — use it for ANY migration that changes a dedupe
+    key** (`research/experience-eligibility/backfill-28.ts`, committed
+    `adea862`): before writing anything, re-run the SAME REAL `normalize()` on
+    each captured payload with the new key DELETED, and require byte-identical
+    reproduction of the record's STORED fingerprint. All 7 reproduced exactly,
+    which proves the reconstruction matches what the original run ACTUALLY did
+    rather than what the current session assumes it did. Any mismatch refuses
+    the write.
+  - **STANDING RULE FROM A LIVE INCIDENT — ABBREVIATED DISPLAY VALUES MUST
+    NEVER BE THE SOURCE FOR A WRITE.** An 8-character fingerprint, copied from
+    a dry-run table that printed `fe365b31 → 20120bc7`, was PATCHed to
+    `recok6rs6BksDShBP`. Caught on the API response and overwritten in the same
+    corrective PATCH; final read-back confirms all 7 at 40 chars. Unnoticed, it
+    would have duplicated that record on the next run — precisely the failure
+    the migration existed to prevent. **Re-read the full value from the record
+    (or emit it in full) before any write; never source a write from a display
+    string.**
+- Test count: 1123 passing (83 test files) — `vitest run`
+  (re-verified 2026-08-07 after the #28 fix, which added 3 tests to
+  src/engines/normalization/tests/normalize.test.ts; the 1120/83 baseline below
+  was the pre-fix figure.)
+- PREVIOUS test count entry: 1120 passing (83 test files) — `vitest run`
   (re-verified 2026-08-06 after wave G1; the pre-G1 baseline 1030/78 was
   re-measured the same day in a clean worktree of main and confirmed.
   Standing note: this entry has gone stale twice — measure before quoting it.)
@@ -1282,4 +1397,14 @@
   local web UI (D16), neither started. Freelance/gig discovery remains deferred
   by locked decision. A3 stays `enabled: false` (its Adzuna collapse risk is
   now MEASURED — see the G1 entry — the one-line exclusion is authorized but
-  not yet built).
+  not yet built). **A3's state is UNCHANGED by the 2026-08-07
+  experience-eligibility probe** — that probe briefly concluded A3 was
+  superseded for Himalayas by a request-side facet; the facet turned out not to
+  be a filter (known-issues #29), so the supersession was REVERSED and A3
+  reverts to exactly this prior state. Nothing measured there is a reason to
+  enable or remove it.
+- EXPERIENCE-LEVEL ELIGIBILITY GATE: NOT STARTED, and deliberately so. The
+  2026-08-07 probe established only that it must be RESPONSE-SIDE if built (no
+  request-side mechanism exists on Himalayas) and measured the yield it would
+  produce. **It is its own wave with its own Step 1 — do not begin it from the
+  probe entry.**
