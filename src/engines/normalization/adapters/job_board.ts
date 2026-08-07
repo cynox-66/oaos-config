@@ -46,6 +46,11 @@ function extractFromObject(raw: RawItem, payload: PayloadObject): AdapterOutput 
     company: readString(payload, [
       "company",
       "company_name",
+      // camelCase sibling of `company_name`. Himalayas (query_net) publishes
+      // `companyName`; `readString` matches keys exactly, so without this the
+      // company reads empty and the fingerprint collapses every posting that
+      // shares a role title on one host. See docs/known-issues.md #28.
+      "companyName",
       "organization",
       "employer",
     ]),

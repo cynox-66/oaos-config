@@ -287,3 +287,46 @@ describe("dedupe / merge", () => {
     expect(existing).toEqual(snapshot);
   });
 });
+
+// Regression: docs/known-issues.md #28. Himalayas publishes the employer under
+// `companyName` (camelCase); the adapter read only snake_case forms, so every
+// persisted Himalayas record carried an empty Company. Key shape below is the
+// real search-API shape, verified live 2026-08-07 (212/212 records carry
+// `companyName`).
+describe("himalayas company mapping (known-issues #28)", () => {
+  const himalayasItem = (companyName: string, title: string): RawItem => ({
+    source_type: "job_board",
+    source_name: "himalayas",
+    raw_payload: {
+      companyName,
+      title,
+      description: "kubernetes platform work",
+      applicationLink: `https://himalayas.app/companies/x/jobs/${title}`,
+      guid: `https://himalayas.app/companies/x/jobs/${title}`,
+    },
+    url: `https://himalayas.app/companies/x/jobs/${title}`,
+    fetched_at: "2026-08-07T00:00:00.000Z",
+  });
+
+  it("reads company from `companyName`, so a himalayas record is never blank", () => {
+    const opp = normalize(himalayasItem("VEXXHOST Inc.", "Kubernetes Engineer"));
+    expect(opp.company).toBe("VEXXHOST Inc.");
+    expect(opp.company).not.toBe("");
+  });
+
+  // The harm the empty company caused: sha1(company|role|url-host) collapsed
+  // every employer sharing a role title on the single himalayas.app host into
+  // ONE opportunity, silently, before anything was written.
+  it("does not collapse two employers sharing a role title into one fingerprint", () => {
+    const a = normalize(himalayasItem("VEXXHOST Inc.", "Kubernetes Engineer"));
+    const b = normalize(himalayasItem("Kong", "Kubernetes Engineer"));
+    expect(a.fingerprint).not.toBe(b.fingerprint);
+  });
+
+  it("still reads the snake_case forms other boards use", () => {
+    const gh = normalize(
+      rawItem({ raw_payload: { company_name: "Grafana Labs", title: "Backend Engineer" } })
+    );
+    expect(gh.company).toBe("Grafana Labs");
+  });
+});
