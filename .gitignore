@@ -35,3 +35,10 @@ research/phase0c/adzuna-keys.txt
 .codex/
 AGENTS.md
 research/phase1-eligibility/raw/
+
+# Experience-eligibility probe captures (2026-08-07, 1.6 MB of Himalayas
+# search responses). Same posture as phase1-eligibility/raw/: the scripts and
+# the written findings are tracked, the bytes are not. Regenerate with
+# `npx tsx research/experience-eligibility/capture.ts` — 13 live requests, and
+# the corpus WILL have drifted. See that directory's README.md.
+research/experience-eligibility/raw/

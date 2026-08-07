@@ -1,0 +1,83 @@
+{
+  "capturedAt": "2026-08-07T04:07:47.331Z",
+  "requests": [
+    {
+      "n": 1,
+      "url": "https://himalayas.app/jobs/api/search?q=cloud-native",
+      "status": 200,
+      "bytes": 120465
+    },
+    {
+      "n": 2,
+      "url": "https://himalayas.app/jobs/api/search?q=kubernetes",
+      "status": 200,
+      "bytes": 116939
+    },
+    {
+      "n": 3,
+      "url": "https://himalayas.app/jobs/api/search?q=security",
+      "status": 200,
+      "bytes": 145782
+    },
+    {
+      "n": 4,
+      "url": "https://himalayas.app/jobs/api/search?q=ebpf",
+      "status": 200,
+      "bytes": 3177
+    },
+    {
+      "n": 5,
+      "url": "https://himalayas.app/jobs/api/search?q=chaos-engineering",
+      "status": 200,
+      "bytes": 159628
+    },
+    {
+      "n": 6,
+      "url": "https://himalayas.app/jobs/api/search?q=networking",
+      "status": 200,
+      "bytes": 110882
+    },
+    {
+      "n": 7,
+      "url": "https://himalayas.app/jobs/api/search?q=devtools",
+      "status": 200,
+      "bytes": 28856
+    },
+    {
+      "n": 8,
+      "url": "https://himalayas.app/jobs/api/search?q=infra",
+      "status": 200,
+      "bytes": 146279
+    },
+    {
+      "n": 9,
+      "url": "https://himalayas.app/jobs/api/search?q=observability",
+      "status": 200,
+      "bytes": 120275
+    },
+    {
+      "n": 10,
+      "url": "https://himalayas.app/jobs/api/search?q=web%2Ffrontend",
+      "status": 200,
+      "bytes": 82215
+    },
+    {
+      "n": 11,
+      "url": "https://himalayas.app/jobs/api/search?q=backend",
+      "status": 200,
+      "bytes": 107806
+    },
+    {
+      "n": 12,
+      "url": "https://himalayas.app/jobs/api/search?q=data",
+      "status": 200,
+      "bytes": 97124
+    },
+    {
+      "n": 13,
+      "url": "https://himalayas.app/jobs/api/search?q=ai%2Fml",
+      "status": 200,
+      "bytes": 127440
+    }
+  ]
+}

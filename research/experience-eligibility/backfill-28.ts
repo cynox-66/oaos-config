@@ -1,5 +1,27 @@
 // backfill-28.ts — known-issues #28 migration.
 //
+// ⛔ COMPLETED ONE-TIME MIGRATION — DO NOT RE-RUN. ⛔
+//
+// This ran once, on 2026-08-07, against the 7 Himalayas records written by the
+// 2026-08-06 run. Those records are already backfilled and verified. It is
+// kept for its PATTERN, not its reproducibility.
+//
+// Re-running it would be wrong twice over:
+//   1. Its safety gate reproduces the PRE-FIX fingerprint and requires it to
+//      match what is STORED. The stored values are now the POST-fix ones, so
+//      the gate would (correctly) refuse and exit 1.
+//   2. It reads `raw/`, which is gitignored. From a clean clone there is no
+//      corpus, and a regenerated capture has DRIFTED — postings expire, so the
+//      payloads behind those 7 records may no longer be fetchable at all.
+//
+// THE PART WORTH KEEPING is the safety gate itself (`buildPlan`, and the
+// `verified` flag that gates `patch`): before trusting a new dedupe key,
+// re-derive the OLD one through the SAME real code path with the new key
+// removed, and require byte-identical reproduction of what is stored. That
+// proves the reconstruction matches what the original run actually did rather
+// than what a later session assumes it did. Copy that shape for any future
+// migration that changes a fingerprint; do not copy this file's record list.
+//
 // The `companyName` fix changes what `normalize()` produces for every
 // Himalayas item, and the fingerprint is sha1(company|role|url-host). The 7
 // records already in Airtable were written with company="" and therefore carry
